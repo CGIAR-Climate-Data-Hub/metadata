@@ -1,11 +1,12 @@
 # Authoring guide
 
-This guide is for people filling out metadata records. It explains what to write first, what can
-wait, and where optional detail belongs.
+This guide is to help in filling out metadata records: what to write first, what can wait, and where
+detail is needed.
 
 The formal standard is `standard.md`. Fillable YAML starting points live in `../templates/`; each
 template binds YAML-aware editors to the CDH profile (`schemas/profiles/cdh.schema.json` = the core
-plus all CDH extensions) for autocomplete and field hints.
+plus all CDH extensions) for autocomplete and field hints. However, other profiels can be used with
+some modifications.
 
 ## The Short Version
 
@@ -29,12 +30,9 @@ Fill these first:
 
 Then add only the sections that apply to the resource.
 
-Optional and conditional sections are useful, but they should not make every record feel
-complicated. If a field does not apply, leave it out.
+## What The Record Should Answer
 
-## What Good Metadata Should Answer
-
-A useful record lets a person or an automated tool answer:
+A useful record answers:
 
 - What is this resource?
 - What can it be used for?
@@ -153,8 +151,7 @@ keywords:
 
 #### Linking keywords to an ontology
 
-It is recommended, but not required, to link keywords to an ontology if it exists. To attach an
-external ontology link (AGROVOC, GEMET, etc.) to a keyword, use the object form:
+Link keywords to an external vocabulary when useful:
 
 ```yaml
 keywords:
@@ -220,19 +217,16 @@ data:
     media_type: application/vnd.apache.parquet
 ```
 
-Each asset's `locations` lists one or more access paths to the **same content** (the first is
-canonical). Use extra entries only for a different way to reach the same file (e.g., an S3 mirror of
-an HTTPS URL); different formats or a queried service belong in separate `data` /
-`additional_assets` entries.
+Each asset's `locations` lists access paths to the **same content**. The first is canonical. Put
+different formats or services in separate `data` entries.
 
 If you know the media type or file size, provide it. If either value is missing it will be added
 during CDH review.
 
 #### Generating many files with `href_template`
 
-When one dataset is split into many files along its dimensions - for example one COG per crop,
-production system, and variable - do **not** hand-list every file. Add an `href_template` to a
-single `data` entry and the encoder expands it into one discoverable item per file.
+When one dataset is split into many files along dimensions (e.g. hive partitioned parquets or cogs
+with 1 file per crop), use one `data[]` entry with `href_template`. Do not hand-list every file.
 
 With a template, `locations[].url` are treated as **base paths** and the template is appended to
 each:
@@ -241,48 +235,35 @@ each:
 data:
   - name: cogs
     locations:
-      - url: https://data.cdh.org/mapspam/cogs/ # base; first is canonical (use HTTPS)
+      - url: https://data.cdh.org/crop-yield/cogs/ # base; first is canonical (use HTTPS)
         title: HTTPS
-      - url: s3://cdh/mapspam/cogs/ # mirror -> per-file alternate
+      - url: s3://cdh/crop-yield/cogs/
         title: S3
-    href_template: "mapspam_{crop}_{technology}_{variable}.tif"
+    href_template: "crop_yield_{crop}_{system}_{variable}.tif"
     media_type: "image/tiff; application=geotiff; profile=cloud-optimized"
 ```
 
-How it expands:
+Rules:
 
-- Each `{token}` **must be the `name` of a declared `dimensions[]` entry**, and that dimension's
-  `values` list supplies the substitution set - so the record must declare the `datacube` extension.
-- **The `values` are substituted verbatim**, so they must be the exact tokens used in the file names
-  (case-sensitive). Put the machine token in `values` (the same code that appears in the data) and
-  any human-readable name in `classes` (`value` -> `label`). Do not put a display name in `values`
-  and hope it matches the file. If file names disagree with the data's codes, fix the file names at
-  the source rather than working around it here.
-- **Every token dimension must list its `values`** - a continuous axis like `lat`/`lon` cannot be a
-  token - and the template assumes **every combination exists**. A missing file would produce a dead
-  URL, so do not template a sparse dataset blindly (a build-time existence check is the planned
-  fix).
-- The canonical URL of each file is `locations[0]` + the filled template; every additional location
-  (e.g. the S3 mirror) becomes that file's alternate. So each slice gets an HTTPS access path for
-  discovery and an S3 path for compute, automatically.
-- Without a template, `locations[].url` are full file URLs and the entry stays a single asset (this
-  is the default for a Zarr store, a single Parquet, etc.).
+- Each `{token}` must match a declared `dimensions[].name`.
+- The matching dimension's `values` are substituted verbatim and must match file-name tokens.
+- Every token dimension must list `values`; continuous axes such as `lat` / `lon` cannot be tokens.
+- The template assumes every value combination exists.
+- Each file URL is `locations[0].url` + filled template; additional locations become alternates.
+- Without `href_template`, `locations[].url` are full file URLs and the entry stays one asset.
 
 Only the file-partitioning dimensions go in the template. Dimensions stored inside each file (e.g.
 bands of a multi-band COG) stay out of it.
 
 ## Add These Only When They Apply
 
-Some of these are CDH extension fields - `climate`, `commodities`, `classes`, and
+Some of these are extension fields - `climate`, `commodities`, `classes`, and
 `variables`/`dimensions`. The CDH template already declares them in `extensions[]`, so you only fill
 the ones that apply. `spatial`, `temporal`, `processing`, and the asset fields are core and always
 available.
 
-Using an extension from another project or center? Add its pinned schema URL to `extensions[]`, bind
-a profile schema that composes the core with that extension (like `schemas/profiles/cdh.schema.json`
-does) via the `# yaml-language-server: $schema=` line for hints, then fill its fields the same way -
-the core + extension model is identical regardless of who owns the extension. See `standard.md`
-section 4.3 and the walkthrough in [`extending.md`](extending.md).
+For a third-party extension, add its pinned schema URL to `extensions[]` and bind a profile schema
+for editor hints. See `standard.md` section 4.3 and [`extending.md`](extending.md).
 
 ### Spatial
 
@@ -303,9 +284,8 @@ Bounding box coordinate order is:
 - 2D: `[west, south, east, north]` = `[xmin, ymin, xmax, ymax]`
 - 3D: `[west, south, min_z, east, north, max_z]` (elevation in metres)
 
-If submitting multiple bounding boxes, the first entry is the overall extent; only add more entries
-if the union would otherwise leave a large uncovered area (e.g., Germany + Chile) and data is split
-across multiple bounding boxes.
+For multiple bounding boxes, put the overall extent first. Add sub-boxes only when the union would
+otherwise leave a large uncovered area.
 
 When converting from common tools, watch the axis order. Here is a comparison across several tools +
 stac:
@@ -326,11 +306,9 @@ spatial:
 ```
 
 `spatial.geography` is the named-place facet for browse and filtering (the precise footprint lives
-in `spatial.bbox`). Use ids from `vocab/geography.json`, a controlled list built from UN M49.
-Because M49 includes regions, you can tag macro-regions as easily as countries -
-`[sub-saharan-africa]`, `[eastern-africa]`, `[kenya, uganda]`, or `[world]` (M49's top level; there
-is no `global`). Country ids resolve to their ISO3 code on output, and `parents` let the catalog
-roll a country up under its region.
+in `spatial.bbox`). Use ids from `vocab/geography.json`, a controlled list built from UN M49. M49
+includes regions and countries: `[sub-saharan-africa]`, `[eastern-africa]`, `[kenya, uganda]`, or
+`[world]`. There is no `global`.
 
 If `spatial.bbox` or `spatial.crs` is omitted for a geospatial STAC record, the CDH review process
 will add it. Provide these fields when you know them, especially for multi-asset records or when the
@@ -358,7 +336,7 @@ spatial:
       value: 2
       unit: admin-level
       label: Counties
-      reference_system: GAUL
+      reference_system: GAUL24
 ```
 
 Use `spatial.geometry_column` when a vector/table asset contains an embedded geometry column.
@@ -414,10 +392,8 @@ For each variable:
 - Use `note` for variable-specific limitations, caveats, or warnings.
 - Use the record-level `note` for dataset-wide limitations.
 
-For inspectable files, the CDH review process may add technical details such as column names, data
-types, bands, nodata values, or dimensions when they can be determined from the asset URL, file
-extension, or inspectable metadata. Review cannot reliably determine what a variable means, what
-unit should be used, how values should be interpreted, or what caveats matter.
+Review may add technical details from inspectable files. It cannot infer meaning, units,
+interpretation, or caveats.
 
 #### Dimensions
 
@@ -479,15 +455,12 @@ Use values from `vocab/commodity.json`.
 Use these for supporting files, documentation, previews, schemas, QA/QC output, code lists,
 alternate formats, or services.
 
-For `additional_assets`, provide `media_type` and `file_size` when known. If either value is
-missing, the CDH review process may add it when it can be determined from the asset URL, file
-extension, or inspectable metadata. Serialized records must contain the required values, whether
-supplied by the contributor or added during CDH review.
+For `additional_assets`, provide `media_type` and `file_size` when known. Review may add them from
+inspectable files.
 
 ## What Review Cannot Decide
 
-The CDH review process may help fill technical facts from inspectable assets, but authors must
-provide the curatorial facts:
+Review may fill technical facts from inspectable assets. Authors provide:
 
 - `title`
 - `description`
@@ -508,10 +481,8 @@ Leave a field out when:
 - The information is unknown and not required.
 - The detail belongs in a sidecar file because it is long, nested, or likely to change.
 
-Avoid inventing new fields. If an important fact has no place in the template, first check the
-formal standard, then consider whether it belongs in `additional_links`, `additional_assets`, a
-sidecar file, or a CDH extension - an existing extension's field, a new field proposed on one, or a
-new extension (see `standard.md` section 4.3).
+Avoid inventing new fields. If the template has no place for something, use `additional_links`,
+`additional_assets`, a sidecar file, or an extension (see `standard.md` section 4.3).
 
 ## Practical Authoring Order
 
@@ -534,3 +505,37 @@ Before publishing, check:
 - Important caveats are in `note`.
 - Data, code, documentation, citation, and license links are stable.
 - Optional fields are omitted when they do not apply.
+
+## Validation Checklist
+
+### Required for every record
+
+- [ ] `cdh_schema_version`
+- [ ] `id`, `title`, `description`
+- [ ] `created`, `updated` (filled in at publication if omitted)
+- [ ] `resource_type`
+- [ ] `cdh.domain[]` includes at least one concept from `vocab/domain.json`
+- [ ] `keywords[]`
+- [ ] `license`
+- [ ] `contact[]` includes at least one contact with `licensor` in `roles`
+- [ ] `citation` (or `doi`, which satisfies the citation requirement)
+- [ ] `data[]` includes at least one entry
+
+### Required for geospatial records
+
+- [ ] `spatial.bbox` or `spatial.geography`
+- [ ] `spatial.crs` for geospatial assets
+
+### Required where applicable
+
+- [ ] `temporal.start_date` / `end_date` for resources with temporal coverage
+- [ ] `variables[]` and `dimensions[]` for data-cube or multi-variable data
+- [ ] `version` for versioned resources
+- [ ] `previous_version` when the record supersedes an existing Hub record
+- [ ] `doi` when a DOI exists
+- [ ] `processing[]` for derived products
+- [ ] `commodities[]` for commodity-specific resources
+- [ ] `climate.scenarios[]` for projection-based climate resources
+- [ ] `climate.mip_era` for CMIP-based resources
+- [ ] `climate.baseline` for anomalies and baseline-relative indicators
+- [ ] `classes[]` or class sidecar for classified data

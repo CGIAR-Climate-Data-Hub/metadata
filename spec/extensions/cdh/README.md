@@ -3,24 +3,19 @@
 CGIAR Climate Data Hub governance: domain classification and use guidance.
 
 - **Applies to:** all CDH records - the CDH profile requires this extension.
-- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
-  extension mechanism.
+- **Declared in:** `extensions[]`.
 
 ## `cdh.domain[]`
 
 - **Requirement:** Required.
-- **Definition:** The CDH-controlled domain(s) the record belongs to. This is the field that powers
-  the website filter, group-by, and STAC sub-catalog placement.
+- **Definition:** CDH domain(s) used for filtering, grouping, and STAC sub-catalog placement.
 - **Expected value:** List of one or more domain ids from `vocab/domain.json`. **Multi-valued and
   ordered**: the first entry is the **primary** domain (drives sub-catalog placement); subsequent
   entries are secondary and enable cross-cutting search.
-- **Vocabulary:** Closed set defined in `vocab/domain.json`. Adding a new domain requires updating
-  that file.
+- **Vocabulary:** `vocab/domain.json`.
 - **Encoding:**
   - Encoded as `cgiar-cdh:domain` (STAC) / `properties["cgiar-cdh:domain"]` (OGC Records).
-  - Also expanded by the encoder into a `themes` entry under the
-    `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/vocab/domain.json` scheme for
-    linked-data consumers (see the [crosswalk](../../crosswalk.md)).
+  - Also expanded into `themes` under the CDH domain scheme.
 
 ## `cdh.use_cases[]`
 

@@ -20,9 +20,9 @@ occur between minor versions.
 - Added cross-field validation for rules JSON Schema cannot express: date order, processing-step
   references, class-variable references, `href_template` tokens, reserved keyword schemes, and
   unique asset names.
-- Added `--profile`, `--schemas`, and `--expect-fail` to `validate-yaml`, with matching
-  `profile` / `extra-schemas` inputs on the reusable validation workflow. This lets adopters
-  validate their own extensions and policy schemas.
+- Added `--profile`, `--schemas`, and `--expect-fail` to `validate-yaml`, with matching `profile` /
+  `extra-schemas` inputs on the reusable validation workflow. This lets adopters validate their own
+  extensions and policy schemas.
 - Added a bundled CDH profile schema (`cdh.schema.bundled.json`) and bundle checks so validators can
   use one file without resolving CDH `$refs`.
 - Added extension-adoption docs, an extension template, and the rule that new extensions should use

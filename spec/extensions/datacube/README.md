@@ -4,8 +4,7 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
 
 - **Applies to:** datasets with measurement variables, bands, or columns, and any dataset whose
   meaning depends on axes/codes.
-- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
-  extension mechanism.
+- **Declared in:** `extensions[]`.
 
 ## `dimensions[]`
 
@@ -18,21 +17,9 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
   - `values` lists the allowed values along the dimension.
   - `reference_system` is a URI or label for a controlled vocabulary when one applies (e.g., the
     AGROVOC URI for a `crop` dimension).
-  - **Coded values MUST be defined.** If `values` contains short codes whose meaning is not obvious
-    (e.g., `["I", "A", "R"]` for irrigated / all / rainfed, or MAPSPAM crop codes like
-    `["whea", "maiz", "rice"]`), the record MUST resolve them through one of:
-    1. `reference_system` pointing at a published controlled vocabulary that defines the codes, OR
-    2. an inline definition in the dimension's `description` (e.g.,
-       `"I = Irrigated, A = All tech, R = Rainfed"`). Limit this to very short, fixed code sets
-       where the full definition fits cleanly in one sentence, OR
-    3. a sidecar asset (e.g., a JSON or CSV code list) linked from the record with `rel=describedby`
-       and `roles: [metadata, describedby]`. One sidecar file MAY cover the codes for **all**
-       dimensions in the dataset - a separate sidecar per dimension is not required. The dimension's
-       `description` should reference the sidecar.
-  - Do not invent inline structured fields (e.g., `value_definitions`) on `dimensions[]` - that
-    would break Datacube Extension validation. Use one of the three options above.
-  - A coded dimension without any of these will fail review - the codes become unusable for
-    downstream tools.
+  - Define coded values. Use `reference_system`, a short inline explanation in `description`, or a
+    sidecar code list linked with `rel=describedby`.
+  - Do not add custom fields such as `value_definitions` to `dimensions[]`.
 
 ## `variables[]`
 
@@ -46,16 +33,9 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
   - Climate variables should use CF standard names where practical (e.g., `precipitation_flux`,
     `air_temperature`).
   - `data_type` follows numpy-style names (`float32`, `int16`, …).
-  - `description` carries the stable definition and normal reading guidance for the variable. Say
-    what the variable measures, then add the reading rule when it matters (for example, "Higher
-    values indicate greater heat hazard" or "Negative values indicate lower than the baseline").
-  - `note` carries caveats, limitations, warnings, or non-obvious use rules for the variable (e.g.,
-    "Data must be aggregated to with weighted_mean from ... variable"). Dataset-wide limitations
-    belong in the record-level `note` field instead.
-  - For inspectable formats, the CDH review process may add technical variable metadata such as
-    names, data types, bands, nodata values, or dimensions when it can be determined from the asset
-    URL, file extension, or inspectable metadata. Authors are still responsible for descriptions,
-    units, reading guidance, and caveats; these cannot be reliably determined from the file alone.
+  - `description` says what the variable measures. Add reading guidance when direction matters.
+  - `note` is for variable-specific caveats. Use record-level `note` for dataset-wide limitations.
+  - Review may add technical metadata from inspectable files, but not meaning, units, or caveats.
 
 ## Example
 
@@ -65,9 +45,9 @@ extensions:
 dimensions:
   - name: crop
     type: crop
-    description: MAPSPAM crop code. Full labels are in the dimension codes sidecar.
+    description: Crop code. Full labels are in the dimension codes sidecar.
     values: [whea, maiz, rice]
-    reference_system: https://www.mapspam.info/
+    reference_system: https://example.org/crop-codes
 variables:
   - name: yield
     dimensions: [lat, lon, crop, technology]

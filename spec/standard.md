@@ -4,10 +4,8 @@ Status: v0.1.0
 
 This document defines the metadata model used by the Climate Data Hub - the field definitions,
 requirement levels, and rules every Hub record conforms to. The model is self-contained and stands
-on its own, independent of any output format.
-
-Records serialize to one of two formats, chosen automatically (see section 4.1) and designed to
-align with established standards:
+on its own, independent of any output format. It is designed to be flexible and extensible for other
+projects and programs. It is intend to map to commonly used community formats, namely:
 
 - **STAC** - for geospatial data. See [`mapping-stac.md`](./mapping-stac.md).
 - **OGC API Records** (recordJSON) - for everything else: non-spatial datasets, documents, software,
@@ -19,7 +17,7 @@ templates live in [`templates/`](../templates/), including
 
 For contributor-facing guidance, start in [`authoring-guide.md`](./authoring-guide.md).
 
-> \[!NOTE] For now, all metadata submissions must be in CDH YAML format which will be automatically
+> [!NOTE] For now, all metadata submissions must be in CDH YAML format which will be automatically
 > converted to STAC or OGC API Records. In the future, there may be an option to directly submit
 > STAC or OGC API Records.
 
@@ -27,14 +25,13 @@ For contributor-facing guidance, start in [`authoring-guide.md`](./authoring-gui
 
 A Hub record exists to make a resource:
 
-- **Discoverable** by humans and tools.
+- **Discoverable** by humans, AI agents, and other tools.
 - **Understandable** without opening the underlying files.
 - **Citable** with a stable identifier and reference.
 - **Validatable** against a schema.
-- **Usable** by automated/AI tools without manual interpretation.
+- **Usable** without manual interpretation.
 
-Free-text descriptions support these goals, but cannot be the only place where structured,
-filterable facts are stored.
+Free text helps, but structured facts belong in structured fields.
 
 ## 2. Versioning
 
@@ -56,139 +53,96 @@ The standard follows RFC 2119-style requirement levels.
 | Conditional | Required only for certain resource classes. |
 | Optional    | Useful, but not required.                   |
 
-The schema enforces these levels directly: blank values (`""`, `null`, empty required lists) are
-invalid - omit a field rather than leaving it empty. The only meaningful `null` is an open-ended
-`temporal` interval. Editor warnings on a partially filled record are expected; they disappear as
-fields are filled. Files under `templates/` are validated as drafts (blank placeholders and presence
-rules are relaxed), so templates stay checkable without weakening the schema.
+The schema rejects blank values (`""`, `null`, empty required lists). Omit unknown values. The only
+allowed `null` is an open-ended `temporal` interval. Files under `templates/` validate in draft mode
+so blank placeholders do not weaken the published schema.
 
 ## 4. Authoring Rules
 
-### 4.1 Routing
-
-The serialization target is inferred, not author-set: a `dataset` with a spatial footprint
-(`spatial.bbox` / geometry) serializes to **STAC**; everything else - non-spatial datasets,
-documents, software, services, AI skills - serializes to **OGC API Records**. Inference runs at
-encode time, after any review-supplied bbox (see section 4.7).
-
-### 4.2 Structured fields first
+### 4.1 Structured fields first
 
 Each fact about the resource is recorded in the most structured place available, in this order:
 
 1. **A core or CDH extension field** (section 5) when one fits.
-2. **A linked sidecar metadata asset** (`rel=describedby`) when the content is large, nested, or
-   frequently changing. Also use this to link other metadata files that do not fit the standard,
-   such as a dataset README.
+2. **A linked sidecar metadata asset** (`rel=describedby`) for large, nested, or changing detail.
 3. **A custom extension field** (see section 4.3) when no standard placement fits.
 4. **Free-text inside `description`**, as a last resort, when the fact cannot be structured.
 
-How the encoder places each field in the most native STAC or OGC Records location (core field,
-approved extension, or `cgiar-cdh:*`) is covered in `mapping-stac.md` and `mapping-ogc-records.md`.
+### 4.2 Extending the schema
 
-### 4.3 Extending the schema
+CDH metadata is a generic core plus optional extensions. Validation has two layers:
 
-CDH metadata is a small, generic **core** plus optional **extensions**. Validation has two layers:
+- **Mechanism:** core plus exactly the extensions declared in `extensions[]`. Fields from undeclared
+  extensions are rejected.
+- **Profile:** policy rules on top. The CDH profile requires the `cdh` extension and composes the
+  five CDH-maintained extensions: `cdh`, `climate`, `datacube`, `classification`, and `agriculture`
+  (section 5.5).
 
-- **Mechanism (always):** a record declares the extensions it uses in `extensions[]` (pinned schema
-  URLs) and is validated against the core composed with exactly those declared extensions - a field
-  from an extension that is not declared is rejected.
-- **Profile (policy):** a profile schema adds house rules on top. The CDH profile
-  (`schemas/profiles/cdh.schema.json`) composes the core with all five CDH-maintained extensions -
-  `cdh`, `climate`, `datacube`, `classification`, and `agriculture` (section 5.5) - and requires the
-  `cdh` extension (it carries `cdh.domain`) on every Hub record. The Hub pipeline supplies the CDH
-  profile to the validator exactly as any adopter supplies their own; nothing CDH-specific is built
-  into the mechanism.
-
-Templates bind the CDH profile through the `yaml-language-server` modeline for autocomplete and
-hints. A single-file bundled copy (`cdh.schema.bundled.json`, all `$refs` inlined) is published for
-validation with any JSON Schema tool.
-
-Terminology: **core** and **extension** name the input model; an input **profile** is a policy
-schema composing them with house rules. The output encodings have their own profiles - the CDH STAC
-profile and the CDH OGC Records profile in the mapping docs.
+Templates bind the CDH profile for editor hints. A bundled copy (`cdh.schema.bundled.json`) is
+published for validators that need a single schema file.
 
 To carry metadata the standard does not yet cover:
 
 1. Use a field from an existing CDH extension if one fits.
-2. Add a field to the relevant CDH extension when it is broadly useful. It must land in the
-   extension schema, profile, crosswalk, and examples before use.
-3. Author a new extension - your own pinned schema - for project- or center-specific fields, and
-   declare it in `extensions[]`. It composes with the core without modifying it. Start from the
-   template in [`extensions/_template/`](extensions/_template/README.md); the full walkthrough is in
-   [`extending.md`](./extending.md).
+2. Add a field to a CDH extension when it is broadly useful. Update the schema, profile, crosswalk,
+   and examples before use.
+3. Author a new extension for project- or center-specific fields. Start from
+   [`extensions/_template/`](extensions/_template/README.md); see [`extending.md`](./extending.md).
 
-A new extension SHOULD nest all of its fields under a single top-level key named after the extension
-(as `cdh.*` and `climate.*` do). Validation rejects undeclared fields, and a bare top-level field
-risks colliding with a future core field or another extension. The `datacube`, `classification`, and
-`agriculture` extensions predate this rule and keep their top-level `dimensions`, `variables`,
-`classes`, and `commodities` fields.
+A new extension SHOULD nest fields under one top-level key named after the extension. The older
+`datacube`, `classification`, and `agriculture` extensions keep their existing top-level fields.
+Fields that outlive one project should move into a shared extension.
 
-A field that outlives one project or center is a sign it should be a shared extension rather than an
-ad hoc addition.
-
-How input fields map to STAC/OGC output extensions (including `cgiar-cdh:*`) is a separate concern,
-covered in `mapping-stac.md` and `mapping-ogc-records.md`.
-
-### 4.4 Description, note, and free text
+### 4.3 Description, note, and free text
 
 `description` and `note` are first-class fields, not catch-all fallbacks:
 
-- **`description` (required)** is the canonical human- and AI-readable paragraph explaining the
-  resource.
-- **`note` (optional)** is reserved for caveats, warnings, or interpretation-critical remarks that a
-  reader of `description` alone would otherwise miss. It is not a second description, and not a
-  place to dump prose that did not fit elsewhere. Use `note` only when something important would be
-  lost without it.
+- **`description` (required)** explains the resource.
+- **`note` (optional)** is for caveats, warnings, or interpretation-critical remarks.
 
-A fact that is needed for search, filtering, faceting, or programmatic use MUST be encoded as a
-structured field, not only mentioned in `description` or `note`. `description` exists to
-contextualize structured facts; `note` exists to flag caveats. Neither is the source of truth for
-filterable data.
+Search, filter, facet, and programmatic facts MUST be structured fields, not only prose.
 
-### 4.5 Domain vs keywords
+### 4.4 Domain vs keywords
 
-`cdh.domain` and `keywords` are not interchangeable - each serves a different purpose.
+`cdh.domain` and `keywords` serve different purposes.
 
 - **`cdh.domain` (required, closed vocab)** - the CDH-controlled high-level classification used for
-  **structured browse, filter, and group-by** in the catalog UI, and for STAC sub-catalog placement.
-  Values are validated against `vocab/domain.json`. This is where the website filter reads from. See
-  the [CDH extension](extensions/cdh/README.md).
+  structured browse, filtering, grouping, and STAC sub-catalog placement. Values come from
+  `vocab/domain.json`. See the [CDH extension](extensions/cdh/README.md).
 - **`keywords` (required, open)** - discovery terms for full-text search. Each entry is either a
   plain string OR a linked object `{ term, scheme, uri, description? }` pointing the term at an
-  external vocabulary or ontology (e.g., AGROVOC, GEMET). Linked-keyword entries are also expanded
-  by the encoder into the serialized record's themes block, grouped by `scheme`. Plain-string
-  entries are full-text only and are not emitted as themes.
+  external vocabulary or ontology (e.g., AGROVOC, GEMET). Linked entries are emitted as themes;
+  plain strings are full-text only.
 
 Decision rule:
 
 - A value needed for filter / group-by / catalog browse -> `cdh.domain`.
-- A value with a canonical concept in an external ontology you want to expose for semantic discovery
-  -> linked entry in `keywords`.
+- A value with an external ontology concept -> linked entry in `keywords`.
 - A value useful only for full-text search -> plain string in `keywords`.
 
-### 4.6 Sidecar metadata
+### 4.5 Sidecar metadata
 
 Use sidecar files (linked with `rel=describedby`) for large, nested, or frequently changing content
 such as long code lists, full [variable dictionaries](extensions/datacube/README.md), QA/QC outputs,
 detailed table schemas, and detailed [classification legends](extensions/classification/README.md).
 
-### 4.7 Author-supplied vs review-inferred
+### 4.6 Author-supplied vs review-inferred
 
-Technical facts readable from the asset - `media_type`, `file_size`, `spatial.bbox`, `spatial.crs`,
-and variable `data_type` / `nodata` / `dimensions` - MAY be added during CDH review when omitted,
-where they can be determined from the asset URL, file extension, or inspectable metadata. Authors
-SHOULD still provide them when known, especially for multi-asset records. Curatorial facts -
-descriptions, units, reading guidance, caveats, license, citation - cannot be inferred and remain
-the author's responsibility.
+Review MAY add technical facts readable from the asset: `media_type`, `file_size`, `spatial.bbox`,
+`spatial.crs`, and variable `data_type` / `nodata` / `dimensions`. Authors SHOULD provide them when
+known. Fields such as descriptions, units, reading guidance, caveats, license, citation, remain the
+author's responsibility.
 
-### 4.8 Versioning a resource
+### 4.7 Versioning a resource
 
-What happens when a resource changes depends on what changed:
+Use this rule when a resource changes:
 
 - **Metadata fix or enrichment** (typo, better description, added contact) - update the existing
   record in place. `updated` reflects the revision.
 - **Routinely extended time series** (e.g., a monthly-updated observation product) - same record;
   use an open-ended `temporal` interval. This is not a version.
+- **New/updated data format** (e.g., new file format, updated chunk structure, re-compressed) -
+  update the existing record with any additional urls and update the processing code commit/version.
 - **New release of the data** (values change, new time span or coverage, new DOI or citation) - a
   new record with a new `id` (the `id` may include the version, e.g. `spam2020-v2`). Set `version`,
   and set `previous_version` to the predecessor record's `id`.
@@ -196,10 +150,7 @@ What happens when a resource changes depends on what changed:
   aggregation, reclassification) - a distinct resource, not a version. Create a separate record
   linked through `processing[].derived_from`.
 
-The version chain is authored backward only: each new record points at its predecessor, and
-superseded records are never edited. Everything else is derived at encode time from the
-`previous_version` graph - superseded records receive `successor-version` and `latest-version` links
-and are marked deprecated (STAC Version Extension) in their serialized form.
+Author the chain backward only: each new record points at its predecessor.
 
 `previous_version` only points at Hub records. A predecessor that was never catalogued is
 provenance, not a version chain - use `processing[].derived_from` or a `via` link. A resource
@@ -244,12 +195,12 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
   - Must clearly describe the resource.
   - Should not end with punctuation.
   - Should not include the file format unless central to the resource.
-- **Example:** `MAPSPAM 2020 v2`
+- **Example:** `Global Crop Yield 2020 v2`
 
 #### `description`
 
 - **Requirement:** Required
-- **Definition:** Human- and AI-readable description of the resource.
+- **Definition:** Human-readable description of the resource.
 - **Expected value:** One short paragraph.
 - **Rules:**
   - Must say what the resource is and what it can be used for.
@@ -289,18 +240,16 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 #### `access`
 
 - **Requirement:** Optional. Defaults to `public` when omitted.
-- **Definition:** Access condition for the resource's data, distinct from `license` (which sets
-  reuse terms, not who may obtain the data).
+- **Definition:** Access condition for the data, separate from reuse terms in `license`.
 - **Vocabulary:** Closed set, aligned to the DCAT / EU accessRights vocabulary:
   - `public` - openly accessible; the data can be obtained directly.
   - `restricted` - discoverable, but obtaining the data requires a request or authentication (e.g.
     contact the producer, or credentialed/presigned access).
-  - `non-public` - catalogued for discovery but not available through public channels.
+  - `non-public` - catalogued, but not available through public channels.
 - **Rules:**
   - Omit (or set `public`) for openly accessible data.
   - An embargo (data not yet released) is `restricted`, not a separate value.
-  - For `restricted` / `non-public` records, the primary `data[].locations[].url` should point at an
-    access/request path rather than a dead direct download.
+  - For `restricted` / `non-public`, `data[].locations[].url` should point at access instructions.
 - **Example:** `restricted`
 
 #### `resource_type`
@@ -324,8 +273,7 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 #### `keywords`
 
 - **Requirement:** Required
-- **Definition:** Free-form search terms, optionally linked to an external controlled vocabulary or
-  ontology.
+- **Definition:** Search terms, optionally linked to an external vocabulary.
 - **Expected value:** List of items. Each item is either:
   - a plain string (full-text discovery term), or
   - an object `{ term, scheme, uri, description? }` where:
@@ -334,17 +282,15 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
     - `uri` - resolvable URI of the specific concept within `scheme`,
     - `description` - optional human-readable definition.
 - **Rules:**
-  - Should include method names, acronyms, aliases, project-specific terms, or other user-facing
-    search phrases that are not already captured by structured fields.
+  - Include method names, acronyms, aliases, project terms, and other search phrases not already
+    captured by structured fields.
   - Must not replace structured fields such as `resource_type`, `cdh.domain`, `commodities`,
     `climate.*`, `spatial.*`, `temporal.*`, or `variables[]`.
-  - Should not duplicate structured values. If a geography exists, encode it in `spatial.geography`;
-    if a crop or commodity exists, encode it in [`commodities`](extensions/agriculture/README.md);
-    if a scenario, model, baseline, or MIP era exists, encode it in
-    [`climate.*`](extensions/climate/README.md); if a variable, band, indicator, or column exists,
-    encode it in [`variables[]`](extensions/datacube/README.md).
-  - Values used for filter, group-by, or facet belong in `cdh.domain` (closed CDH vocab), not here.
-    See section 4.5.
+  - Do not duplicate structured values. Geography belongs in `spatial.geography`; commodities in
+    [`commodities`](extensions/agriculture/README.md); scenarios, models, baselines, and MIP eras in
+    [`climate.*`](extensions/climate/README.md); variables, bands, indicators, and columns in
+    [`variables[]`](extensions/datacube/README.md).
+  - Filter/group-by values belong in `cdh.domain`, not here. See section 4.5.
   - Should use consistent spelling and capitalization.
   - Linked items must include both `scheme` and `uri` to be expanded as themes; a `term`-only object
     is equivalent to a plain string.
@@ -402,8 +348,7 @@ keywords:
   - Each contact MUST include `roles` and `organization`.
   - Use `organization` on its own for organization-level contacts when no specific person should be
     named.
-  - Use `name` plus `organization` for person-level contacts. If `name` is present, `organization`
-    is required so the person is not detached from an institutional context.
+  - Use `name` plus `organization` for person-level contacts.
   - Email, URL, or org contact page when public.
 
 #### `citation`
@@ -452,10 +397,9 @@ precise footprint.
   - 3D: `[west, south, min_z, east, north, max_z]` (= `[xmin, ymin, zmin, xmax, ymax, zmax]`);
     elevation in metres.
 
-  Single-region datasets use one box, e.g. `[-180, -90, 180, 90]`. To describe sub-regions, pass a
-  list of boxes (`[[...], [...]]`) where the first is the overall extent; add more only when their
-  union would otherwise leave a large uncovered area (e.g., Germany + Chile). Both forms serialize
-  to STAC's array-of-boxes.
+  Single-region datasets use one box, e.g. `[-180, -90, 180, 90]`. For sub-regions, pass a list of
+  boxes (`[[...], [...]]`) where the first is the overall extent. Add sub-boxes only when the union
+  would otherwise leave a large uncovered area.
 
 - **Rules:**
   - Coordinates MUST be in WGS84 regardless of `spatial.crs` (which describes the underlying assets,
@@ -505,8 +449,7 @@ spatial:
   filtering), and LDC/LLDC/SIDS `groups`.
 - **Rules:**
   - Must use the `id` from the `vocab/geography.json` vocabulary.
-  - Serves a different purpose from `bbox`, just because one exists does not mean the other doesn't
-    need to.
+  - Complements `bbox`; one does not replace the other.
 - **Examples:** `[world]`, `[sub-saharan-africa]`, `[kenya, uganda]`.
 
 #### `spatial.crs`
@@ -584,21 +527,15 @@ these extension fields, not in `keywords` (see section 4.5).
 #### `processing[]`
 
 - **Requirement:** Recommended - required for derived products.
-- **Definition:** Ordered list of processing steps. When `processing[]` is provided, at least one
-  step MUST use `id: source` and describe the original generation of the data; for many records this
-  is the only step needed.
+- **Definition:** Ordered list of processing steps. When present, one step MUST use `id: source`.
 - **Expected value per step:** `{ id, description, code: { url, version }, date, derived_from[] }`.
 - **Rules:**
   - `id` must be unique within `processing[]`.
   - At least one step must use `id: source` whenever `processing[]` is present.
-  - `derived_from[]` entries are always external URLs of the form `{ url, title }`. This matches
-    STAC `links[rel=derived_from]` semantics. Inter-step references are NOT used here - order in the
-    `processing[]` array carries the step sequence, and the chain for a specific asset is captured
-    by `data[].processing_steps[]`.
+  - `derived_from[]` entries are external `{ url, title }` references. Step order is the array
+    order; asset-specific chains use `data[].processing_steps[]`.
   - `date` is ISO 8601 / RFC 3339.
-  - Put the `source` step first unless there is a specific reason to preserve a different processing
-    order. Add subsequent steps only when meaningful new processing occurs (e.g., format conversion,
-    bias adjustment).
+  - Put `source` first unless the processing order requires otherwise.
 
 ### 5.7 Assets and Links
 
@@ -617,16 +554,13 @@ these extension fields, not in `keywords` (see section 4.5).
   - List more than one entry only when the additional entries point at the same content via a
     different access path (e.g., an HTTPS and an S3 URL for the same file). All `locations[]` share
     the asset's `media_type`, `file_size`, and `nodata`.
-  - Different content or formats (e.g., COG vs NetCDF) and services that are queried rather than
-    downloaded (e.g., a Google Earth Engine collection) are separate assets - a separate `data[]` or
-    `additional_assets[]` entry, not an extra location here.
+  - Different content, formats, or services are separate `data[]` / `additional_assets[]` entries.
 - **`href_template` (optional):** Use when one dataset is split into many files along its dimensions
   (e.g., one COG per crop, production system, and variable). Each `locations[].url` becomes a base
-  path with the template appended; each `{token}` must match a `dimensions[].name` (so the record
-  must declare the `datacube` extension), and the entry serializes as one item per combination of
-  those dimensions' `values` instead of a single asset. Values are substituted verbatim and every
-  combination is assumed to exist. Omit it for a single file. Expansion mechanics and an example are
-  in the [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
+  path with the template appended. Each `{token}` must match a `dimensions[].name`, and the entry
+  serializes as one item per combination of those dimensions' `values`. Values are substituted
+  verbatim; every combination is assumed to exist. Omit it for a single file. See the
+  [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
 - **Rules:**
   - `name` is required; it becomes the asset key in serialized output and must be unique across
     `data[]` and `additional_assets[]`.
@@ -695,37 +629,3 @@ these extension fields, not in `keywords` (see section 4.5).
 | `climate.mip_era`                                             | `CMIP5`, `CMIP6` (informal)                                                                                                                                              |
 | `climate.scenarios`                                           | SSP / RCP labels, `historic` (informal)                                                                                                                                  |
 | `climate.models`                                              | CMIP source IDs (informal)                                                                                                                                               |
-
-## 8. Validation Checklist
-
-### Required for every record
-
-- [ ] `cdh_schema_version`
-- [ ] `id`, `title`, `description`
-- [ ] `created`, `updated` (filled in at publication if omitted)
-- [ ] `resource_type`
-- [ ] `cdh.domain[]` includes at least one concept from `vocab/domain.json`
-- [ ] `keywords[]`
-- [ ] `license`
-- [ ] `contact[]` includes at least one contact with `licensor` in `roles`
-- [ ] `citation` (or `doi`, which satisfies the citation requirement)
-- [ ] `data[]` includes at least one entry
-
-### Required for geospatial records
-
-- [ ] `spatial.bbox` or `spatial.geography`
-- [ ] `spatial.crs` for geospatial assets
-
-### Required where applicable
-
-- [ ] `temporal.start_date` / `end_date` for resources with temporal coverage
-- [ ] `variables[]` and `dimensions[]` for data-cube or multi-variable data
-- [ ] `version` for versioned resources
-- [ ] `previous_version` when the record supersedes an existing Hub record
-- [ ] `doi` when a DOI exists
-- [ ] `processing[]` for derived products
-- [ ] `commodities[]` for commodity-specific resources
-- [ ] `climate.scenarios[]` for projection-based climate resources
-- [ ] `climate.mip_era` for CMIP-based resources
-- [ ] `climate.baseline` for anomalies and baseline-relative indicators
-- [ ] `classes[]` or class sidecar for classified data

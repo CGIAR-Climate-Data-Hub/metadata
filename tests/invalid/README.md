@@ -1,8 +1,6 @@
 # Negative fixtures
 
-Every record in this directory MUST fail validation - each targets one rule class named by its file.
-They guard the strictness of the schemas and the cross-field checks: if a schema or check is
-accidentally loosened, the fixture that stops failing turns CI red.
+Every record here MUST fail validation. Each file targets one rule class, so CI catches schema or
+cross-field checks that get loosened by mistake.
 
-Run via `npm run check-invalid` (part of `npm run check`), which validates the directory with
-`--expect-fail`.
+Run with `npm run check-invalid` or as part of `npm run check`.
