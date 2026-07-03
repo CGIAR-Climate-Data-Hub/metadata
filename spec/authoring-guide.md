@@ -5,7 +5,7 @@ wait, and where optional detail belongs.
 
 The formal standard is `standard.md`. Fillable YAML starting points live in `../templates/`; each
 template binds YAML-aware editors to the CDH profile (`schemas/profiles/cdh.schema.json` = the core
-plus the CDH extensions) for validation and field hints.
+plus all CDH extensions) for autocomplete and field hints.
 
 ## The Short Version
 
@@ -68,8 +68,7 @@ contact:
 citation:
   authors: []
   date: ""
-created: # can be filled during CDH review
-updated: # can be filled during CDH review
+# created / updated are optional - filled in at publication if omitted.
 cdh:
   domain: []
 data:
@@ -154,7 +153,7 @@ keywords:
 
 #### Linking keywords to an ontology
 
-It is recomended, but not required, to link keywords to an ontology if it exists. To attach an
+It is recommended, but not required, to link keywords to an ontology if it exists. To attach an
 external ontology link (AGROVOC, GEMET, etc.) to a keyword, use the object form:
 
 ```yaml
@@ -205,8 +204,8 @@ For `citation`, provide structured fields - `authors` and `date` (required), plu
 
 ### `created` and `updated`
 
-These timestamps are required in serialized records. In draft authoring files, they may be left
-blank when CDH review manages metadata timestamps.
+These timestamps are optional when authoring - provide them if you want, or leave them out and they
+are filled in at publication. Serialized records always include both.
 
 ### `data`
 
@@ -253,7 +252,7 @@ data:
 How it expands:
 
 - Each `{token}` **must be the `name` of a declared `dimensions[]` entry**, and that dimension's
-  `values` list supplies the substitution set.
+  `values` list supplies the substitution set - so the record must declare the `datacube` extension.
 - **The `values` are substituted verbatim**, so they must be the exact tokens used in the file names
   (case-sensitive). Put the machine token in `values` (the same code that appears in the data) and
   any human-readable name in `classes` (`value` -> `label`). Do not put a display name in `values`
@@ -280,9 +279,10 @@ the ones that apply. `spatial`, `temporal`, `processing`, and the asset fields a
 available.
 
 Using an extension from another project or center? Add its pinned schema URL to `extensions[]`, bind
-the matching profile via the `# yaml-language-server: $schema=` line for validation and hints, then
-fill its fields the same way - the core + extension model is identical regardless of who owns the
-extension. See `standard.md` section 4.3.
+a profile schema that composes the core with that extension (like `schemas/profiles/cdh.schema.json`
+does) via the `# yaml-language-server: $schema=` line for hints, then fill its fields the same way -
+the core + extension model is identical regardless of who owns the extension. See `standard.md`
+section 4.3 and the walkthrough in [`extending.md`](extending.md).
 
 ### Spatial
 
@@ -375,8 +375,8 @@ Common fields:
 - `temporal.resolution`
 
 Use `temporal.resolution.step` for the machine-readable time step when known (ISO 8601 durations
-such as `P1D`, `P1M`, or `P1Y`). If not know, this will be added during CDH review. Use `values` for
-named or easily interpretable temporal positions.
+such as `P1D`, `P1M`, or `P1Y`). If not known, this will be added during CDH review. Use `values`
+for named or easily interpretable temporal positions.
 
 ```yaml
 temporal:

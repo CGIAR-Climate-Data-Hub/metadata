@@ -3,8 +3,9 @@
 Dimensions and variables for gridded, multidimensional, or tabular data.
 
 - **Applies to:** datasets with measurement variables, bands, or columns, and any dataset whose
-  meaning depends on axes/codes.- **Declared in** a record's `extensions[]`. See
-  [the standard](../../standard.md), §4.3, for the extension mechanism.
+  meaning depends on axes/codes.
+- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
+  extension mechanism.
 
 ## `dimensions[]`
 

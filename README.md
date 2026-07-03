@@ -15,6 +15,8 @@ mapped to STAC or OGC API Records.
 - [Core schema](./spec/schemas/core.schema.json) - validates the YAML structure and controlled
   values.
 - [Standard](./spec/standard.md) - formal field definitions and validation expectations.
+- [Extending & adopting](./spec/extending.md) - add your own extension, build a profile, or adopt
+  the core standard outside the Hub.
 
 ## Mappings
 
@@ -67,12 +69,15 @@ All validation runs through `npm`:
 
 ```sh
 npm install        # one-time, installs dev tooling
-npm test           # markdown lint + schema/vocab/yaml validation
-npm run check      # schemas + vocabs + compile + yaml (skips markdown)
+npm test           # formatting + markdown lint + schema/vocab/yaml validation
+npm run check      # schemas + vocabs + compile + bundle + yaml + negative fixtures
 ```
 
 Individual targets: `check-schemas`, `check-vocabs`, `compile-schemas`, `check-yaml`,
-`check-markdown`, `gen-schemas`.
+`check-invalid`, `bundle-profile`, `gen-schemas`, `lint-md`.
+
+Records under [`tests/invalid/`](./tests/invalid/README.md) are negative fixtures - each MUST fail
+validation, guarding against schema or check rules being accidentally loosened.
 
 The validation scripts use bare ESM imports, so `node` is the supported runtime today but they
 should also run under Deno or bun.

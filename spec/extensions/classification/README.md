@@ -3,8 +3,9 @@
 Class definitions for categorical, classified, or bitfield variables.
 
 - **Applies to:** classified, categorical, or bitfield variables (e.g., land cover, suitability
-  classes).- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3,
-  for the extension mechanism.
+  classes).
+- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
+  extension mechanism.
 
 ## `classes[]`
 

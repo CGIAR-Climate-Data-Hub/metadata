@@ -2,8 +2,9 @@
 
 Climate projection provenance: baseline, scenarios, models, downscaling.
 
-- **Applies to:** climate projection, CMIP-based, and adaptation resources.- **Declared in** a
-  record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the extension mechanism.
+- **Applies to:** climate projection, CMIP-based, and adaptation resources.
+- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
+  extension mechanism.
 
 **Source provenance:** link the dataset this was directly made from as a `derived_from` on the
 `processing` `source` step. Surface the foundational climate product (e.g., NEX-GDDP-CMIP6, CHIRPS,

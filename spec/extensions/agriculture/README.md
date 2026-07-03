@@ -2,8 +2,9 @@
 
 Agricultural commodities described by the record.
 
-- **Applies to:** agriculture, food-systems, livestock, and crop resources.- **Declared in** a
-  record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the extension mechanism.
+- **Applies to:** agriculture, food-systems, livestock, and crop resources.
+- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
+  extension mechanism.
 
 ## `commodities[]`
 

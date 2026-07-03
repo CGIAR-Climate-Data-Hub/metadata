@@ -2,8 +2,9 @@
 
 CGIAR Climate Data Hub governance: domain classification and use guidance.
 
-- **Applies to:** all CDH records - the CDH profile requires this extension.- **Declared in** a
-  record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the extension mechanism.
+- **Applies to:** all CDH records - the CDH profile requires this extension.
+- **Declared in** a record's `extensions[]`. See [the standard](../../standard.md), §4.3, for the
+  extension mechanism.
 
 ## `cdh.domain[]`
 
