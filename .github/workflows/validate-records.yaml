@@ -10,6 +10,9 @@ name: Validate CDH records
 #       uses: CGIAR-Climate-Data-Hub/metadata/.github/workflows/validate-records.yaml@main
 #       with:
 #         path: ./metadata-records          # directory or file to validate
+#         extra-schemas: ./my-extensions    # optional: your own extension schemas
+#         profile: ./my-profile.schema.json # optional: your own policy schema
+#                                           # (default "cdh"; "" = mechanism only)
 #
 # Pin both refs to a release tag (e.g. @v0.0.1 above and tooling-ref: v0.0.1)
 # to validate against a fixed version of the standard instead of latest.
@@ -42,6 +45,24 @@ on:
            so the fork's CI tests its own changes instead of upstream.
         required: false
         default: CGIAR-Climate-Data-Hub/metadata
+        type: string
+      extra-schemas:
+        description: |
+          Path (file or directory) in the caller repo with additional extension
+          schemas to register (passed to the validator as --schemas), for
+          records that declare extensions not maintained in the CDH repo.
+        required: false
+        default: ""
+        type: string
+      profile:
+        description: |
+          Policy schema to validate against, on top of core + declared
+          extensions. "cdh" (default) uses the CDH profile from the tooling
+          repo - required for Hub submissions. A path validates against your
+          own profile schema in the caller repo. Empty string = no profile
+          (mechanism only).
+        required: false
+        default: cdh
         type: string
 
 permissions:
@@ -76,7 +97,15 @@ jobs:
 
       - name: Validate records
         if: ${{ !inputs.changed-only }}
-        run: node _cdh-tooling/scripts/validate-yaml.js "${{ inputs.path }}"
+        env:
+          EXTRA_SCHEMAS: ${{ inputs.extra-schemas }}
+          PROFILE: ${{ inputs.profile }}
+        run: |
+          flags=()
+          [ -n "$EXTRA_SCHEMAS" ] && flags+=(--schemas "$EXTRA_SCHEMAS")
+          [ "$PROFILE" = "cdh" ] && PROFILE=_cdh-tooling/spec/schemas/profiles/cdh.schema.json
+          [ -n "$PROFILE" ] && flags+=(--profile "$PROFILE")
+          node _cdh-tooling/scripts/validate-yaml.js "${flags[@]}" "${{ inputs.path }}"
 
       - name: List changed records
         id: changed
@@ -97,4 +126,11 @@ jobs:
         if: ${{ inputs.changed-only && steps.changed.outputs.files != '' }}
         env:
           FILES: ${{ steps.changed.outputs.files }}
-        run: echo "$FILES" | xargs node _cdh-tooling/scripts/validate-yaml.js
+          EXTRA_SCHEMAS: ${{ inputs.extra-schemas }}
+          PROFILE: ${{ inputs.profile }}
+        run: |
+          flags=()
+          [ -n "$EXTRA_SCHEMAS" ] && flags+=(--schemas "$EXTRA_SCHEMAS")
+          [ "$PROFILE" = "cdh" ] && PROFILE=_cdh-tooling/spec/schemas/profiles/cdh.schema.json
+          [ -n "$PROFILE" ] && flags+=(--profile "$PROFILE")
+          echo "$FILES" | xargs node _cdh-tooling/scripts/validate-yaml.js "${flags[@]}"
