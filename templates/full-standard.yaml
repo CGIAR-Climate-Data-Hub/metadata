@@ -58,11 +58,9 @@ related_publications: # optional
       url: ""
     doi: ""
 
-# metadata tracking (required/auto-populated)
-# May be left blank in draft authoring files when CDH review manages metadata
-# timestamps.
-created:
-updated:
+# metadata tracking - optional; filled in at publication if omitted.
+# created: 2026-01-01
+# updated: 2026-01-01
 
 # Version (conditional - if version exists already, or multiple versions are expected)
 version: ""

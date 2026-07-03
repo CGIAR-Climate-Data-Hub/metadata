@@ -5,13 +5,22 @@
   "description": "Dimensions and variables for gridded, multidimensional, or tabular data.",
   "type": "object",
   "$defs": {
-    "nullableString": { "type": ["string", "null"] },
-    "scalarOrNull": {
+    "nonEmptyString": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "scalar": {
       "anyOf": [
-        { "type": "string" },
-        { "type": "number" },
-        { "type": "boolean" },
-        { "type": "null" }
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
       ]
     }
   },
@@ -23,23 +32,30 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "name": { "type": "string" },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
           "description": {
             "type": "string",
-            "description": "What the dimension is; define coded values here, or via reference_system or a sidecar."
+            "description": "What the dimension is; define coded values here, or via reference_system or a sidecar.",
+            "minLength": 1
           },
           "type": {
             "type": "string",
-            "description": "Dimension type: spatial, temporal, bands, or a domain axis (e.g. crop, scenario)."
+            "description": "Dimension type: spatial, temporal, bands, or a domain axis (e.g. crop, scenario).",
+            "minLength": 1
           },
           "reference_system": {
-            "$ref": "#/$defs/nullableString",
+            "$ref": "#/$defs/nonEmptyString",
             "description": "Controlled-vocabulary URI or label defining the dimension's values, when coded."
           },
           "values": {
             "description": "Allowed values along the dimension.",
             "type": "array",
-            "items": { "$ref": "#/$defs/scalarOrNull" }
+            "items": {
+              "$ref": "#/$defs/scalar"
+            }
           }
         }
       }
@@ -51,27 +67,34 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "name": { "type": "string" },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
           "description": {
             "type": "string",
-            "description": "Stable definition and reading guidance for the variable."
+            "description": "Stable definition and reading guidance for the variable.",
+            "minLength": 1
           },
           "data_type": {
-            "$ref": "#/$defs/nullableString",
+            "$ref": "#/$defs/nonEmptyString",
             "description": "Data type, numpy-style (e.g. float32, int16)."
           },
           "dimensions": {
             "description": "Axes this variable spans; omit when it spans all declared dimensions.",
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "unit": {
-            "$ref": "#/$defs/nullableString",
+            "$ref": "#/$defs/nonEmptyString",
             "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM.",
             "examples": ["t ha-1", "{head}/km2"]
           },
           "note": {
-            "$ref": "#/$defs/nullableString",
+            "$ref": "#/$defs/nonEmptyString",
             "description": "Variable-specific caveats, limitations, or warnings."
           }
         }

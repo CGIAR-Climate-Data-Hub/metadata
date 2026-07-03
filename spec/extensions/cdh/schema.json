@@ -15,12 +15,17 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "$ref": "../../schemas/vocab/domain.schema.json" }
+          "items": {
+            "$ref": "../../schemas/vocab/domain.schema.json"
+          }
         },
         "use_cases": {
           "description": "Short statements of what the data is well suited for.",
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "not_recommended_for": {
           "description": "Uses to avoid, each with a reason and optional alternative.",
@@ -31,15 +36,18 @@
             "properties": {
               "reason": {
                 "type": "string",
-                "description": "Why this use is discouraged."
+                "description": "Why this use is discouraged.",
+                "minLength": 1
               },
               "use": {
                 "type": "string",
-                "description": "The use being discouraged."
+                "description": "The use being discouraged.",
+                "minLength": 1
               },
               "use_instead": {
-                "type": ["string", "null"],
-                "description": "Recommended alternative, if any."
+                "type": "string",
+                "description": "Recommended alternative, if any.",
+                "minLength": 1
               }
             }
           }

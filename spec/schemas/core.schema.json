@@ -6,20 +6,19 @@
       "additionalProperties": false,
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "file_size": {
           "description": "File size in bytes (integer) or a human-readable string (e.g. 1.2 GB).",
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
               "minimum": 0,
               "type": "integer"
-            },
-            {
-              "type": "null"
             }
           ]
         },
@@ -35,87 +34,37 @@
           "$ref": "#/$defs/mediaType"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "description": "Asset name; becomes the asset key in serialized output, so it must be unique across data[] and additional_assets[]."
         },
         "roles": {
           "description": "Asset roles, e.g. metadata, thumbnail, or describedby.",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "type": "array",
           "uniqueItems": true
         }
       },
-      "required": ["locations"],
+      "required": ["name", "locations"],
       "type": "object"
     },
     "contact": {
       "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "name": {
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": ["name"],
-            "type": "object"
-          },
-          "then": {
-            "properties": {
-              "organization": {
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": ["organization"],
-            "type": "object"
-          }
-        }
-      ],
-      "anyOf": [
-        {
-          "properties": {
-            "organization": {
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": ["organization"],
-          "type": "object"
-        },
-        {
-          "properties": {
-            "name": {
-              "const": ""
-            },
-            "organization": {
-              "const": ""
-            }
-          },
-          "required": ["name", "organization"],
-          "type": "object"
-        }
-      ],
       "properties": {
         "email": {
-          "anyOf": [
-            {
-              "const": ""
-            },
-            {
-              "format": "email",
-              "type": "string"
-            }
-          ]
+          "format": "email",
+          "type": "string"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "organization": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "roles": {
           "description": "Roles this contact holds (one or more).",
@@ -126,30 +75,29 @@
           "uniqueItems": true
         },
         "url": {
-          "$ref": "#/$defs/nullableString"
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
-      "required": ["roles"],
+      "required": ["roles", "organization"],
       "type": "object"
     },
     "dataAsset": {
       "additionalProperties": false,
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "file_size": {
           "description": "File size in bytes (integer) or a human-readable string (e.g. 1.2 GB).",
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
               "minimum": 0,
               "type": "integer"
-            },
-            {
-              "type": "null"
             }
           ]
         },
@@ -165,36 +113,30 @@
           "$ref": "#/$defs/mediaType"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "description": "Asset name; becomes the asset key in serialized output, so it must be unique across data[] and additional_assets[]."
         },
         "href_template": {
           "type": "string",
-          "description": "Optional. When present, each locations[].url is treated as a base path and this relative pattern is appended to it (base + filled template). Tokens in {braces} must match a dimensions[].name; the encoder expands the cross-product of those dimensions' values into one item per combination, using locations[0] for the canonical href and any other locations as alternates. When absent, locations[].url are full file URLs and the entry is a single asset.",
-          "examples": ["mapspam_{crop}_{technology}_{variable}.tif"]
+          "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name (requires the datacube extension); the entry expands to one item per combination of those dimensions' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
+          "examples": ["mapspam_{crop}_{technology}_{variable}.tif"],
+          "minLength": 1
         },
         "nodata": {
           "description": "No-data / fill value for the asset.",
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "$ref": "#/$defs/numberOrString"
         },
         "processing_steps": {
           "description": "ids of processing[] steps that produced this asset.",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
           "type": "array"
         }
       },
-      "required": ["locations"],
+      "required": ["name", "locations"],
       "type": "object"
     },
     "bboxCoords": {
@@ -264,16 +206,10 @@
         }
       ]
     },
-    "dateOrBlank": {
-      "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z). May be left blank.",
+    "date": {
+      "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
       "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
       "anyOf": [
-        {
-          "const": ""
-        },
-        {
-          "type": "null"
-        },
         {
           "format": "date",
           "type": "string"
@@ -284,49 +220,46 @@
         }
       ]
     },
-    "doi": {
-      "description": "Bare DOI (not a URL).",
-      "oneOf": [
+    "dateOrOpen": {
+      "description": "A date, or null for an open-ended interval.",
+      "anyOf": [
         {
-          "const": ""
+          "$ref": "#/$defs/date"
         },
         {
           "type": "null"
-        },
-        {
-          "type": "string",
-          "pattern": "^10\\.\\d{2,}(\\.\\d+)*/\\S+$"
         }
-      ],
+      ]
+    },
+    "doi": {
+      "description": "Bare DOI (not a URL).",
+      "type": "string",
+      "pattern": "^10\\.\\d{2,}(\\.\\d+)*/\\S+$",
       "examples": ["10.7910/DVN/SWPENT"]
     },
     "id": {
       "description": "Short, stable, URL-safe identifier (lowercase letters, digits, hyphens).",
-      "oneOf": [
-        {
-          "const": ""
-        },
-        {
-          "pattern": "^[a-z0-9][a-z0-9-]*$",
-          "type": "string"
-        }
-      ]
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "type": "string"
     },
     "link": {
       "additionalProperties": false,
       "properties": {
         "description": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "rel": {
           "type": "string",
-          "description": "Link relation type, e.g. cite-as or describedby."
+          "description": "Link relation type, e.g. cite-as or describedby.",
+          "minLength": 1
         },
         "url": {
-          "$ref": "#/$defs/nullableString"
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
       "type": "object"
@@ -336,10 +269,11 @@
       "properties": {
         "title": {
           "type": "string",
-          "description": "Optional access label, e.g. HTTPS or S3."
+          "description": "Optional access label, e.g. HTTPS or S3.",
+          "minLength": 1
         },
         "url": {
-          "$ref": "#/$defs/nullableString"
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
       "required": ["url"],
@@ -347,15 +281,8 @@
     },
     "mediaType": {
       "description": "Media type (IANA), optionally with format parameters such as profile or version.",
-      "oneOf": [
-        {
-          "const": ""
-        },
-        {
-          "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+(\\s*;\\s*[^;=]+=[^;]+)*$",
-          "type": "string"
-        }
-      ],
+      "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+(\\s*;\\s*[^;=]+=[^;]+)*$",
+      "type": "string",
       "examples": [
         "image/tiff; application=geotiff; profile=cloud-optimized",
         "image/tiff; application=geotiff",
@@ -371,27 +298,27 @@
       "additionalProperties": false,
       "properties": {
         "name": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "url": {
-          "$ref": "#/$defs/nullableString"
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
       "type": "object"
     },
-    "nullableString": {
-      "type": ["string", "null"]
+    "nonEmptyString": {
+      "minLength": 1,
+      "type": "string"
     },
-    "numberOrStringOrNull": {
+    "numberOrString": {
       "anyOf": [
         {
           "type": "number"
         },
         {
+          "minLength": 1,
           "type": "string"
-        },
-        {
-          "type": "null"
         }
       ]
     },
@@ -403,18 +330,18 @@
           "description": "Software or code that produced this step's output. Omit when none is published.",
           "properties": {
             "url": {
-              "$ref": "#/$defs/nullableString",
+              "$ref": "#/$defs/nonEmptyString",
               "description": "Link to the production code or repository."
             },
             "version": {
-              "$ref": "#/$defs/nullableString",
+              "$ref": "#/$defs/nonEmptyString",
               "description": "Version, tag, or commit of the code."
             }
           },
           "type": "object"
         },
         "date": {
-          "$ref": "#/$defs/dateOrBlank"
+          "$ref": "#/$defs/date"
         },
         "derived_from": {
           "description": "Upstream sources this step derived from - the data (e.g. a Zenodo/Dataverse landing page), not code.",
@@ -422,10 +349,10 @@
             "additionalProperties": false,
             "properties": {
               "title": {
-                "$ref": "#/$defs/nullableString"
+                "$ref": "#/$defs/nonEmptyString"
               },
               "url": {
-                "$ref": "#/$defs/nullableString"
+                "$ref": "#/$defs/nonEmptyString"
               }
             },
             "type": "object"
@@ -433,11 +360,11 @@
           "type": "array"
         },
         "description": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "What this step did."
         },
         "id": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Step identifier; one step must use id: source for the original generation."
         }
       },
@@ -449,26 +376,29 @@
       "properties": {
         "title": {
           "type": "string",
-          "description": "Cite-as title; may differ from the record's top-level title."
+          "description": "Cite-as title; may differ from the record's top-level title.",
+          "minLength": 1
         },
         "authors": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
           },
-          "description": "Names in citation order."
+          "description": "Names in citation order.",
+          "minItems": 1
         },
         "date": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Publication date or year, e.g. 2024 or 2024-07-15.",
           "examples": ["2024", "2024-07-15"]
         },
         "publisher": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Publisher or venue: the data publisher/repository for datasets, or the journal for articles."
         },
         "url": {
-          "$ref": "#/$defs/nullableString"
+          "$ref": "#/$defs/nonEmptyString"
         }
       },
       "required": ["authors", "date"],
@@ -490,34 +420,27 @@
       "additionalProperties": false,
       "properties": {
         "label": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Human-readable resolution, e.g. 5 arc-minutes or Kenya counties."
         },
         "note": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Short spatial interpretation note."
         },
         "reference_system": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "For point/polygon types, the system defining the reporting units (e.g. GAUL 2015, GADM)."
         },
         "type": {
           "description": "Resolution type: xy (regular grid), x, y, point, or polygon.",
-          "oneOf": [
-            {
-              "const": ""
-            },
-            {
-              "enum": ["xy", "x", "y", "point", "polygon"]
-            }
-          ]
+          "enum": ["xy", "x", "y", "point", "polygon"]
         },
         "unit": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM. Non-grid spatial units may use clear labels such as admin-level."
         },
         "value": {
-          "$ref": "#/$defs/numberOrStringOrNull",
+          "$ref": "#/$defs/numberOrString",
           "description": "Numeric resolution value (grid spacing, or admin level)."
         }
       },
@@ -527,7 +450,7 @@
       "additionalProperties": false,
       "properties": {
         "bbox": {
-          "description": "Spatial extent. A single bounding box, or an array of boxes when sub-regions are needed (the first is the overall extent; add more only when their union would otherwise leave a large uncovered area). 2D = [west, south, east, north] = [xmin, ymin, xmax, ymax]; 3D = [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres. Empty array means unspecified.",
+          "description": "Spatial extent. A single bounding box, or an array of boxes when sub-regions are needed (the first is the overall extent; add more only when their union would otherwise leave a large uncovered area). 2D = [west, south, east, north] = [xmin, ymin, xmax, ymax]; 3D = [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
           "oneOf": [
             {
               "$ref": "#/$defs/bboxCoords"
@@ -536,13 +459,14 @@
               "type": "array",
               "items": {
                 "$ref": "#/$defs/bboxCoords"
-              }
+              },
+              "minItems": 1
             }
           ],
           "examples": [[-180, -90, 180, 90], [[-180, -90, 180, 90]]]
         },
         "crs": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Coordinate reference system of the data: EPSG code, CRS URI, or PROJ string.",
           "examples": ["EPSG:4326"]
         },
@@ -555,7 +479,7 @@
           "uniqueItems": true
         },
         "geometry_column": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Name of the geometry column, for vector tables."
         },
         "resolution": {
@@ -572,16 +496,16 @@
       "additionalProperties": false,
       "properties": {
         "note": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Time-specific interpretation note, e.g. the aggregation method."
         },
         "step": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "ISO 8601 duration of one step.",
           "examples": ["P1D", "P1M"]
         },
         "unit": {
-          "$ref": "#/$defs/nullableString",
+          "$ref": "#/$defs/nonEmptyString",
           "description": "Time unit of the data, e.g. daily or monthly."
         },
         "values": {
@@ -589,6 +513,7 @@
           "items": {
             "anyOf": [
               {
+                "minLength": 1,
                 "type": "string"
               },
               {
@@ -596,9 +521,6 @@
               },
               {
                 "type": "boolean"
-              },
-              {
-                "type": "null"
               }
             ]
           },
@@ -611,14 +533,14 @@
       "additionalProperties": false,
       "properties": {
         "end_date": {
-          "$ref": "#/$defs/dateOrBlank",
+          "$ref": "#/$defs/dateOrOpen",
           "examples": ["2020-01-01"]
         },
         "resolution": {
           "$ref": "#/$defs/temporalResolution"
         },
         "start_date": {
-          "$ref": "#/$defs/dateOrBlank",
+          "$ref": "#/$defs/dateOrOpen",
           "examples": ["2020-01-01"]
         }
       },
@@ -673,8 +595,8 @@
       "type": "array"
     },
     "created": {
-      "$ref": "#/$defs/dateOrBlank",
-      "description": "Date the record was first published to the Hub - the metadata record, not the data file. May be left blank in drafts; populated during CDH review."
+      "$ref": "#/$defs/date",
+      "description": "Date the record was first published to the Hub - the metadata record, not the data file. Optional when authoring; filled in at publication if omitted."
     },
     "data": {
       "description": "Data assets for the resource; at least one entry.",
@@ -686,7 +608,8 @@
     },
     "description": {
       "type": "string",
-      "description": "Canonical human- and AI-readable summary of the resource."
+      "description": "Canonical human- and AI-readable summary of the resource.",
+      "minLength": 1
     },
     "doi": {
       "$ref": "#/$defs/doi"
@@ -740,24 +663,27 @@
                 "format": "uri"
               },
               "description": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               }
             }
           }
         ]
-      }
+      },
+      "minItems": 1
     },
     "license": {
       "type": "string",
       "description": "License of the data. SPDX identifier preferred.",
-      "examples": ["CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0"]
+      "examples": ["CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0"],
+      "minLength": 1
     },
     "note": {
-      "$ref": "#/$defs/nullableString",
+      "$ref": "#/$defs/nonEmptyString",
       "description": "Caveats, warnings, or interpretation-critical remarks not captured in description."
     },
     "previous_version": {
-      "$ref": "#/$defs/nullableString",
+      "$ref": "#/$defs/nonEmptyString",
       "description": "id of the predecessor record, when this supersedes an earlier version."
     },
     "processing": {
@@ -785,15 +711,8 @@
       "type": "array"
     },
     "resource_type": {
-      "description": "Kind of resource: dataset, document, tool, or ai-skill.",
-      "oneOf": [
-        {
-          "const": ""
-        },
-        {
-          "$ref": "vocab/resource_type.schema.json"
-        }
-      ]
+      "description": "Kind of resource the record describes (vocab/resource_type.json).",
+      "$ref": "vocab/resource_type.schema.json"
     },
     "spatial": {
       "$ref": "#/$defs/spatial"
@@ -803,14 +722,15 @@
     },
     "title": {
       "type": "string",
-      "description": "Human-readable title of the resource."
+      "description": "Human-readable title of the resource.",
+      "minLength": 1
     },
     "updated": {
-      "$ref": "#/$defs/dateOrBlank",
-      "description": "Date the record was last revised - the metadata record, not the data file. May be left blank in drafts; populated during CDH review."
+      "$ref": "#/$defs/date",
+      "description": "Date the record was last revised - the metadata record, not the data file. Optional when authoring; filled in at publication if omitted."
     },
     "version": {
-      "$ref": "#/$defs/nullableString",
+      "$ref": "#/$defs/nonEmptyString",
       "description": "Version of the resource, when versioned.",
       "examples": ["v1.0", "2.0-release-2"]
     }
@@ -824,8 +744,6 @@
     "resource_type",
     "keywords",
     "contact",
-    "created",
-    "updated",
     "data"
   ],
   "anyOf": [
