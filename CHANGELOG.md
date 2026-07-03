@@ -12,21 +12,57 @@ occur between minor versions.
 
 ### Added
 
-- `access` field (optional; values `public` / `restricted` / `non-public`, default `public`) to
-  declare data access conditions separately from `license` — an embargo (data not yet released) is
-  `restricted`, not a separate value. Encodes as `cgiar-cdh:access` in STAC and `dct:accessRights`
-  (EU accessRights vocabulary, via GeoDCAT) in OGC Records.
+- Added `access` so access conditions are separate from `license`. Values are `public`,
+  `restricted`, and `non-public`; omitted means `public`.
+- Added resource versioning rules: when to update a record, create a new version, or fork a new
+  resource. Authors set `previous_version`; encoders derive successor/latest links and deprecation
+  metadata.
+- Added cross-field validation for rules JSON Schema cannot express: date order, processing-step
+  references, class-variable references, `href_template` tokens, reserved keyword schemes, and
+  unique asset names.
+- Added `--profile`, `--schemas`, and `--expect-fail` to `validate-yaml`, with matching
+  `profile` / `extra-schemas` inputs on the reusable validation workflow. This lets adopters
+  validate their own extensions and policy schemas.
+- Added a bundled CDH profile schema (`cdh.schema.bundled.json`) and bundle checks so validators can
+  use one file without resolving CDH `$refs`.
+- Added extension-adoption docs, an extension template, and the rule that new extensions should use
+  one top-level key named after the extension.
+- Added negative fixtures in `tests/invalid/` to catch schema or validation rules getting
+  accidentally loosened.
+- Added version guards so schema `$id`s must match `package.json`, and release tags must match the
+  package version before publishing.
 
 ### Changed
 
-- OGC Records mapping now prefers a recognized GeoDCAT / `dct:` term over a `cgiar-cdh:*` field
-  wherever one exists — each encoding uses its own ecosystem's standard term. First application:
-  `spatial.geography[]` → `dct:spatial`. STAC continues to use its native extensions and
-  `cgiar-cdh:*`.
-- Records may now use unquoted ISO dates (e.g. `created: 2026-06-23`). The validator parses YAML as
-  1.2 core, so dates remain strings instead of being rejected as date objects; quoting still works.
-- Repository formatting and linting moved from remark to Prettier (Markdown, JSON, YAML) and
-  markdownlint. Contributor-facing only — no change to the schema, vocabularies, or published URLs.
+- **Breaking:** schemas now reject blank strings, empty required arrays, and stray `null`s. Omit
+  unknown values instead; `null` only remains for open-ended temporal intervals.
+- **Breaking:** every `contact[]` entry must include `organization`.
+- **Breaking:** `data[]` and `additional_assets[]` entries must include `name`; it becomes the
+  serialized asset key and must be unique.
+- `created` and `updated` are optional in input YAML and filled at publication. Serialized records
+  still include both.
+- `extensions[]` is documented as required and must include the `cdh` extension for Hub records.
+- Validation now has two layers: mechanism (core plus declared extensions) and profile (policy
+  schema passed with `--profile`). CDH uses the same path as adopters.
+- Templates now validate in draft mode: blanks are pruned and presence checks are relaxed, while
+  field names, types, enums, and patterns are still checked.
+- OGC Records mapping now uses standard GeoDCAT / `dct:` terms where available, starting with
+  `access` and `spatial.geography[]`.
+- Unquoted ISO dates in YAML now work because the validator parses YAML 1.2 core values as strings.
+- Formatting and linting moved to Prettier and markdownlint.
+
+### Fixed
+
+- Unknown extension URLs now fail with a clear `--schemas` message instead of a misleading warning.
+- Validation output is shorter and more useful: offending fields are named, enum options are shown,
+  duplicates are collapsed, and noisy Ajv `unevaluatedProperties` cascades are filtered.
+- Fixed the versioning crosswalk: `deprecated` belongs on superseded records and is derived from the
+  `previous_version` chain.
+- Fixed field-reference/checklist drift around `cdh_schema_version`, `citation` vs DOI, temporal
+  coverage, variables/dimensions, and `extensions[]`.
+- Fixed the `resource_type` schema description so it matches the vocabulary.
+- Consolidated duplicate bbox and `href_template` guidance, and cleaned up extension README bullets
+  and typos.
 
 ## [0.1.0] - 2026-06-24
 
