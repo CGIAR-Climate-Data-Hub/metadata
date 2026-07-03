@@ -1,8 +1,7 @@
 # Climate Data Hub Metadata Standard
 
 This repository defines the Climate Data Hub metadata standard, input schema, and authoring
-templates. The goal is lightweight, searchable, AI-readable metadata that can be validated and
-mapped to STAC or OGC API Records.
+templates. Records are lightweight, searchable, validated, and mapped to STAC or OGC API Records.
 
 > \[!WARNING] This standard is still a draft. Breaking changes are expected while it is being tested
 > and refined.
@@ -77,10 +76,7 @@ Individual targets: `check-schemas`, `check-vocabs`, `compile-schemas`, `check-y
 `check-invalid`, `bundle-profile`, `gen-schemas`, `lint-md`.
 
 Records under [`tests/invalid/`](./tests/invalid/README.md) are negative fixtures - each MUST fail
-validation, guarding against schema or check rules being accidentally loosened.
-
-The validation scripts use bare ESM imports, so `node` is the supported runtime today but they
-should also run under Deno or bun.
+validation. They catch schema or rule changes that accidentally loosen validation.
 
 ## Acknowledgements
 
