@@ -119,7 +119,7 @@
         },
         "href_template": {
           "type": "string",
-          "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name (requires the datacube extension); the entry expands to one item per combination of those dimensions' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
+          "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name or be the reserved {variable} token, which expands over variables[].name (requires the datacube extension); the entry expands to one item per combination of the tokens' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
           "examples": ["mapspam_{crop}_{technology}_{variable}.tif"],
           "minLength": 1
         },
@@ -605,6 +605,10 @@
       },
       "minItems": 1,
       "type": "array"
+    },
+    "deprecated": {
+      "type": "boolean",
+      "description": "true when a newer release supersedes this record. Set on version snapshots."
     },
     "description": {
       "type": "string",

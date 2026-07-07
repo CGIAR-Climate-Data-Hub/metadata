@@ -314,7 +314,7 @@
               },
               "href_template": {
                 "type": "string",
-                "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name (requires the datacube extension); the entry expands to one item per combination of those dimensions' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
+                "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name or be the reserved {variable} token, which expands over variables[].name (requires the datacube extension); the entry expands to one item per combination of the tokens' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
                 "examples": [
                   "mapspam_{crop}_{technology}_{variable}.tif"
                 ],
@@ -349,6 +349,10 @@
           },
           "minItems": 1,
           "type": "array"
+        },
+        "deprecated": {
+          "type": "boolean",
+          "description": "true when a newer release supersedes this record. Set on version snapshots."
         },
         "description": {
           "type": "string",
@@ -1505,7 +1509,11 @@
             "properties": {
               "name": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "not": {
+                  "const": "variable"
+                },
+                "description": "Axis name. Must not be \"variable\": measures are not axes and belong in variables[]; href_template refers to them via the reserved {variable} token."
               },
               "description": {
                 "type": "string",

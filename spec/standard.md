@@ -143,9 +143,12 @@ Use this rule when a resource changes:
   use an open-ended `temporal` interval. This is not a version.
 - **New/updated data format** (e.g., new file format, updated chunk structure, re-compressed) -
   update the existing record with any additional urls and update the processing code commit/version.
-- **New release of the data** (values change, new time span or coverage, new DOI or citation) - a
-  new record with a new `id` (the `id` may include the version, e.g. `spam2020-v2`). Set `version`,
-  and set `previous_version` to the predecessor record's `id`.
+- **New release of the data** (values change, new time span or coverage, new DOI or citation) -
+  snapshot, then update in place. Copy the current record to a new record whose `id` appends the
+  version (e.g. `spam2020-v2`) and set `deprecated: true` on the snapshot. Then update the original
+  record to the new release: set the new `version` and point `previous_version` at the snapshot's
+  `id`. The unversioned `id` always describes the current release. Snapshots are frozen - never edit
+  them again.
 - **Structural change or lossy transform** (dimension added or removed, resolution or extent change,
   aggregation, reclassification) - a distinct resource, not a version. Create a separate record
   linked through `processing[].derived_from`.
@@ -183,8 +186,9 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
   - Must not contain `/`, `:`, `?`, `#`, `&`, spaces, or other URL/path-reserved characters.
   - Should use hyphens, not underscores.
   - Should not change when the title changes.
-  - Should not include version unless each version is a separate record.
-- **Example:** `spam2020-v2`
+  - Must not include the version; the unversioned `id` always identifies the current release. Only
+    deprecated snapshots append the version (e.g. `spam2020-v2`). See section 4.7.
+- **Example:** `spam2020`
 
 #### `title`
 
@@ -321,16 +325,19 @@ keywords:
   - Authors MAY provide these; when omitted, they are filled in at publication. Serialized records
     MUST include both values.
 
-#### `version`, `previous_version`
+#### `version`, `previous_version`, `deprecated`
 
 - **Requirement:** Conditional. Required when the resource is versioned; `previous_version` is
-  required when the record supersedes an existing Hub record.
-- **Expected value:** Stable version label.
+  required when the record supersedes an existing Hub record; `deprecated: true` is required on
+  version snapshots.
+- **Expected value:** Stable version label; `deprecated` is boolean.
 - **Rules:**
   - Identify the resource version, not the metadata schema version.
   - Semantic versions, release names, years, source versions, or commit hashes are all acceptable.
-  - `previous_version` is the `id` of the predecessor record. See section 4.8 for when to create a
-    new versioned record and what the encoder derives from the chain.
+  - `previous_version` is the `id` of the predecessor record. See section 4.7 for when to snapshot
+    and what the encoder derives from the chain.
+  - `deprecated: true` marks a superseded snapshot. Snapshots are frozen and are surfaced only
+    through the version chain, not catalog listings.
 
 ### 5.2 Contact and Citation
 
@@ -532,8 +539,10 @@ these extension fields, not in `keywords` (see section 4.5).
 - **Rules:**
   - `id` must be unique within `processing[]`.
   - At least one step must use `id: source` whenever `processing[]` is present.
-  - `derived_from[]` entries are external `{ url, title }` references. Step order is the array
-    order; asset-specific chains use `data[].processing_steps[]`.
+  - `derived_from[]` entries are external `{ url, title }` references. When the source is versioned,
+    point `url` at the version-specific URL (e.g. a snapshot record or versioned landing page), not
+    at a URL that tracks the latest release. Step order is the array order; asset-specific chains
+    use `data[].processing_steps[]`.
   - `date` is ISO 8601 / RFC 3339.
   - Put `source` first unless the processing order requires otherwise.
 
@@ -557,9 +566,11 @@ these extension fields, not in `keywords` (see section 4.5).
   - Different content, formats, or services are separate `data[]` / `additional_assets[]` entries.
 - **`href_template` (optional):** Use when one dataset is split into many files along its dimensions
   (e.g., one COG per crop, production system, and variable). Each `locations[].url` becomes a base
-  path with the template appended. Each `{token}` must match a `dimensions[].name`, and the entry
-  serializes as one item per combination of those dimensions' `values`. Values are substituted
-  verbatim; every combination is assumed to exist. Omit it for a single file. See the
+  path with the template appended. Each `{token}` must match a `dimensions[].name`, or be the
+  reserved `{variable}` token, which expands over `variables[].name` for files split per variable
+  (`variable` is therefore not allowed as a dimension name). The entry serializes as one item per
+  combination of the tokens' values. Values are substituted verbatim; every combination is assumed
+  to exist. Omit it for a single file. See the
   [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
 - **Rules:**
   - `name` is required; it becomes the asset key in serialized output and must be unique across

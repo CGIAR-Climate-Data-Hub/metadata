@@ -208,11 +208,18 @@ const RESERVED_SCHEME_PREFIX =
 function checkCrossFieldRules(doc) {
   const out = [];
   const dims = new Map(list(doc?.dimensions).map((d) => [d?.name, list(d?.values).length]));
+  const namedVariables = list(doc?.variables).filter((v) => typeof v?.name === "string").length;
   list(doc?.data).forEach((asset, i) => {
     const tpl = asset?.href_template;
     if (typeof tpl !== "string" || tpl === "") return;
     for (const [, token] of tpl.matchAll(/\{([^}]+)\}/g)) {
-      if (!dims.has(token)) {
+      if (token === "variable") {
+        if (namedVariables === 0) {
+          out.push(
+            `/data/${i}/href_template: token {variable} expands over variables[].name, but no named variables are declared (requires the datacube extension)`,
+          );
+        }
+      } else if (!dims.has(token)) {
         out.push(
           `/data/${i}/href_template: token {${token}} has no matching dimensions[].name (requires the datacube extension)`,
         );

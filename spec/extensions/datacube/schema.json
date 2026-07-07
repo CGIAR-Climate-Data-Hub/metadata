@@ -34,7 +34,9 @@
         "properties": {
           "name": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "not": { "const": "variable" },
+            "description": "Axis name. Must not be \"variable\": measures are not axes and belong in variables[]; href_template refers to them via the reserved {variable} token."
           },
           "description": {
             "type": "string",

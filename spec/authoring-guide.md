@@ -89,6 +89,9 @@ Use lowercase words with hyphens:
 id: banana-climate-risk-indicators
 ```
 
+Do not put the version in the `id`; the unversioned `id` always describes the current release (see
+[Superseding a Record](#superseding-a-record)).
+
 ### `title`
 
 A concise human-readable name.
@@ -245,12 +248,17 @@ data:
 
 Rules:
 
-- Each `{token}` must match a declared `dimensions[].name`.
-- The matching dimension's `values` are substituted verbatim and must match file-name tokens.
+- Each `{token}` must match a declared `dimensions[].name`, except the reserved `{variable}` token,
+  which expands over `variables[].name` for files split per variable. `variable` cannot be used as a
+  dimension name.
+- The matching dimension's `values` (or the variable names) are substituted verbatim and must match
+  file-name tokens.
 - Every token dimension must list `values`; continuous axes such as `lat` / `lon` cannot be tokens.
 - The template assumes every value combination exists.
 - Each file URL is `locations[0].url` + filled template; additional locations become alternates.
 - Without `href_template`, `locations[].url` are full file URLs and the entry stays one asset.
+- A templated entry shares one `description`, `nodata`, and `media_type` across every generated
+  file; split into separate `data[]` entries (e.g. one per variable) when those differ.
 
 Only the file-partitioning dimensions go in the template. Dimensions stored inside each file (e.g.
 bands of a multi-band COG) stay out of it.
@@ -458,6 +466,18 @@ alternate formats, or services.
 For `additional_assets`, provide `media_type` and `file_size` when known. Review may add them from
 inspectable files.
 
+## Superseding a Record
+
+When a new release of the data ships, snapshot first, then update in place:
+
+1. Copy the current record to a new file. Append the version to the snapshot's `id` (e.g.
+   `spam2020-v2`) and set `deprecated: true`. Never edit the snapshot again.
+2. Update the original record to the new release: set the new `version` and point `previous_version`
+   at the snapshot's `id`.
+
+The unversioned `id` always describes the current release. Metadata-only fixes are not releases -
+update in place without a snapshot. See `standard.md` section 4.7 for the full rules.
+
 ## What Review Cannot Decide
 
 Review may fill technical facts from inspectable assets. Authors provide:
@@ -532,6 +552,7 @@ Before publishing, check:
 - [ ] `variables[]` and `dimensions[]` for data-cube or multi-variable data
 - [ ] `version` for versioned resources
 - [ ] `previous_version` when the record supersedes an existing Hub record
+- [ ] `deprecated: true` on version snapshots
 - [ ] `doi` when a DOI exists
 - [ ] `processing[]` for derived products
 - [ ] `commodities[]` for commodity-specific resources

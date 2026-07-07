@@ -70,6 +70,7 @@ terms are used where available, e.g. `access` -> `dct:accessRights`.
 | `related_publications[]`    | `properties["cgiar-cdh:related_publications"]`                                                                                                                             |
 | `note`                      | `properties["cgiar-cdh:note"]`                                                                                                                                             |
 | `version`                   | `properties.version`                                                                                                                                                       |
+| `deprecated`                | `properties["cgiar-cdh:deprecated"]`                                                                                                                                       |
 | `previous_version`          | `links[rel=predecessor-version]`                                                                                                                                           |
 | `funding[]`                 | `properties["cgiar-cdh:funding"]`                                                                                                                                          |
 
