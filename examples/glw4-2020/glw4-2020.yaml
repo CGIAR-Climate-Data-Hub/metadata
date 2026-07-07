@@ -103,7 +103,7 @@ cdh:
       use_instead: official livestock census counts where available
   domain: [agricultural-production]
 
-commodities: [livestock, buffalo, cattle, chickens, goats, swine, sheep]
+commodities: [buffalo, cattle, chickens, goats, swine, sheep]
 
 processing:
   - id: source

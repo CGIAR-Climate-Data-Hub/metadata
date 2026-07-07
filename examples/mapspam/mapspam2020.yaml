@@ -45,7 +45,8 @@ contact:
     url: https://www.ifpri.org/
 
 citation:
-  title: Global Spatially-Disaggregated Crop Production Statistics Data for 2020 Version 2.0 Release 2
+  title:
+    Global Spatially-Disaggregated Crop Production Statistics Data for 2020 Version 2.0 Release 2
   authors:
     - International Food Policy Research Institute (IFPRI)
   date: "2026"
@@ -90,12 +91,59 @@ dimensions:
   - name: crop
     type: crop
     description: MAPSPAM crop code. Full labels are provided in the dimension codes asset.
-    values: [whea, maiz, rice, sorg, pmil, soyb]
+    values:
+      - whea
+      - rice
+      - maiz
+      - barl
+      - mill
+      - pmil
+      - sorg
+      - ocer
+      - pota
+      - swpo
+      - yams
+      - cass
+      - orts
+      - bean
+      - chic
+      - cowp
+      - pige
+      - lent
+      - opul
+      - soyb
+      - grou
+      - cnut
+      - oilp
+      - sunf
+      - rape
+      - sesa
+      - ooil
+      - sugc
+      - sugb
+      - cott
+      - ofib
+      - coff
+      - rcof
+      - coco
+      - teas
+      - toba
+      - bana
+      - plnt
+      - citr
+      - trof
+      - temf
+      - toma
+      - onio
+      - vege
+      - rubb
+      - rest
 
   - name: technology
     type: technology
-    description: MAPSPAM production system code. Full labels are provided in the dimension codes asset.
-    values: [A, I, R, H, L, S]
+    description:
+      MAPSPAM production system code. Full labels are provided in the dimension codes asset.
+    values: [all, irrigated, rainfed]
 
 variables:
   - name: physical_area
@@ -130,12 +178,52 @@ cdh:
       use_instead: local survey or administrative production data.
 
 commodities:
-  - maize
-  - rice
   - wheat
-  - soybeans
-  - sorghum
+  - rice
+  - maize
+  - barley
+  - millets
   - pearl-millet
+  - sorghum
+  - cereals
+  - potato
+  - sweet-potatoes
+  - yams
+  - cassava
+  - root-vegetables
+  - common-bean
+  - chickpeas
+  - cowpeas
+  - pigeon-pea
+  - lentils
+  - pulses
+  - soybeans
+  - groundnuts
+  - coconuts
+  - oil-palms
+  - sunflower
+  - rapeseed
+  - sesame
+  - oil-crops
+  - sugarcane
+  - sugarbeet
+  - cotton
+  - fibre-crops
+  - coffee
+  - robusta-coffee
+  - cocoa
+  - tea
+  - tobacco
+  - banana
+  - plantains
+  - citrus
+  - tropical-fruits
+  - temperate-fruit
+  - tomatoes
+  - onions
+  - vegetables
+  - rubber
+  - crops
 
 processing:
   - id: source
