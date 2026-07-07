@@ -404,9 +404,9 @@ precise footprint.
   - 3D: `[west, south, min_z, east, north, max_z]` (= `[xmin, ymin, zmin, xmax, ymax, zmax]`);
     elevation in metres.
 
-  Single-region datasets use one box, e.g. `[-180, -90, 180, 90]`. For sub-regions, pass a list of
-  boxes (`[[...], [...]]`) where the first is the overall extent. Add sub-boxes only when the union
-  would otherwise leave a large uncovered area.
+  Single-region datasets use a flat box, e.g. `[-180, -90, 180, 90]`. For sub-regions, pass a list
+  of boxes (`[[...], [...]]`) where the first is the overall extent. Add sub-boxes only when the
+  union would otherwise leave a large uncovered area.
 
 - **Rules:**
   - Coordinates MUST be in WGS84 regardless of `spatial.crs` (which describes the underlying assets,
@@ -427,14 +427,12 @@ the [authoring guide](./authoring-guide.md#spatial).
 
 ```yaml
 spatial:
-  bbox:
-    - [-180.0, -90.0, 180.0, 90.0] # whole Earth, 2D
+  bbox: [-180.0, -90.0, 180.0, 90.0] # whole Earth, 2D
 ```
 
 ```yaml
 spatial:
-  bbox:
-    - [-180.0, -90.0, -1, 180.0, 90.0, 0] # whole Earth, -1m to 0m (i.e. soil data...)
+  bbox: [-180.0, -90.0, -1, 180.0, 90.0, 0] # whole Earth, -1m to 0m (i.e. soil data...)
 ```
 
 ```yaml

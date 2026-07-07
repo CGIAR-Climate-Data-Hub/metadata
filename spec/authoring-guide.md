@@ -285,15 +285,15 @@ Common fields:
 - `spatial.geometry_column`
 - `spatial.resolution`
 
-`spatial.bbox` is a list of bounding boxes in WGS84 (EPSG:4326).
+`spatial.bbox` is a single bounding box, or a list of bounding boxes, in WGS84 (EPSG:4326).
 
 Bounding box coordinate order is:
 
 - 2D: `[west, south, east, north]` = `[xmin, ymin, xmax, ymax]`
 - 3D: `[west, south, min_z, east, north, max_z]` (elevation in metres)
 
-For multiple bounding boxes, put the overall extent first. Add sub-boxes only when the union would
-otherwise leave a large uncovered area.
+Use a flat bounding box for one extent. For multiple bounding boxes, use a list and put the overall
+extent first. Add sub-boxes only when the union would otherwise leave a large uncovered area.
 
 When converting from common tools, watch the axis order. Here is a comparison across several tools +
 stac:
@@ -308,9 +308,14 @@ stac:
 
 ```yaml
 spatial:
+  bbox: [-180.0, -90.0, 180.0, 90.0] # whole Earth
+```
+
+```yaml
+spatial:
   bbox:
-    - [-180.0, -90.0, 180.0, 90.0] # whole Earth
-    - [-10.0, 10.0, 10.0, 20.0] # a small region included
+    - [-180.0, -90.0, 180.0, 90.0] # overall extent
+    - [-10.0, 10.0, 10.0, 20.0] # included sub-region
 ```
 
 `spatial.geography` is the named-place facet for browse and filtering (the precise footprint lives
