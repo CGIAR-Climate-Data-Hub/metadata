@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=../../spec/schemas/profiles/cdh.schema.json
-cdh_schema_version: "v0.1.0"
+cdh_schema_version: "v0.2.0"
 
 extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
@@ -95,12 +95,12 @@ variables:
 
 cdh:
   use_cases:
-    - Livestock exposure to hazards
-    - Comparing livestock densities across systems or regions
+    - livestock exposure to hazards
+    - comparing livestock densities across systems or regions
   not_recommended_for:
-    - use: Exact livestock counts
-      reason: Values are spatially modeled estimates derived from census and other data
-      use_instead: Official livestock census counts where available
+    - use: exact livestock counts
+      reason: values are spatially modeled estimates derived from census and other data
+      use_instead: official livestock census counts where available
   domain: [agricultural-production]
 
 commodities: [livestock, buffalo, cattle, chickens, goats, swine, sheep]
@@ -120,7 +120,7 @@ processing:
       version: "885ed96"
 
 data:
-  - name: Zarr
+  - name: zarr
     locations:
       - url: https://digital-atlas.s3.amazonaws.com/cdh/data/glw4-2020/glw4-2020.zarr
         title: HTTPS
