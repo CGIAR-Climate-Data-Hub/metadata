@@ -14,9 +14,10 @@ occur between minor versions.
 
 - Added `access` so access conditions are separate from `license`. Values are `public`,
   `restricted`, and `non-public`; omitted means `public`.
-- Added resource versioning rules: when to update a record, create a new version, or fork a new
-  resource. Authors set `previous_version`; encoders derive successor/latest links and deprecation
-  metadata.
+- Added resource versioning rules: when to update a record in place, snapshot a superseded release,
+  or fork a new resource. The unversioned `id` always identifies the current release; snapshots
+  append the version to the `id`, set `deprecated: true`, and are linked via `previous_version`.
+  Encoders derive successor/latest links from the chain.
 - Added cross-field validation for rules JSON Schema cannot express: date order, processing-step
   references, class-variable references, `href_template` tokens, reserved keyword schemes, and
   unique asset names.
@@ -29,6 +30,8 @@ occur between minor versions.
   one top-level key named after the extension.
 - Added negative fixtures in `tests/invalid/` to catch schema or validation rules getting
   accidentally loosened.
+- Added the reserved `{variable}` `href_template` token, which expands over `variables[].name` for
+  datasets split into one file per variable. `variable` is rejected as a dimension name.
 - Added version guards so schema `$id`s must match `package.json`, and release tags must match the
   package version before publishing.
 
@@ -48,6 +51,8 @@ occur between minor versions.
   field names, types, enums, and patterns are still checked.
 - OGC Records mapping now uses standard GeoDCAT / `dct:` terms where available, starting with
   `access` and `spatial.geography[]`.
+- `derived_from[]` entries should point at version-specific source URLs rather than URLs that track
+  the latest release.
 - Unquoted ISO dates in YAML now work because the validator parses YAML 1.2 core values as strings.
 - Formatting and linting moved to Prettier and markdownlint.
 
@@ -56,8 +61,6 @@ occur between minor versions.
 - Unknown extension URLs now fail with a clear `--schemas` message instead of a misleading warning.
 - Validation output is shorter and more useful: offending fields are named, enum options are shown,
   duplicates are collapsed, and noisy Ajv `unevaluatedProperties` cascades are filtered.
-- Fixed the versioning crosswalk: `deprecated` belongs on superseded records and is derived from the
-  `previous_version` chain.
 - Fixed field-reference/checklist drift around `cdh_schema_version`, `citation` vs DOI, temporal
   coverage, variables/dimensions, and `extensions[]`.
 - Fixed the `resource_type` schema description so it matches the vocabulary.
