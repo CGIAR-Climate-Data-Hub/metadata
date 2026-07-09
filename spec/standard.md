@@ -270,8 +270,21 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 - **Rules:**
   - Omit (or set `public`) for openly accessible data.
   - An embargo (data not yet released) is `restricted`, not a separate value.
-  - For `restricted` / `non-public`, `data[].locations[].url` should point at access instructions.
+  - For `restricted` / `non-public`, provide `access_note`.
+  - Use `additional_links[].rel: create-form` for access request forms and `rel: help` for access
+    help pages or `mailto:` contacts.
 - **Example:** `restricted`
+
+#### `access_note`
+
+- **Requirement:** Required when `access` is `restricted` or `non-public`.
+- **Definition:** Human-readable access conditions or instructions, including embargo details,
+  request steps, authentication requirements, or why the data is catalogued but unavailable.
+- **Encoding:** Maps to schema.org `conditionsOfAccess`; maps to `cgiar-cdh:access_note` in STAC and
+  OGC Records.
+- **Examples:**
+  - `Embargoed until 2027-01-01. Contact the data custodian for early access.`
+  - `Request access using the linked form. Approval is limited to research use.`
 
 #### `resource_type`
 
@@ -647,6 +660,8 @@ these extension fields, not in `keywords` (see section 4.5).
 | `license`                                       | License terms for the resource            | IANA / STAC          |
 | `describedby` / `describes`                     | Documentation, schema, code list          | IANA                 |
 | `about`                                         | Project or explanatory page               | IANA                 |
+| `create-form`                                   | Form for requesting access or submission  | IANA                 |
+| `help`                                          | Access help page or contact               | IANA                 |
 | `via`                                           | Intermediate source                       | IANA                 |
 | `canonical`                                     | Authoritative URL (when this is a mirror) | IANA                 |
 | `alternate`                                     | Alternate representation                  | IANA                 |

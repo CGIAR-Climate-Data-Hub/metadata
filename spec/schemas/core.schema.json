@@ -583,6 +583,10 @@
       "default": "public",
       "enum": ["public", "restricted", "non-public"]
     },
+    "access_note": {
+      "$ref": "#/$defs/nonEmptyString",
+      "description": "Human-readable access conditions or instructions. Required when access is restricted or non-public; maps to schema.org conditionsOfAccess."
+    },
     "additional_assets": {
       "description": "Sidecar or auxiliary assets, e.g. metadata files or thumbnails.",
       "items": {
@@ -791,6 +795,21 @@
         }
       },
       "required": ["doi"]
+    }
+  ],
+  "allOf": [
+    {
+      "if": {
+        "required": ["access"],
+        "properties": {
+          "access": {
+            "enum": ["restricted", "non-public"]
+          }
+        }
+      },
+      "then": {
+        "required": ["access_note"]
+      }
     }
   ],
   "title": "Climate Data Hub Metadata Input Schema",

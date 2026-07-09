@@ -178,6 +178,10 @@ Use an SPDX license expression such as `CC-BY-4.0`, `CC0-1.0`, `MIT`, or `CC-BY-
 a custom license, use `LicenseRef-*` and add an `additional_links[]` entry with `rel: license` and a
 URL for the license terms.
 
+Use `access_note` when `access` is `restricted` or `non-public`. It should say how to request
+access, what authentication is needed, or whether the data is embargoed. Link request forms with
+`rel: create-form`; link access help pages or `mailto:` contacts with `rel: help`.
+
 For `contact`, use either an organization contact or a person contact. Every record must include at
 least one contact with `licensor` in `roles`; that contact is the licensing party for the resource.
 

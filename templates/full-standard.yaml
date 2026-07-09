@@ -17,6 +17,8 @@ description: >
   ""
 license: ""
 access: public # optional - one of: public | restricted | non-public; omit = public
+access_note: > # required when access is restricted or non-public
+  ""
 # Resource type - one of: dataset | document | software | service | ai-skill
 resource_type: ""
 

@@ -64,6 +64,7 @@ terms are used where available, e.g. `access` -> `dct:accessRights`.
 | `properties.themes`         | Encoder output only - populated from `cdh.domain`, `commodities`, and any linked-keyword entries. Not an author-facing input field.                                        |
 | `license`                   | `properties.license`                                                                                                                                                       |
 | `access`                    | `properties["dct:accessRights"]` using the EU accessRights NAL URI. Omitted = `public`; `public` MAY be left unencoded. Advertise GeoDCAT via `conformsTo`.                |
+| `access_note`               | `properties["cgiar-cdh:access_note"]`; also suitable for schema.org `conditionsOfAccess` on generated landing pages.                                                       |
 | `contact[]`                 | `properties.contacts[]`. At least one contact must include `licensor` in `roles`.                                                                                          |
 | `citation`                  | `properties["cgiar-cdh:citation"]`                                                                                                                                         |
 | `doi`                       | `links[rel=cite-as]`                                                                                                                                                       |
