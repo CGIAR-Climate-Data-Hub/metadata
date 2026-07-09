@@ -18,6 +18,7 @@
 // no longer validates never ships.
 
 import $RefParser from "@apidevtools/json-schema-ref-parser";
+import prettier from "prettier";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -84,7 +85,11 @@ if (JSON.stringify(schema).includes('"$ref"')) {
 // Never ship a bundle that stopped being a valid schema.
 newAjv().compile(schema);
 
-const next = JSON.stringify(schema, null, 2) + "\n";
+const prettierConfig = (await prettier.resolveConfig(OUT)) || {};
+const next = await prettier.format(JSON.stringify(schema, null, 2), {
+  ...prettierConfig,
+  filepath: OUT,
+});
 
 if (check) {
   const current = await readFile(OUT, "utf-8").catch(() => null);

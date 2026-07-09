@@ -59,7 +59,8 @@
               "$ref": "#/$defs/scalar"
             }
           }
-        }
+        },
+        "required": ["name", "type", "description"]
       }
     },
     "variables": {
@@ -99,7 +100,8 @@
             "$ref": "#/$defs/nonEmptyString",
             "description": "Variable-specific caveats, limitations, or warnings."
           }
-        }
+        },
+        "required": ["name", "description", "unit"]
       }
     }
   }

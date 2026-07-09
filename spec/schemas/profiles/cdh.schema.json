@@ -4,6 +4,9 @@
   "title": "CDH Profile",
   "description": "CDH policy schema: the core composed with all CDH-maintained extensions, requiring the cdh extension on every Hub record. Applied as the policy layer (validate-yaml --profile) on top of the per-record mechanism check (core + declared extensions only), and bound by editors via the yaml-language-server modeline for autocomplete. A single-file bundled copy is published alongside as cdh.schema.bundled.json.",
   "$defs": {
+    "cdhProfileUrl": {
+      "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json"
+    },
     "cdhExtensionUrl": {
       "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json"
     },
@@ -78,7 +81,13 @@
       "then": { "$ref": "#/$defs/declaresAgricultureExtension" }
     }
   ],
-  "required": ["cdh", "extensions"],
+  "required": ["$schema", "cdh", "extensions"],
+  "patternProperties": {
+    "^\\$schema$": {
+      "description": "Canonical CDH profile schema URL for this metadata record.",
+      "$ref": "#/$defs/cdhProfileUrl"
+    }
+  },
   "properties": {
     "extensions": {
       "contains": {

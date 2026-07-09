@@ -15,8 +15,11 @@ needs. Typical cases:
 - Spatial vector assets, spatial/temporal tabular assets
 - APIs for access to geospatial data
 
-This mapping applies to records routed to STAC: a `dataset` with a spatial footprint (see
-`standard.md` section 4.1). Routing is inferred, not author-set.
+This mapping applies to records routed to STAC: a `dataset` with spatial data structure or a spatial
+footprint (see `standard.md` section 5.3). `spatial.structure` is the clearest author signal for
+spatial data routing; technical spatial fields such as `bbox`, `crs`, `resolution`, and
+`geometry_column` also route a record to STAC. `spatial.geography` alone is a place facet and does
+not make a record spatial data.
 
 ## 2. STAC Extensions
 
@@ -88,6 +91,7 @@ STAC implies resource type through object type and asset media types. CDH also e
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `spatial.bbox`                     | `extent.spatial.bbox` (Collection); `bbox` (Item)                                                                                                    |
 | `spatial.geography[]`              | `cgiar-cdh:geography` array                                                                                                                          |
+| `spatial.structure`                | `cgiar-cdh:spatial_structure`                                                                                                                        |
 | `spatial.crs`                      | Projection Extension: `proj:code` (preferred) or `proj:epsg`                                                                                         |
 | `spatial.geometry_column`          | Table Extension `table:primary_geometry`                                                                                                             |
 | `spatial.resolution[]`             | Grid entries (`xy`, `x`, `y`) map to `cube:dimensions[].step` (+ `unit`/`reference_system`); all entries also emit as `cgiar-cdh:spatial_resolution` |
@@ -149,8 +153,8 @@ The `cdh.*`, `climate.*`, and `commodities` fields in the input record are encod
 commodity JSON lookup.
 
 Faceted fields such as `scenarios` and `models` live in Collection `summaries` when they apply
-across Items. `mip_era`, `baseline`, `bias_adjustment`, `downscaling`, `use_cases`, and
-`not_recommended_for` are Collection-level `cgiar-cdh:*` fields.
+across Items. `mip_era`, `baseline`, `bias_adjustment`, `downscaling`, and `not_recommended_for` are
+Collection-level `cgiar-cdh:*` fields.
 
 When a faceted value is also a data axis, emit it in both places: discovery fields and
 `cube:dimensions`.

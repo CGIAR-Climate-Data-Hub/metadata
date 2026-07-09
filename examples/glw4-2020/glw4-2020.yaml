@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=../../spec/schemas/profiles/cdh.schema.json
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
 cdh_schema_version: "v0.2.0"
 
 extensions:
@@ -64,6 +65,7 @@ created: "2026-06-23"
 updated: "2026-06-23"
 
 spatial:
+  structure: grid
   bbox: [-180.0, -90.0, 180.0, 90.0]
   geography: [world]
   crs: EPSG:4326
@@ -94,9 +96,6 @@ variables:
     unit: "{head}/km-1"
 
 cdh:
-  use_cases:
-    - livestock exposure to hazards
-    - comparing livestock densities across systems or regions
   not_recommended_for:
     - use: exact livestock counts
       reason: values are spatially modeled estimates derived from census and other data

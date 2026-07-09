@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=../../spec/schemas/profiles/cdh.schema.json
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
 cdh_schema_version: "v0.2.0"
 extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
@@ -68,6 +69,7 @@ created: "2026-07-06"
 updated: "2026-07-06"
 
 spatial:
+  structure: grid
   bbox: [-180, -90, 180, 90]
   geography:
     - world
@@ -168,9 +170,6 @@ variables:
 
 cdh:
   domain: [agricultural-production]
-  use_cases:
-    - proposal preparation
-    - adaptation planning
   not_recommended_for:
     - use: field-scale farm management
       reason: the grid is too coarse for field-scale operational decisions.

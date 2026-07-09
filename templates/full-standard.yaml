@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=../spec/schemas/profiles/cdh.schema.json
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
 cdh_schema_version: "v0.1.0"
 
 # Extensions this record uses (pinned schema URLs).
@@ -16,7 +17,7 @@ description: >
   ""
 license: ""
 access: public # optional - one of: public | restricted | non-public; omit = public
-# Resource type - one of: dataset | document | tool | ai-skill
+# Resource type - one of: dataset | document | software | service | ai-skill
 resource_type: ""
 
 #   keywords:
@@ -31,7 +32,7 @@ note: > # Optional
 # Contact Metadata (required). At least one contact MUST list licensor in roles.
 contact:
   - name: "" # optional when organization is present; required for person-level contacts
-    roles: [licensor] # any of: licensor | producer | processor | point-of-contact
+    roles: [licensor] # any of: licensor | producer | processor | point-of-contact | custodian
     email: ""
     organization: "" # required when name is present; may be used on its own
     url: ""
@@ -73,6 +74,7 @@ funding:
 
 # Spatial (conditional - if data has a spatial aspect/will be in STAC)
 spatial:
+  structure: "" # one of: grid | geometry | indexed; omit for place-tagged-only records
   bbox: [] # [xmin, ymin, xmax, ymax]; or [[...], [...]] for multiple boxes
   geography: [] # vocab/geography.json ids (UN M49), e.g. [world] or [kenya, uganda]
   crs: ""
@@ -125,7 +127,6 @@ classes: # conditional, if classification scheme exists - must map to a listed v
 
 # Additional fields for searching and filtering
 cdh:
-  use_cases: []
   not_recommended_for:
     - use: ""
       reason: ""

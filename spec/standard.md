@@ -78,8 +78,11 @@ CDH metadata is a generic core plus optional extensions. Validation has two laye
   five CDH-maintained extensions: `cdh`, `climate`, `datacube`, `classification`, and `agriculture`
   (section 5.5).
 
-Templates bind the CDH profile for editor hints. A bundled copy (`cdh.schema.bundled.json`) is
-published for validators that need a single schema file.
+Records may declare their validation schema in the top-level `$schema` field. The core schema
+accepts any schema URI and does not require a profile-specific value. Profiles can make `$schema`
+required and constrain it to their own canonical schema URL. The CDH templates do this for the CDH
+profile and also bind the same profile for editor hints. A bundled copy (`cdh.schema.bundled.json`)
+is published for validators that need a single schema file.
 
 To carry metadata the standard does not yet cover:
 
@@ -166,7 +169,20 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 (section 5.5, declared in `extensions[]`). For each field: **Requirement**, **Definition**,
 **Expected value**, **Rules**, **Vocabulary** where applicable, and **Example**.
 
-### 5.1 Core
+### 5.1 Record and core fields
+
+#### `$schema`
+
+- **Requirement:** Optional in the core schema; required by the CDH profile.
+- **Definition:** The canonical JSON Schema URL for validating this metadata record.
+- **Expected value:**
+  - Core-only records: any profile or schema URI, when present.
+  - CDH profile records:
+    `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json`
+- **Rules:**
+  - Use this to make the record self-describing for validators, editors, and AI-assisted tooling.
+  - This identifies the validation schema or profile. Continue using `extensions[]` for the
+    extension schemas the record uses.
 
 #### `cdh_schema_version`
 
@@ -232,14 +248,15 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 
 - **Requirement:** Required
 - **Definition:** Legal terms under which the resource may be used.
-- **Expected value:** SPDX identifier preferred; recognized license name or clear custom statement
-  otherwise.
+- **Expected value:** Valid SPDX license expression.
 - **Vocabulary:** [SPDX License List](https://spdx.org/licenses/).
 - **Rules:**
-  - Prefer SPDX identifiers.
+  - Use SPDX identifiers and expressions such as `CC-BY-4.0`, `CC0-1.0`, or `CC-BY-4.0 OR CC0-1.0`.
+  - Custom licenses must use an SPDX `LicenseRef-*` expression and include an `additional_links[]`
+    entry with `rel: license` and a URL for the license terms.
   - Data must be licensed to be included in the Hub.
   - Access restrictions are separate from license (see `access`).
-- **Examples:** `CC-BY-4.0`, `CC0-1.0`, `MIT`.
+- **Examples:** `CC-BY-4.0`, `CC0-1.0`, `MIT`, `LicenseRef-CGIAR-Restricted`.
 
 #### `access`
 
@@ -345,9 +362,11 @@ keywords:
 
 - **Requirement:** Required. At least one contact MUST list `licensor` in `roles`.
 - **Expected value:** List of objects with `name`, `roles`, `email`, `organization`, `url`.
-- **Vocabulary for `roles`:** `licensor`, `producer`, `processor`, and `point-of-contact`. The first
-  three are STAC provider roles; `point-of-contact` maps to the Contacts extension instead. `roles`
-  is an array, so one contact may hold several (e.g., `[producer, licensor]`).
+- **Vocabulary for `roles`:** `licensor`, `producer`, `processor`, `point-of-contact`, and
+  `custodian`. The first three are STAC provider roles; `point-of-contact` and `custodian` map to
+  the Contacts extension instead. A `custodian` is the party accountable for the resource and its
+  metadata - typically the person who authored or submitted the record and maintains it. `roles` is
+  an array, so one contact may hold several (e.g., `[producer, licensor]`).
 - **Rules:**
   - Must identify at least one responsible party.
   - Must identify at least one licensing party by including `licensor` in `roles`.
@@ -390,9 +409,30 @@ keywords:
 
 ### 5.3 Spatial
 
-Required when the resource has a geospatial footprint. `spatial.geography` (named places) applies to
-any resource for broad discovery; `bbox`, `crs`, `resolution`, and `geometry_column` describe a
-precise footprint.
+Required when the resource has a geospatial footprint. `spatial.structure` identifies spatial data
+records for routing and display. `spatial.geography` (named places) applies to any resource for
+broad discovery; `bbox`, `crs`, `resolution`, and `geometry_column` describe a precise footprint.
+
+#### `spatial.structure`
+
+- **Requirement:** Conditional. Required when the record describes spatial data; omit for
+  non-spatial resources and records that are only tagged with named geographies.
+- **Definition:** How the resource's values are spatially structured.
+- **Expected value:** One of:
+  - `grid` - values are represented on a regular grid, raster, or multidimensional array.
+  - `geometry` - the primary data asset contains embedded geometries, such as a geometry column or
+    geospatial vector format.
+  - `indexed` - values are keyed to external spatial features or locations, such as administrative
+    unit codes or station identifiers.
+- **Rules:**
+  - Do not use `structure` for file format or preview type; use `data[].media_type` for asset
+    encoding.
+  - `spatial.geography` alone is a place facet and does not require `structure`.
+  - `structure: grid` should be paired with grid resolution (`xy`, `x`, or `y`) when known.
+  - `structure: geometry` should be paired with `geometry_column` or a geospatial vector media type
+    when the asset is inspectable.
+  - `structure: indexed` should be paired with a spatial dimension or
+    `resolution[].reference_system` that identifies the external spatial units or locations.
 
 #### `spatial.bbox`
 
@@ -519,13 +559,13 @@ Each extension is documented alongside its schema (linked below); all are option
 extension, which the CDH profile requires (`cdh.domain`). Encode values you filter or facet on in
 these extension fields, not in `keywords` (see section 4.5).
 
-| Extension                                             | Fields                                                   | Applies to                            |
-| ----------------------------------------------------- | -------------------------------------------------------- | ------------------------------------- |
-| [CDH](extensions/cdh/README.md)                       | `cdh.domain`, `cdh.use_cases`, `cdh.not_recommended_for` | all records (required by the profile) |
-| [Climate](extensions/climate/README.md)               | `climate.*` - scenarios, models, baseline, downscaling   | climate / CMIP / adaptation           |
-| [Datacube](extensions/datacube/README.md)             | `dimensions[]`, `variables[]`                            | gridded / multidimensional / tabular  |
-| [Classification](extensions/classification/README.md) | `classes[]`                                              | categorical / classified data         |
-| [Agriculture](extensions/agriculture/README.md)       | `commodities[]`                                          | agriculture / food-systems / crops    |
+| Extension                                             | Fields                                                 | Applies to                            |
+| ----------------------------------------------------- | ------------------------------------------------------ | ------------------------------------- |
+| [CDH](extensions/cdh/README.md)                       | `cdh.domain`, `cdh.not_recommended_for`                | all records (required by the profile) |
+| [Climate](extensions/climate/README.md)               | `climate.*` - scenarios, models, baseline, downscaling | climate / CMIP / adaptation           |
+| [Datacube](extensions/datacube/README.md)             | `dimensions[]`, `variables[]`                          | gridded / multidimensional / tabular  |
+| [Classification](extensions/classification/README.md) | `classes[]`                                            | categorical / classified data         |
+| [Agriculture](extensions/agriculture/README.md)       | `commodities[]`                                        | agriculture / food-systems / crops    |
 
 ### 5.6 Processing and Provenance
 
@@ -604,6 +644,7 @@ these extension fields, not in `keywords` (see section 4.5).
 | ----------------------------------------------- | ----------------------------------------- | -------------------- |
 | `self`, `root`, `parent`, `child`, `collection` | Catalog navigation                        | IANA / STAC / OGC    |
 | `cite-as`                                       | Preferred citation target (DOI)           | IANA                 |
+| `license`                                       | License terms for the resource            | IANA / STAC          |
 | `describedby` / `describes`                     | Documentation, schema, code list          | IANA                 |
 | `about`                                         | Project or explanatory page               | IANA                 |
 | `via`                                           | Intermediate source                       | IANA                 |
@@ -629,7 +670,7 @@ these extension fields, not in `keywords` (see section 4.5).
 | `spatial.geography`                                           | `vocab/geography.json` (UN M49; regions + countries)                                                                                                                     |
 | `variables[].unit`, grid `spatial.resolution[].unit`          | Unit of measurement, preferably UDUNITS-2 or UCUM (not strictly validated); non-grid spatial units may use clear labels such as `admin-level`                            |
 | `variables[].name` (climate)                                  | CF Standard Names (where practical)                                                                                                                                      |
-| `contact[].roles[]`                                           | `licensor`, `producer`, `processor` (STAC provider roles), `point-of-contact` (Contacts extension)                                                                       |
+| `contact[].roles[]`                                           | `licensor`, `producer`, `processor` (STAC provider roles), `point-of-contact`, `custodian` (Contacts extension)                                                          |
 | `media_type`                                                  | IANA media types                                                                                                                                                         |
 | `resource_type`                                               | `vocab/resource_type.json`                                                                                                                                               |
 | `cdh.domain`                                                  | `vocab/domain.json` (CDH closed set)                                                                                                                                     |

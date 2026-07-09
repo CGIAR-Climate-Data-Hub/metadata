@@ -70,7 +70,7 @@
           "description": "Roles this contact holds (one or more).",
           "type": "array",
           "items": {
-            "enum": ["licensor", "producer", "processor", "point-of-contact"]
+            "enum": ["licensor", "producer", "processor", "point-of-contact", "custodian"]
           },
           "uniqueItems": true
         },
@@ -262,6 +262,7 @@
           "$ref": "#/$defs/nonEmptyString"
         }
       },
+      "required": ["rel", "url"],
       "type": "object"
     },
     "location": {
@@ -446,6 +447,24 @@
       },
       "type": "object"
     },
+    "spatialStructure": {
+      "description": "How the resource's values are spatially structured. Omit for non-spatial resources and records that are only tagged with named geographies.",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "grid",
+          "description": "Values are represented on a regular grid, raster, or multidimensional array."
+        },
+        {
+          "const": "geometry",
+          "description": "The primary data asset contains embedded geometries, such as a geometry column or geospatial vector format."
+        },
+        {
+          "const": "indexed",
+          "description": "Values are keyed to external spatial features or locations, such as administrative unit codes or station identifiers."
+        }
+      ]
+    },
     "spatial": {
       "additionalProperties": false,
       "properties": {
@@ -488,6 +507,9 @@
             "$ref": "#/$defs/spatialResolution"
           },
           "type": "array"
+        },
+        "structure": {
+          "$ref": "#/$defs/spatialStructure"
         }
       },
       "type": "object"
@@ -548,6 +570,13 @@
     }
   },
   "description": "JSON Schema for validating CDH metadata input YAML records before serialization to STAC or OGC API Records. This validates structure, types, controlled values, and basic input rules; CDH review still handles contextual and curatorial checks.",
+  "patternProperties": {
+    "^\\$schema$": {
+      "description": "Canonical JSON Schema URL for validating this metadata record.",
+      "format": "uri",
+      "type": "string"
+    }
+  },
   "properties": {
     "access": {
       "description": "Access condition for the resource's data, distinct from license. Omitting it means public. Aligned to the DCAT / EU accessRights vocabulary: public (openly accessible); restricted (discoverable, but obtaining the data requires a request or authentication); non-public (catalogued but not available through public channels).",
@@ -678,8 +707,8 @@
     },
     "license": {
       "type": "string",
-      "description": "License of the data. SPDX identifier preferred.",
-      "examples": ["CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0"],
+      "description": "License of the data as an SPDX license expression. Custom LicenseRef-* expressions must be accompanied by an additional_links[] entry with rel: license.",
+      "examples": ["CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0", "CC-BY-4.0 OR CC0-1.0"],
       "minLength": 1
     },
     "note": {

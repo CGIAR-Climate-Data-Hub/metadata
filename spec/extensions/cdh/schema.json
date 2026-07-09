@@ -19,14 +19,6 @@
             "$ref": "../../schemas/vocab/domain.schema.json"
           }
         },
-        "use_cases": {
-          "description": "Short statements of what the data is well suited for.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
         "not_recommended_for": {
           "description": "Uses to avoid, each with a reason and optional alternative.",
           "type": "array",

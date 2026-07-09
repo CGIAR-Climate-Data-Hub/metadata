@@ -4,9 +4,10 @@ This guide is to help in filling out metadata records: what to write first, what
 detail is needed.
 
 The formal standard is `standard.md`. Fillable YAML starting points live in `../templates/`; each
-template binds YAML-aware editors to the CDH profile (`schemas/profiles/cdh.schema.json` = the core
-plus all CDH extensions) for autocomplete and field hints. However, other profiels can be used with
-some modifications.
+CDH template declares the CDH profile in `$schema` and binds YAML-aware editors to the same profile
+(`schemas/profiles/cdh.schema.json` = the core plus all CDH extensions) for autocomplete and field
+hints. Other profiles should declare their own profile schema URL; core-only records may omit
+profile-specific fields.
 
 ## The Short Version
 
@@ -50,6 +51,8 @@ A useful record answers:
 Use this as the first pass.
 
 ```yaml
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
+cdh_schema_version: "v0.1.0"
 id: ""
 title: ""
 description: ""
@@ -171,7 +174,9 @@ Plain-string keywords stay full-text-only. Both forms can be mixed in the same l
 
 These make the record reusable and citable.
 
-Prefer SPDX license identifiers such as `CC-BY-4.0`, `CC0-1.0`, or `MIT`.
+Use an SPDX license expression such as `CC-BY-4.0`, `CC0-1.0`, `MIT`, or `CC-BY-4.0 OR CC0-1.0`. For
+a custom license, use `LicenseRef-*` and add an `additional_links[]` entry with `rel: license` and a
+URL for the license terms.
 
 For `contact`, use either an organization contact or a person contact. Every record must include at
 least one contact with `licensor` in `roles`; that contact is the licensing party for the resource.
@@ -196,8 +201,10 @@ contact:
 ```
 
 If `name` is used, include `organization` too. `organization` on its own is OK. Roles: `licensor`,
-`producer`, `processor` (STAC provider roles), or `point-of-contact` (a contact point, mapped to the
-Contacts extension). `roles` is an array, so one contact may hold several.
+`producer`, `processor` (STAC provider roles), `point-of-contact` (a contact point), or `custodian`
+(the party accountable for the resource and its metadata - typically whoever authored or submitted
+the record and maintains it); the latter two map to the Contacts extension. `roles` is an array, so
+one contact may hold several.
 
 For `citation`, provide structured fields - `authors` and `date` (required), plus optional `title`,
 `publisher`, and `url`. You may omit `citation` when a `doi` is provided.
@@ -270,8 +277,9 @@ Some of these are extension fields - `climate`, `commodities`, `classes`, and
 the ones that apply. `spatial`, `temporal`, `processing`, and the asset fields are core and always
 available.
 
-For a third-party extension, add its pinned schema URL to `extensions[]` and bind a profile schema
-for editor hints. See `standard.md` section 4.3 and [`extending.md`](extending.md).
+For a third-party extension, add its pinned schema URL to `extensions[]`. If the record uses a
+profile, set `$schema` to that profile's canonical schema URL and bind it for editor hints. See
+`standard.md` section 4.3 and [`extending.md`](extending.md).
 
 ### Spatial
 
@@ -281,9 +289,33 @@ Common fields:
 
 - `spatial.bbox`
 - `spatial.geography`
+- `spatial.structure`
 - `spatial.crs`
 - `spatial.geometry_column`
 - `spatial.resolution`
+
+Use `spatial.structure` when the record describes spatial data. Omit it for non-spatial records and
+records that are only tagged with named places through `spatial.geography`.
+
+```yaml
+spatial:
+  structure: grid
+  geography: [world]
+```
+
+```yaml
+spatial:
+  structure: indexed
+  geography: [kenya]
+  resolution:
+    - type: polygon
+      label: Counties
+      reference_system: GAUL ADM2
+```
+
+Use `structure: grid` for gridded, raster, or multidimensional array data; `structure: geometry`
+when the asset contains geometries; and `structure: indexed` when rows are keyed to external spatial
+features or locations. File formats still belong in `data[].media_type`.
 
 `spatial.bbox` is a single bounding box, or a list of bounding boxes, in WGS84 (EPSG:4326).
 
@@ -332,6 +364,7 @@ regular grids, use `type: xy` when x/y spacing is the same:
 
 ```yaml
 spatial:
+  structure: grid
   resolution:
     - type: xy
       value: 0.08333333333333333
@@ -344,6 +377,7 @@ For polygon reporting units such as counties or watersheds:
 
 ```yaml
 spatial:
+  structure: indexed
   resolution:
     - type: polygon
       value: 2
@@ -516,7 +550,7 @@ Avoid inventing new fields. If the template has no place for something, use `add
 3. Add `variables`, and include units and reading guidance.
 4. Add `dimensions` or `classes` only if they are needed to understand values.
 5. Add `processing` for derived products.
-6. Add climate, commodity, and use-case fields when they improve discovery.
+6. Add climate and commodity fields when they improve discovery.
 7. Add sidecars or extra links for long supporting detail.
 8. Review the record using the checklist in `standard.md`.
 
@@ -536,6 +570,7 @@ Before publishing, check:
 ### Required for every record
 
 - [ ] `cdh_schema_version`
+- [ ] `$schema`
 - [ ] `id`, `title`, `description`
 - [ ] `created`, `updated` (filled in at publication if omitted)
 - [ ] `resource_type`

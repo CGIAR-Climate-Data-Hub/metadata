@@ -1,6 +1,6 @@
 # CDH Extension
 
-CGIAR Climate Data Hub governance: domain classification and use guidance.
+CGIAR Climate Data Hub governance: domain classification and use limitations.
 
 - **Applies to:** all CDH records - the CDH profile requires this extension.
 - **Declared in:** `extensions[]`.
@@ -17,11 +17,6 @@ CGIAR Climate Data Hub governance: domain classification and use guidance.
   - Encoded as `cgiar-cdh:domain` (STAC) / `properties["cgiar-cdh:domain"]` (OGC Records).
   - Also expanded into `themes` under the CDH domain scheme.
 
-## `cdh.use_cases[]`
-
-- **Requirement:** Optional
-- **Vocabulary:** Free-form text for now. May migrate to a controlled vocabulary as needed.
-
 ## `cdh.not_recommended_for[]`
 
 - **Requirement:** Optional
@@ -34,9 +29,6 @@ extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
 cdh:
   domain: [agricultural-production] # primary first; rest are secondary
-  use_cases:
-    - proposal preparation
-    - adaptation planning
   not_recommended_for:
     - use: field-scale farm management
       reason: The grid is too coarse for field-scale operational decisions.

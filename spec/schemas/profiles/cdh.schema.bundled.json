@@ -6,15 +6,18 @@
   "allOf": [
     {
       "description": "JSON Schema for validating CDH metadata input YAML records before serialization to STAC or OGC API Records. This validates structure, types, controlled values, and basic input rules; CDH review still handles contextual and curatorial checks.",
+      "patternProperties": {
+        "^\\$schema$": {
+          "description": "Canonical JSON Schema URL for validating this metadata record.",
+          "format": "uri",
+          "type": "string"
+        }
+      },
       "properties": {
         "access": {
           "description": "Access condition for the resource's data, distinct from license. Omitting it means public. Aligned to the DCAT / EU accessRights vocabulary: public (openly accessible); restricted (discoverable, but obtaining the data requires a request or authentication); non-public (catalogued but not available through public channels).",
           "default": "public",
-          "enum": [
-            "public",
-            "restricted",
-            "non-public"
-          ]
+          "enum": ["public", "restricted", "non-public"]
         },
         "additional_assets": {
           "description": "Sidecar or auxiliary assets, e.g. metadata files or thumbnails.",
@@ -53,9 +56,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "url"
-                  ],
+                  "required": ["url"],
                   "type": "object"
                 },
                 "minItems": 1,
@@ -91,10 +92,7 @@
                 "uniqueItems": true
               }
             },
-            "required": [
-              "name",
-              "locations"
-            ],
+            "required": ["name", "locations"],
             "type": "object"
           },
           "type": "array"
@@ -122,6 +120,7 @@
                 "type": "string"
               }
             },
+            "required": ["rel", "url"],
             "type": "object"
           },
           "type": "array"
@@ -153,10 +152,7 @@
               "minLength": 1,
               "type": "string",
               "description": "Publication date or year, e.g. 2024 or 2024-07-15.",
-              "examples": [
-                "2024",
-                "2024-07-15"
-              ]
+              "examples": ["2024", "2024-07-15"]
             },
             "publisher": {
               "minLength": 1,
@@ -168,10 +164,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "authors",
-            "date"
-          ],
+          "required": ["authors", "date"],
           "type": "object"
         },
         "contact": {
@@ -194,12 +187,7 @@
                 "description": "Roles this contact holds (one or more).",
                 "type": "array",
                 "items": {
-                  "enum": [
-                    "licensor",
-                    "producer",
-                    "processor",
-                    "point-of-contact"
-                  ]
+                  "enum": ["licensor", "producer", "processor", "point-of-contact", "custodian"]
                 },
                 "uniqueItems": true
               },
@@ -208,10 +196,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "roles",
-              "organization"
-            ],
+            "required": ["roles", "organization"],
             "type": "object"
           },
           "minItems": 1,
@@ -224,18 +209,13 @@
                 }
               }
             },
-            "required": [
-              "roles"
-            ]
+            "required": ["roles"]
           },
           "type": "array"
         },
         "created": {
           "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-          "examples": [
-            "2026-06-23",
-            "2026-06-23T00:00:00Z"
-          ],
+          "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
           "anyOf": [
             {
               "format": "date",
@@ -284,9 +264,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "url"
-                  ],
+                  "required": ["url"],
                   "type": "object"
                 },
                 "minItems": 1,
@@ -315,9 +293,7 @@
               "href_template": {
                 "type": "string",
                 "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name or be the reserved {variable} token, which expands over variables[].name (requires the datacube extension); the entry expands to one item per combination of the tokens' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
-                "examples": [
-                  "mapspam_{crop}_{technology}_{variable}.tif"
-                ],
+                "examples": ["mapspam_{crop}_{technology}_{variable}.tif"],
                 "minLength": 1
               },
               "nodata": {
@@ -341,10 +317,7 @@
                 "type": "array"
               }
             },
-            "required": [
-              "name",
-              "locations"
-            ],
+            "required": ["name", "locations"],
             "type": "object"
           },
           "minItems": 1,
@@ -363,9 +336,7 @@
           "description": "Bare DOI (not a URL).",
           "type": "string",
           "pattern": "^10\\.\\d{2,}(\\.\\d+)*/\\S+$",
-          "examples": [
-            "10.7910/DVN/SWPENT"
-          ]
+          "examples": ["10.7910/DVN/SWPENT"]
         },
         "extensions": {
           "description": "Pinned URLs of the CDH extension schemas this record uses.",
@@ -412,9 +383,7 @@
               {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [
-                  "term"
-                ],
+                "required": ["term"],
                 "properties": {
                   "term": {
                     "type": "string",
@@ -442,12 +411,8 @@
         },
         "license": {
           "type": "string",
-          "description": "License of the data. SPDX identifier preferred.",
-          "examples": [
-            "CC-BY-4.0",
-            "CC-BY-SA-4.0",
-            "CC0-1.0"
-          ],
+          "description": "License of the data as an SPDX license expression. Custom LicenseRef-* expressions must be accompanied by an additional_links[] entry with rel: license.",
+          "examples": ["CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0", "CC-BY-4.0 OR CC0-1.0"],
           "minLength": 1
         },
         "note": {
@@ -468,9 +433,7 @@
                 "const": "source"
               }
             },
-            "required": [
-              "id"
-            ],
+            "required": ["id"],
             "type": "object"
           },
           "items": {
@@ -495,10 +458,7 @@
               },
               "date": {
                 "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-                "examples": [
-                  "2026-06-23",
-                  "2026-06-23T00:00:00Z"
-                ],
+                "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
                 "anyOf": [
                   {
                     "format": "date",
@@ -571,10 +531,7 @@
                     "minLength": 1,
                     "type": "string",
                     "description": "Publication date or year, e.g. 2024 or 2024-07-15.",
-                    "examples": [
-                      "2024",
-                      "2024-07-15"
-                    ]
+                    "examples": ["2024", "2024-07-15"]
                   },
                   "publisher": {
                     "minLength": 1,
@@ -586,19 +543,14 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "authors",
-                  "date"
-                ],
+                "required": ["authors", "date"],
                 "type": "object"
               },
               "doi": {
                 "description": "Bare DOI (not a URL).",
                 "type": "string",
                 "pattern": "^10\\.\\d{2,}(\\.\\d+)*/\\S+$",
-                "examples": [
-                  "10.7910/DVN/SWPENT"
-                ]
+                "examples": ["10.7910/DVN/SWPENT"]
               }
             },
             "type": "object"
@@ -609,13 +561,7 @@
           "description": "Kind of resource the record describes (vocab/resource_type.json).",
           "title": "CDH Resource Type Vocabulary",
           "type": "string",
-          "enum": [
-            "dataset",
-            "software",
-            "service",
-            "ai-skill",
-            "document"
-          ]
+          "enum": ["dataset", "software", "service", "ai-skill", "document"]
         },
         "spatial": {
           "additionalProperties": false,
@@ -762,30 +708,13 @@
                   "minItems": 1
                 }
               ],
-              "examples": [
-                [
-                  -180,
-                  -90,
-                  180,
-                  90
-                ],
-                [
-                  [
-                    -180,
-                    -90,
-                    180,
-                    90
-                  ]
-                ]
-              ]
+              "examples": [[-180, -90, 180, 90], [[-180, -90, 180, 90]]]
             },
             "crs": {
               "minLength": 1,
               "type": "string",
               "description": "Coordinate reference system of the data: EPSG code, CRS URI, or PROJ string.",
-              "examples": [
-                "EPSG:4326"
-              ]
+              "examples": ["EPSG:4326"]
             },
             "geography": {
               "description": "Named places for discovery (vocab/geography.json ids, UN M49).",
@@ -1104,13 +1033,7 @@
                   },
                   "type": {
                     "description": "Resolution type: xy (regular grid), x, y, point, or polygon.",
-                    "enum": [
-                      "xy",
-                      "x",
-                      "y",
-                      "point",
-                      "polygon"
-                    ]
+                    "enum": ["xy", "x", "y", "point", "polygon"]
                   },
                   "unit": {
                     "minLength": 1,
@@ -1133,6 +1056,24 @@
                 "type": "object"
               },
               "type": "array"
+            },
+            "structure": {
+              "description": "How the resource's values are spatially structured. Omit for non-spatial resources and records that are only tagged with named geographies.",
+              "type": "string",
+              "oneOf": [
+                {
+                  "const": "grid",
+                  "description": "Values are represented on a regular grid, raster, or multidimensional array."
+                },
+                {
+                  "const": "geometry",
+                  "description": "The primary data asset contains embedded geometries, such as a geometry column or geospatial vector format."
+                },
+                {
+                  "const": "indexed",
+                  "description": "Values are keyed to external spatial features or locations, such as administrative unit codes or station identifiers."
+                }
+              ]
             }
           },
           "type": "object"
@@ -1141,17 +1082,12 @@
           "additionalProperties": false,
           "properties": {
             "end_date": {
-              "examples": [
-                "2020-01-01"
-              ],
+              "examples": ["2020-01-01"],
               "description": "A date, or null for an open-ended interval.",
               "anyOf": [
                 {
                   "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-                  "examples": [
-                    "2026-06-23",
-                    "2026-06-23T00:00:00Z"
-                  ],
+                  "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
                   "anyOf": [
                     {
                       "format": "date",
@@ -1180,10 +1116,7 @@
                   "minLength": 1,
                   "type": "string",
                   "description": "ISO 8601 duration of one step.",
-                  "examples": [
-                    "P1D",
-                    "P1M"
-                  ]
+                  "examples": ["P1D", "P1M"]
                 },
                 "unit": {
                   "minLength": 1,
@@ -1212,17 +1145,12 @@
               "type": "object"
             },
             "start_date": {
-              "examples": [
-                "2020-01-01"
-              ],
+              "examples": ["2020-01-01"],
               "description": "A date, or null for an open-ended interval.",
               "anyOf": [
                 {
                   "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-                  "examples": [
-                    "2026-06-23",
-                    "2026-06-23T00:00:00Z"
-                  ],
+                  "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
                   "anyOf": [
                     {
                       "format": "date",
@@ -1249,10 +1177,7 @@
         },
         "updated": {
           "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-          "examples": [
-            "2026-06-23",
-            "2026-06-23T00:00:00Z"
-          ],
+          "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
           "anyOf": [
             {
               "format": "date",
@@ -1268,10 +1193,7 @@
           "minLength": 1,
           "type": "string",
           "description": "Version of the resource, when versioned.",
-          "examples": [
-            "v1.0",
-            "2.0-release-2"
-          ]
+          "examples": ["v1.0", "2.0-release-2"]
         }
       },
       "required": [
@@ -1287,9 +1209,7 @@
       ],
       "anyOf": [
         {
-          "required": [
-            "citation"
-          ]
+          "required": ["citation"]
         },
         {
           "properties": {
@@ -1298,9 +1218,7 @@
               "minLength": 1
             }
           },
-          "required": [
-            "doi"
-          ]
+          "required": ["doi"]
         }
       ],
       "title": "Climate Data Hub Metadata Input Schema",
@@ -1314,9 +1232,7 @@
         "cdh": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "domain"
-          ],
+          "required": ["domain"],
           "properties": {
             "domain": {
               "description": "CDH domain(s); closed vocabulary (vocab/domain.json). Drives catalog browse and filtering.",
@@ -1336,14 +1252,6 @@
                   "mitigation",
                   "socioeconomic"
                 ]
-              }
-            },
-            "use_cases": {
-              "description": "Short statements of what the data is well suited for.",
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
               }
             },
             "not_recommended_for": {
@@ -1391,10 +1299,7 @@
               "properties": {
                 "start_date": {
                   "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-                  "examples": [
-                    "2026-06-23",
-                    "2026-06-23T00:00:00Z"
-                  ],
+                  "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
                   "anyOf": [
                     {
                       "format": "date",
@@ -1408,10 +1313,7 @@
                 },
                 "end_date": {
                   "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
-                  "examples": [
-                    "2026-06-23",
-                    "2026-06-23T00:00:00Z"
-                  ],
+                  "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
                   "anyOf": [
                     {
                       "format": "date",
@@ -1468,10 +1370,7 @@
             },
             "mip_era": {
               "description": "CMIP era of the source models.",
-              "enum": [
-                "CMIP5",
-                "CMIP6"
-              ]
+              "enum": ["CMIP5", "CMIP6"]
             },
             "models": {
               "description": "Climate model source IDs; use 'ensemble' for a multi-model ensemble.",
@@ -1548,7 +1447,8 @@
                   ]
                 }
               }
-            }
+            },
+            "required": ["name", "type", "description"]
           }
         },
         "variables": {
@@ -1582,10 +1482,7 @@
               },
               "unit": {
                 "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM.",
-                "examples": [
-                  "t ha-1",
-                  "{head}/km2"
-                ],
+                "examples": ["t ha-1", "{head}/km2"],
                 "minLength": 1,
                 "type": "string"
               },
@@ -1594,7 +1491,8 @@
                 "minLength": 1,
                 "type": "string"
               }
-            }
+            },
+            "required": ["name", "description", "unit"]
           }
         }
       }
@@ -1736,14 +1634,10 @@
     },
     {
       "if": {
-        "required": [
-          "climate"
-        ]
+        "required": ["climate"]
       },
       "then": {
-        "required": [
-          "extensions"
-        ],
+        "required": ["extensions"],
         "properties": {
           "extensions": {
             "contains": {
@@ -1757,21 +1651,15 @@
       "if": {
         "anyOf": [
           {
-            "required": [
-              "dimensions"
-            ]
+            "required": ["dimensions"]
           },
           {
-            "required": [
-              "variables"
-            ]
+            "required": ["variables"]
           }
         ]
       },
       "then": {
-        "required": [
-          "extensions"
-        ],
+        "required": ["extensions"],
         "properties": {
           "extensions": {
             "contains": {
@@ -1783,14 +1671,10 @@
     },
     {
       "if": {
-        "required": [
-          "classes"
-        ]
+        "required": ["classes"]
       },
       "then": {
-        "required": [
-          "extensions"
-        ],
+        "required": ["extensions"],
         "properties": {
           "extensions": {
             "contains": {
@@ -1802,14 +1686,10 @@
     },
     {
       "if": {
-        "required": [
-          "commodities"
-        ]
+        "required": ["commodities"]
       },
       "then": {
-        "required": [
-          "extensions"
-        ],
+        "required": ["extensions"],
         "properties": {
           "extensions": {
             "contains": {
@@ -1820,10 +1700,13 @@
       }
     }
   ],
-  "required": [
-    "cdh",
-    "extensions"
-  ],
+  "required": ["$schema", "cdh", "extensions"],
+  "patternProperties": {
+    "^\\$schema$": {
+      "description": "Canonical CDH profile schema URL for this metadata record.",
+      "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json"
+    }
+  },
   "properties": {
     "extensions": {
       "contains": {

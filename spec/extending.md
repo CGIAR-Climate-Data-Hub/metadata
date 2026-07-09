@@ -59,10 +59,12 @@ schema is enough:
 }
 ```
 
-Add `required` / `contains` constraints for your own rules. Bind the profile in YAML editors:
+Add `required` / `contains` constraints for your own rules. Declare the profile in records and bind
+it in YAML editors:
 
 ```yaml
 # yaml-language-server: $schema=https://<you>.github.io/<repo>/v1.0.0/profiles/mine.schema.json
+"$schema": https://<you>.github.io/<repo>/v1.0.0/profiles/mine.schema.json
 ```
 
 ## 4. Validate

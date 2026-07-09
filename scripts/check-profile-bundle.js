@@ -23,6 +23,8 @@ const EXTENSIONS = {
 };
 
 const base = {
+  $schema:
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json",
   cdh_schema_version: "v0.1.0",
   extensions: [EXTENSIONS.cdh],
   id: "fixture-record",
@@ -46,7 +48,15 @@ const cases = [
   {
     name: "datacube",
     extension: EXTENSIONS.datacube,
-    field: { dimensions: [{ name: "crop" }] },
+    field: {
+      dimensions: [
+        {
+          name: "crop",
+          type: "crop",
+          description: "Crop code axis.",
+        },
+      ],
+    },
   },
   {
     name: "classification",
