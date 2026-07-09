@@ -25,6 +25,7 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
+            "required": ["use", "reason"],
             "properties": {
               "reason": {
                 "type": "string",
