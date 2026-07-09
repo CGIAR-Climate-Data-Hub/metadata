@@ -30,6 +30,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 
 import yaml from "js-yaml";
+import validateSpdxExpression from "spdx-expression-validate";
 
 import { loadAllSchemas, newAjv, rel, ROOT } from "./_ajv.js";
 
@@ -207,6 +208,21 @@ const RESERVED_SCHEME_PREFIX =
   "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/vocab/";
 function checkCrossFieldRules(doc) {
   const out = [];
+  if (typeof doc?.license === "string") {
+    if (!validateSpdxExpression(doc.license)) {
+      out.push(`/license: must be a valid SPDX license expression`);
+    }
+    if (/\bLicenseRef-[A-Za-z0-9.-]+\b/.test(doc.license)) {
+      const hasLicenseLink = list(doc?.additional_links).some(
+        (link) => link?.rel === "license" && typeof link?.url === "string" && link.url.length > 0,
+      );
+      if (!hasLicenseLink) {
+        out.push(
+          `/license: custom LicenseRef-* expressions require an additional_links[] entry with rel: license and url`,
+        );
+      }
+    }
+  }
   const dims = new Map(list(doc?.dimensions).map((d) => [d?.name, list(d?.values).length]));
   const namedVariables = list(doc?.variables).filter((v) => typeof v?.name === "string").length;
   list(doc?.data).forEach((asset, i) => {
