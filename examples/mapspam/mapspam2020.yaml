@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../spec/schemas/profiles/cdh.schema.json
 "$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
-cdh_schema_version: "v0.2.0"
+cdh_schema_version: "v0.1.0"
 extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/climate/schema.json
@@ -69,7 +69,6 @@ created: "2026-07-06"
 updated: "2026-07-06"
 
 spatial:
-  structure: grid
   bbox: [-180, -90, 180, 90]
   geography:
     - world

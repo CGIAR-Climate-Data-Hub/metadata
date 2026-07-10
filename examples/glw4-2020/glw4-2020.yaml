@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../spec/schemas/profiles/cdh.schema.json
 "$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
-cdh_schema_version: "v0.2.0"
+cdh_schema_version: "v0.1.0"
 
 extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
@@ -46,7 +46,7 @@ contact:
     email: giuseppina.cinardi@fao.org
     organization: Food and Agriculture Organization of the United Nations
   - name: Brayden Youngberg
-    roles: [processor, point-of-contact]
+    roles: [processor, custodian]
     email: b.youngberg@cgiar.org
     organization: The Alliance of Bioversity International and CIAT
 
@@ -65,7 +65,6 @@ created: "2026-06-23"
 updated: "2026-06-23"
 
 spatial:
-  structure: grid
   bbox: [-180.0, -90.0, 180.0, 90.0]
   geography: [world]
   crs: EPSG:4326
