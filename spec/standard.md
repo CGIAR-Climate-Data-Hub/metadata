@@ -422,30 +422,9 @@ keywords:
 
 ### 5.3 Spatial
 
-Required when the resource has a geospatial footprint. `spatial.structure` identifies spatial data
-records for routing and display. `spatial.geography` (named places) applies to any resource for
-broad discovery; `bbox`, `crs`, `resolution`, and `geometry_column` describe a precise footprint.
-
-#### `spatial.structure`
-
-- **Requirement:** Conditional. Required when the record describes spatial data; omit for
-  non-spatial resources and records that are only tagged with named geographies.
-- **Definition:** How the resource's values are spatially structured.
-- **Expected value:** One of:
-  - `grid` - values are represented on a regular grid, raster, or multidimensional array.
-  - `geometry` - the primary data asset contains embedded geometries, such as a geometry column or
-    geospatial vector format.
-  - `indexed` - values are keyed to external spatial features or locations, such as administrative
-    unit codes or station identifiers.
-- **Rules:**
-  - Do not use `structure` for file format or preview type; use `data[].media_type` for asset
-    encoding.
-  - `spatial.geography` alone is a place facet and does not require `structure`.
-  - `structure: grid` should be paired with grid resolution (`xy`, `x`, or `y`) when known.
-  - `structure: geometry` should be paired with `geometry_column` or a geospatial vector media type
-    when the asset is inspectable.
-  - `structure: indexed` should be paired with a spatial dimension or
-    `resolution[].reference_system` that identifies the external spatial units or locations.
+Required when the resource has a geospatial footprint. `spatial.geography` (named places) applies to
+any resource for broad discovery; `bbox`, `crs`, `resolution`, and `geometry_column` describe a
+precise footprint.
 
 #### `spatial.bbox`
 

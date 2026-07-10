@@ -1061,24 +1061,6 @@
                 "type": "object"
               },
               "type": "array"
-            },
-            "structure": {
-              "description": "How the resource's values are spatially structured. Omit for non-spatial resources and records that are only tagged with named geographies.",
-              "type": "string",
-              "oneOf": [
-                {
-                  "const": "grid",
-                  "description": "Values are represented on a regular grid, raster, or multidimensional array."
-                },
-                {
-                  "const": "geometry",
-                  "description": "The primary data asset contains embedded geometries, such as a geometry column or geospatial vector format."
-                },
-                {
-                  "const": "indexed",
-                  "description": "Values are keyed to external spatial features or locations, such as administrative unit codes or station identifiers."
-                }
-              ]
             }
           },
           "type": "object"

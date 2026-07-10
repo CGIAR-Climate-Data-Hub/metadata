@@ -77,9 +77,9 @@ terms are used where available, e.g. `access` -> `dct:accessRights`.
 
 ### 4.2 Spatial / Temporal (when applicable)
 
-OGC Records is the non-spatial CDH path. Records with `spatial.structure`, geospatial extent, CRS,
-spatial resolution, or embedded geometry-column metadata route to STAC. OGC Records may still carry
-named geography labels and temporal metadata for discovery.
+OGC Records is the non-spatial CDH path. Records with geospatial extent, CRS, spatial resolution, or
+embedded geometry-column metadata route to STAC. OGC Records may still carry named geography labels
+and temporal metadata for discovery.
 
 | CDH                                | recordJSON placement                                                                                                                                                                       |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -87,8 +87,8 @@ named geography labels and temporal metadata for discovery.
 | `temporal.start_date` / `end_date` | `time` (interval form `{ interval: [start, end] }` per recordJSON)                                                                                                                         |
 | `temporal.resolution`              | `properties["cgiar-cdh:temporal_resolution"]`                                                                                                                                              |
 
-The CDH OGC Records profile does not emit `spatial.structure`, `spatial.bbox`, `spatial.crs`,
-`spatial.geometry_column`, or `spatial.resolution[]`; those records route to STAC.
+The CDH OGC Records profile does not emit `spatial.bbox`, `spatial.crs`, `spatial.geometry_column`,
+or `spatial.resolution[]`; those records route to STAC.
 
 ### 4.3 Data fields
 

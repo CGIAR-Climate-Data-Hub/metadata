@@ -15,11 +15,10 @@ needs. Typical cases:
 - Spatial vector assets, spatial/temporal tabular assets
 - APIs for access to geospatial data
 
-This mapping applies to records routed to STAC: a `dataset` with spatial data structure or a spatial
-footprint (see `standard.md` section 5.3). `spatial.structure` is the clearest author signal for
-spatial data routing; technical spatial fields such as `bbox`, `crs`, `resolution`, and
-`geometry_column` also route a record to STAC. `spatial.geography` alone is a place facet and does
-not make a record spatial data.
+This mapping applies to records routed to STAC: a `dataset` with a spatial footprint (see
+`standard.md` section 5.3). Technical spatial fields such as `bbox`, `crs`, `resolution`, and
+`geometry_column` route a record to STAC. `spatial.geography` alone is a place facet and does not
+make a record spatial data.
 
 ## 2. STAC Extensions
 
@@ -92,7 +91,6 @@ STAC implies resource type through object type and asset media types. CDH also e
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `spatial.bbox`                     | `extent.spatial.bbox` (Collection); `bbox` (Item)                                                                                                    |
 | `spatial.geography[]`              | `cgiar-cdh:geography` array                                                                                                                          |
-| `spatial.structure`                | `cgiar-cdh:spatial_structure`                                                                                                                        |
 | `spatial.crs`                      | Projection Extension: `proj:code` (preferred) or `proj:epsg`                                                                                         |
 | `spatial.geometry_column`          | Table Extension `table:primary_geometry`                                                                                                             |
 | `spatial.resolution[]`             | Grid entries (`xy`, `x`, `y`) map to `cube:dimensions[].step` (+ `unit`/`reference_system`); all entries also emit as `cgiar-cdh:spatial_resolution` |

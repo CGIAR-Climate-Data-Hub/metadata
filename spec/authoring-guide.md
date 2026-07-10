@@ -293,33 +293,9 @@ Common fields:
 
 - `spatial.bbox`
 - `spatial.geography`
-- `spatial.structure`
 - `spatial.crs`
 - `spatial.geometry_column`
 - `spatial.resolution`
-
-Use `spatial.structure` when the record describes spatial data. Omit it for non-spatial records and
-records that are only tagged with named places through `spatial.geography`.
-
-```yaml
-spatial:
-  structure: grid
-  geography: [world]
-```
-
-```yaml
-spatial:
-  structure: indexed
-  geography: [kenya]
-  resolution:
-    - type: polygon
-      label: Counties
-      reference_system: GAUL ADM2
-```
-
-Use `structure: grid` for gridded, raster, or multidimensional array data; `structure: geometry`
-when the asset contains geometries; and `structure: indexed` when rows are keyed to external spatial
-features or locations. File formats still belong in `data[].media_type`.
 
 `spatial.bbox` is a single bounding box, or a list of bounding boxes, in WGS84 (EPSG:4326).
 
@@ -368,7 +344,6 @@ regular grids, use `type: xy` when x/y spacing is the same:
 
 ```yaml
 spatial:
-  structure: grid
   resolution:
     - type: xy
       value: 0.08333333333333333
@@ -381,7 +356,6 @@ For polygon reporting units such as counties or watersheds:
 
 ```yaml
 spatial:
-  structure: indexed
   resolution:
     - type: polygon
       value: 2
