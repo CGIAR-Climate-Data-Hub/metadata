@@ -40,6 +40,13 @@ const { version } = JSON.parse(await readFile(resolve(ROOT, "package.json"), "ut
 const BASE = `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v${version}`;
 const CORE_ID = `${BASE}/schemas/core.schema.json`;
 
+// Matches CDH-hosted, version-tagged schema URLs; captures the version segment.
+// Records keep the URLs of the release they target, so declared URLs are
+// resolved against this checkout's schemas regardless of version.
+const CDH_VERSIONED_URL =
+  /^(https:\/\/cgiar-climate-data-hub\.github\.io\/cdh-metadata-standard)\/(v\d+\.\d+\.\d+)\//;
+const toCurrentVersion = (url) => url.replace(CDH_VERSIONED_URL, `$1/v${version}/`);
+
 const YAML_EXTS = [".yaml", ".yml"];
 const list = (v) => (Array.isArray(v) ? v : []);
 
@@ -194,7 +201,12 @@ function mechanismFor(validator, doc) {
   const unknown = [];
   for (const url of declared) {
     if (typeof url !== "string") continue;
-    (validator.getSchema(url) ? known : unknown).push(url);
+    const resolved = toCurrentVersion(url);
+    if (validator.getSchema(resolved)) {
+      known.push(resolved);
+    } else {
+      unknown.push(url);
+    }
   }
   const schema = {
     allOf: [{ $ref: CORE_ID }, ...known.map((url) => ({ $ref: url }))],
@@ -208,6 +220,21 @@ const RESERVED_SCHEME_PREFIX =
   "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/vocab/";
 function checkCrossFieldRules(doc) {
   const out = [];
+  if (typeof doc?.cdh_schema_version === "string") {
+    const refs = [
+      ["$schema", doc?.["$schema"]],
+      ...list(doc?.extensions).map((url, i) => [`extensions/${i}`, url]),
+    ];
+    for (const [path, url] of refs) {
+      if (typeof url !== "string") continue;
+      const urlVersion = url.match(CDH_VERSIONED_URL)?.[2];
+      if (urlVersion && urlVersion !== doc.cdh_schema_version) {
+        out.push(
+          `/${path}: URL targets ${urlVersion} but cdh_schema_version is ${doc.cdh_schema_version} - a record must reference one release throughout`,
+        );
+      }
+    }
+  }
   if (typeof doc?.license === "string") {
     if (!validateSpdxExpression(doc.license)) {
       out.push(`/license: must be a valid SPDX license expression`);
