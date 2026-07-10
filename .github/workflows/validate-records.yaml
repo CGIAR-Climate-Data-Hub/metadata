@@ -7,7 +7,7 @@ name: Validate CDH records
 #
 #   jobs:
 #     validate:
-#       uses: CGIAR-Climate-Data-Hub/metadata/.github/workflows/validate-records.yaml@main
+#       uses: CGIAR-Climate-Data-Hub/cdh-metadata-standard/.github/workflows/validate-records.yaml@main
 #       with:
 #         path: ./metadata-records          # directory or file to validate
 #         extra-schemas: ./my-extensions    # optional: your own extension schemas
@@ -44,7 +44,7 @@ on:
            from a fork of this repo (set it to the fork's own github.repository)
            so the fork's CI tests its own changes instead of upstream.
         required: false
-        default: CGIAR-Climate-Data-Hub/metadata
+        default: CGIAR-Climate-Data-Hub/cdh-metadata-standard
         type: string
       extra-schemas:
         description: |
