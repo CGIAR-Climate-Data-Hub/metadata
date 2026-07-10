@@ -37,6 +37,10 @@ occur between minor versions.
 
 ### Changed
 
+- The `service` resource type now maps to schema.org `Service` (a core type) instead of `WebAPI` (a
+  pending type with weaker consumer support), matching the concept's broad scope.
+- added a $schema field to allow persistent schema and versioning across tooling/conversion between
+  formats.
 - **Breaking:** schemas now reject blank strings, empty required arrays, and stray `null`s. Omit
   unknown values instead; `null` only remains for open-ended temporal intervals.
 - **Breaking:** every `contact[]` entry must include `organization`.
@@ -55,6 +59,12 @@ occur between minor versions.
   the latest release.
 - Unquoted ISO dates in YAML now work because the validator parses YAML 1.2 core values as strings.
 - Formatting and linting moved to Prettier and markdownlint.
+
+### Removed
+
+- **Breaking:** removed the `ai-skill` resource type; AI skills are no longer catalogued as Hub
+  records, and its schema.org mapping (`SoftwareApplication`) was a stretch. Remaining values are
+  `dataset`, `software`, `service`, and `document`.
 
 ### Fixed
 
