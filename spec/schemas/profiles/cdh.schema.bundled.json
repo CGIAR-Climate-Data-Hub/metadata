@@ -566,7 +566,7 @@
           "description": "Kind of resource the record describes (vocab/resource_type.json).",
           "title": "CDH Resource Type Vocabulary",
           "type": "string",
-          "enum": ["dataset", "software", "service", "ai-skill", "document"]
+          "enum": ["dataset", "software", "service", "document"]
         },
         "spatial": {
           "additionalProperties": false,
@@ -1644,7 +1644,8 @@
         "properties": {
           "extensions": {
             "contains": {
-              "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/climate/schema.json"
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/climate/schema\\.json$"
             }
           }
         }
@@ -1666,7 +1667,8 @@
         "properties": {
           "extensions": {
             "contains": {
-              "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/datacube/schema.json"
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/datacube/schema\\.json$"
             }
           }
         }
@@ -1681,7 +1683,8 @@
         "properties": {
           "extensions": {
             "contains": {
-              "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/classification/schema.json"
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/classification/schema\\.json$"
             }
           }
         }
@@ -1696,7 +1699,8 @@
         "properties": {
           "extensions": {
             "contains": {
-              "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/agriculture/schema.json"
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/agriculture/schema\\.json$"
             }
           }
         }
@@ -1706,14 +1710,16 @@
   "required": ["$schema", "cdh", "extensions"],
   "patternProperties": {
     "^\\$schema$": {
-      "description": "Canonical CDH profile schema URL for this metadata record.",
-      "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json"
+      "description": "CDH profile schema URL for any released version; its version segment must match cdh_schema_version (checked by validate-yaml).",
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/schemas/profiles/cdh\\.schema\\.json$"
     }
   },
   "properties": {
     "extensions": {
       "contains": {
-        "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json"
+        "type": "string",
+        "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/cdh/schema\\.json$"
       }
     }
   },

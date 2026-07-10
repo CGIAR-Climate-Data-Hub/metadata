@@ -9,7 +9,7 @@ projects and programs. It is intend to map to commonly used community formats, n
 
 - **STAC** - for geospatial data. See [`mapping-stac.md`](./mapping-stac.md).
 - **OGC API Records** (recordJSON) - for everything else: non-spatial datasets, documents, software,
-  services, AI skills. See [`mapping-ogc-records.md`](./mapping-ogc-records.md).
+  services. See [`mapping-ogc-records.md`](./mapping-ogc-records.md).
 
 For the field-level mapping to both formats, see [`crosswalk.md`](./crosswalk.md). Fillable YAML
 templates live in [`templates/`](../templates/), including
@@ -80,9 +80,11 @@ CDH metadata is a generic core plus optional extensions. Validation has two laye
 
 Records may declare their validation schema in the top-level `$schema` field. The core schema
 accepts any schema URI and does not require a profile-specific value. Profiles can make `$schema`
-required and constrain it to their own canonical schema URL. The CDH templates do this for the CDH
-profile and also bind the same profile for editor hints. A bundled copy (`cdh.schema.bundled.json`)
-is published for validators that need a single schema file.
+required and constrain it to their own canonical schema URL. The CDH profile accepts its schema URL
+for any released version - the record's `cdh_schema_version` names the release it targets - so
+existing records stay valid when a new version is released. The CDH templates set `$schema` and also
+bind the same profile for editor hints. A bundled copy (`cdh.schema.bundled.json`) is published for
+validators that need a single schema file.
 
 To carry metadata the standard does not yet cover:
 
@@ -177,9 +179,13 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 - **Definition:** The canonical JSON Schema URL for validating this metadata record.
 - **Expected value:**
   - Core-only records: any profile or schema URI, when present.
-  - CDH profile records:
-    `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json`
+  - CDH profile records: the CDH profile schema URL for the release the record targets, e.g.
+    `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json`.
+    Any released version is accepted; the version segment must match `cdh_schema_version`.
 - **Rules:**
+  - The version segment of every CDH-hosted schema URL in the record (`$schema` and `extensions[]`)
+    must match `cdh_schema_version`, so a record references one release throughout. Validators
+    enforce this as a cross-field rule.
   - Use this to make the record self-describing for validators, editors, and AI-assisted tooling.
   - This identifies the validation schema or profile. Continue using `extensions[]` for the
     extension schemas the record uses.
@@ -291,7 +297,7 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 - **Requirement:** Required
 - **Definition:** Kind of resource the record describes.
 - **Vocabulary:** Closed set defined in `vocab/resource_type.json`. Initial values are `dataset`,
-  `software`, `service`, `ai-skill`, and `document`.
+  `software`, `service`, and `document`.
 - **Rules:**
   - Should not replace asset media types.
 

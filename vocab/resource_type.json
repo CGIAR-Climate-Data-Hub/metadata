@@ -29,15 +29,8 @@
       "id": "service",
       "label": "Service",
       "description": "A hosted, network-accessed endpoint rather than a downloadable artifact - e.g., an API, web/OGC service, or online data catalog.",
-      "code": "WebAPI",
-      "uri": "https://schema.org/WebAPI"
-    },
-    {
-      "id": "ai-skill",
-      "label": "AI skill",
-      "description": "Reusable AI-agent skill, prompt package, workflow capability, or assistant extension intended to perform a defined task. schema.org has no dedicated AI-skill type; SoftwareApplication is the closest.",
-      "code": "SoftwareApplication",
-      "uri": "https://schema.org/SoftwareApplication"
+      "code": "Service",
+      "uri": "https://schema.org/Service"
     },
     {
       "id": "document",
