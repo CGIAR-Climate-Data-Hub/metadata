@@ -18,7 +18,8 @@
     "check-format": "prettier --check .",
     "lint-md": "markdownlint-cli2",
     "bundle-profile": "node scripts/bundle-profile.js",
-    "check-invalid": "node scripts/validate-yaml.js --profile spec/schemas/profiles/cdh.schema.json --expect-fail tests/invalid"
+    "check-invalid": "node scripts/validate-yaml.js --profile spec/schemas/profiles/cdh.schema.json --expect-fail tests/invalid",
+    "version": "node scripts/sync-version.js && npm test"
   },
   "dependencies": {
     "ajv": "^8.17.1",
