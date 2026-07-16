@@ -74,6 +74,7 @@ terms are used where available, e.g. `access` -> `dct:accessRights`.
 | `deprecated`                | `properties["cgiar-cdh:deprecated"]`                                                                                                                                       |
 | `previous_version`          | `links[rel=predecessor-version]`                                                                                                                                           |
 | `funding[]`                 | `properties["cgiar-cdh:funding"]`                                                                                                                                          |
+| `series`                    | `properties["dcat:inSeries"]` (`{ name, url }`, DCAT 3 dataset series). Advertise DCAT 3 via `conformsTo`.                                                                 |
 
 ### 4.2 Spatial / Temporal (when applicable)
 
@@ -84,8 +85,7 @@ and temporal metadata for discovery.
 | CDH                                | recordJSON placement                                                                                                                                                                       |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `spatial.geography[]`              | `properties["dct:spatial"]` (GeoDCAT spatial coverage). The encoder resolves each `geography` id to its place IRI; advertise GeoDCAT via `conformsTo`. (STAC keeps `cgiar-cdh:geography`.) |
-| `temporal.start_date` / `end_date` | `time` (interval form `{ interval: [start, end] }` per recordJSON)                                                                                                                         |
-| `temporal.resolution`              | `properties["cgiar-cdh:temporal_resolution"]`                                                                                                                                              |
+| `temporal.start_date` / `end_date` | `time`: a single instant (`start_date` only), interval `{ interval: [start, end] }`, or open interval when `end_date: null`                                                                |
 
 The CDH OGC Records profile does not emit `spatial.bbox`, `spatial.crs`, `spatial.geometry_column`,
 or `spatial.resolution[]`; those records route to STAC.

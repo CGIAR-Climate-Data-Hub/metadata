@@ -76,6 +76,7 @@ Searchable structured facts MUST NOT live only in free text.
 | `deprecated`                | `deprecated` (Version Extension)                                                                                                                                                                                                      |
 | `previous_version`          | `links[rel=predecessor-version]`. The encoder derives the rest of the chain from the `previous_version` graph: superseded records get `links[rel=successor-version]` and `links[rel=latest-version]` (see `standard.md` section 4.7). |
 | `funding[]`                 | `cgiar-cdh:funding`                                                                                                                                                                                                                   |
+| `series`                    | `cgiar-cdh:series` (`{ name, url }`). `name` is the grouping key for series facets and listings.                                                                                                                                      |
 | `cdh.domain[]`              | `cgiar-cdh:domain` on the Collection; also expanded into Themes Extension `themes[]` under the CDH domain scheme. First entry drives sub-catalog placement.                                                                           |
 | `keywords[]` (linked items) | Each linked-keyword entry (`{ term, scheme, uri }`) is also emitted as a Themes Extension `themes[]` concept, grouped by `scheme`. Plain-string keywords are emitted only into STAC `keywords`.                                       |
 | Themes Extension `themes[]` | Encoder output only - populated from `cdh.domain`, `commodities`, and any linked-keyword entries. Not an author-facing input field.                                                                                                   |
@@ -87,15 +88,14 @@ STAC implies resource type through object type and asset media types. CDH also e
 
 ### 4.3 Spatial / Temporal
 
-| CDH                                | STAC placement                                                                                                                                       |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `spatial.bbox`                     | `extent.spatial.bbox` (Collection); `bbox` (Item)                                                                                                    |
-| `spatial.geography[]`              | `cgiar-cdh:geography` array                                                                                                                          |
-| `spatial.crs`                      | Projection Extension: `proj:code` (preferred) or `proj:epsg`                                                                                         |
-| `spatial.geometry_column`          | Table Extension `table:primary_geometry`                                                                                                             |
-| `spatial.resolution[]`             | Grid entries (`xy`, `x`, `y`) map to `cube:dimensions[].step` (+ `unit`/`reference_system`); all entries also emit as `cgiar-cdh:spatial_resolution` |
-| `temporal.start_date` / `end_date` | `extent.temporal.interval` (Collection); `cube:dimensions[time].extent`; `datetime` / `start_datetime` / `end_datetime` (Item);                      |
-| `temporal.resolution`              | `cube:dimensions[time]` for `step`, `values`, and `unit`                                                                                             |
+| CDH                                | STAC placement                                                                                                                                                    |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `spatial.bbox`                     | `extent.spatial.bbox` (Collection); `bbox` (Item)                                                                                                                 |
+| `spatial.geography[]`              | `cgiar-cdh:geography` array                                                                                                                                       |
+| `spatial.crs`                      | Projection Extension: `proj:code` (preferred) or `proj:epsg`                                                                                                      |
+| `spatial.geometry_column`          | Table Extension `table:primary_geometry`                                                                                                                          |
+| `spatial.resolution[]`             | Grid entries (`xy`, `x`, `y`) map to `cube:dimensions[].step` (+ `unit`/`reference_system`); all entries also emit as `cgiar-cdh:spatial_resolution`              |
+| `temporal.start_date` / `end_date` | `extent.temporal.interval` (Collection); Item `datetime` (instant, `start_date` only) or `start_datetime`/`end_datetime` (span); `end_date: null` = open interval |
 
 Resolution placement, in order of preference:
 
@@ -103,13 +103,11 @@ Resolution placement, in order of preference:
    expanded to the relevant `cube:dimensions[]` `step`, expressed in that dimension's native `unit`
    / `reference_system`. `type: xy` is an authoring shorthand and serializes as separate x and y
    dimensions.
-2. `temporal.resolution.step` maps to `cube:dimensions[time].step` when the data has a real time
-   axis.
-3. The Collection-level `cgiar-cdh:spatial_resolution` mirrors the input `spatial.resolution[]`
+2. The Collection-level `cgiar-cdh:spatial_resolution` mirrors the input `spatial.resolution[]`
    list. This is the format-independent value for labels, point/polygon reporting units, and
    non-metric spatial units.
-4. The Collection-level `cgiar-cdh:temporal_resolution` mirrors `temporal.resolution`
-   (`{ values, unit, step, note }`).
+3. Temporal cadence is not a resolution field: it comes from a `type: temporal` dimension's `step`
+   (see below), which maps to that `cube:dimensions[].step`.
 
 ### 4.4 Data fields, dimensions, variables
 
@@ -117,6 +115,12 @@ Array/grid data uses Datacube by default; tabular data uses Table.
 
 - `dimensions[]` -> `cube:dimensions`
 - `variables[]` -> `cube:variables`
+
+Each `dimensions[]` entry becomes a `cube:dimensions` member. A `type: temporal` dimension
+serializes as a temporal cube dimension, carrying its `step` (an ISO 8601 duration) as
+`cube:dimensions[].step`. STAC datacube permits several temporal dimensions, so a cube split by
+`period` and `season` emits one temporal dimension each, while the top-level `temporal` drives the
+Collection `extent.temporal`.
 
 For grid data, `spatial.resolution[]` derives `cube:dimensions[].step` with native units.
 

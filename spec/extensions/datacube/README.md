@@ -10,10 +10,18 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
 
 - **Requirement:** Conditional. Required for data cubes, tabular data with axes, or any dataset
   whose meaning depends on axes/codes.
-- **Expected value per dimension:** `{ name, type, description, values, reference_system }`.
+- **Expected value per dimension:** `{ name, type, description, values, reference_system, step }`.
 - **Rules:**
-  - `type` should be one of `spatial`, `temporal`, `bands`, or a domain-specific axis name (e.g.,
-    `crop`, `technology`, `scenario`).
+  - `type` is a domain axis name (e.g., `crop`, `technology`, `scenario`), `bands`, or `temporal`.
+  - **Do not declare the horizontal lat/lon grid here.** It comes from the top-level `spatial`
+    field, and encoders derive the `x`/`y` cube dimensions from it. `variables[].dimensions` may
+    still reference `lat`/`lon` even though they are not listed here.
+  - **Declare every temporal axis here** as `type: temporal` with a `step`. The top-level `temporal`
+    field carries only the coverage extent (start/end); all temporal cadence lives on these
+    dimensions. A cube may have several temporal axes (e.g. `season` within 20-year `period`s),
+    which STAC datacube permits.
+  - `step` is the spacing of one step, always an ISO 8601 duration (`P3M`, `P20Y`), and valid **only
+    on a `type: temporal` dimension**. It is the only cadence field a dimension carries.
   - `values` lists the allowed values along the dimension.
   - `reference_system` is a URI or label for a controlled vocabulary when one applies (e.g., the
     AGROVOC URI for a `crop` dimension).
@@ -57,4 +65,32 @@ variables:
     note: >
       Relative quantity; do not sum across cells. Use a weighted mean with harvested_area as the
       weight.
+```
+
+### Two temporal axes (seasons within projection periods)
+
+A cube split by 20-year projection `period` and by `season` has two temporal axes. Declare both as
+`type: temporal` dimensions with their own `step`; `temporal` carries only the overall extent.
+
+```yaml
+temporal:
+  start_date: "2020-01-01"
+  end_date: "2080-12-31"
+dimensions:
+  - name: period
+    type: temporal
+    description: 20-year projection window.
+    values: ["2020-2040", "2041-2060", "2061-2080"]
+    step: P20Y
+  - name: season
+    type: temporal
+    description: Meteorological season.
+    values: [DJF, MAM, JJA, SON]
+    step: P3M
+variables:
+  - name: tas
+    dimensions: [lat, lon, period, season]
+    description: Near-surface air temperature.
+    data_type: float32
+    unit: K
 ```

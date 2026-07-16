@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=../spec/schemas/profiles/cdh.schema.json
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
+cdh_schema_version: "v0.1.0"
+
+extensions:
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/datacube/schema.json
+
+id: ""
+title: ""
+description: >
+  ""
+license: ""
+access: public # optional - one of: public | restricted | non-public; omit = public
+access_note: > # required when access is restricted or non-public
+  ""
+resource_type: dataset
+keywords:
+  - ""
+
+contact:
+  - organization: ""
+    roles: [licensor]
+    email: ""
+    url: ""
+
+citation:
+  authors:
+    - ""
+  date: ""
+  publisher: ""
+
+spatial:
+  bbox: [] # [xmin, ymin, xmax, ymax]
+  geography: [] # vocab/geography.json ids, e.g. [world]
+  crs: "" # e.g. EPSG:4326
+  resolution:
+    - type: xy
+      value:
+      unit: "" # e.g. degree, m
+      label: ""
+      reference_system: ""
+
+temporal:
+  start_date: ""
+  end_date: ""
+
+dimensions:
+  - name: ""
+    type: "" # e.g. time, crop, scenario
+    description: ""
+    values: []
+    reference_system: ""
+    step: "" # ISO 8601 duration (e.g. P1M); temporal dimensions only
+
+variables:
+  - name: ""
+    dimensions: []
+    description: ""
+    data_type: ""
+    unit: ""
+    note: >
+      ""
+
+cdh:
+  domain: []
+  not_recommended_for:
+    - use: ""
+      reason: ""
+      use_instead: ""
+
+processing:
+  - id: source
+    description: ""
+    date: ""
+    derived_from:
+      - url: ""
+        title: ""
+
+data:
+  - name: ""
+    locations:
+      - url: ""
+        title: ""
+    # Optional when files are split by dimensions or variables.
+    # href_template: "name_{variable}.tif"
+    processing_steps: []
+    description: ""
+    nodata: ""
+    media_type: "" # e.g. application/vnd.zarr; version=3, image/tiff; application=geotiff; profile=cloud-optimized
+    file_size: ""

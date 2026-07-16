@@ -12,6 +12,14 @@ occur between minor versions.
 
 ### Added
 
+- Added `step` (ISO 8601 duration, valid only on a `type: temporal` dimension) to the datacube
+  extension. Temporal cadence is now expressed as `type: temporal` dimension(s) - one per temporal
+  axis, so a cube can carry several (e.g. `season` within 20-year `period`s). The lat/lon grid still
+  comes from `spatial` (derived, not declared; `variables[].dimensions` may reference `lat`/`lon`).
+- Added optional `series` (`{ name, url }`, `name` required) to group records by dataset series /
+  product family (e.g., MapSPAM, GLW), independent of the version chain. Maps to `cgiar-cdh:series`
+  in STAC and `dcat:inSeries` (DCAT 3) in OGC Records.
+
 - Added `access` so access conditions are separate from `license`. Values are `public`,
   `restricted`, and `non-public`; omitted means `public`.
 - Added resource versioning rules: when to update a record in place, snapshot a superseded release,
@@ -65,6 +73,10 @@ occur between minor versions.
 - **Breaking:** removed the `ai-skill` resource type; AI skills are no longer catalogued as Hub
   records, and its schema.org mapping (`SoftwareApplication`) was a stretch. Remaining values are
   `dataset`, `software`, `service`, and `document`.
+- **Breaking:** removed `temporal.resolution`. `temporal` is now the coverage **extent only**
+  (`start_date` / `end_date`): `start_date` alone is a single instant, both is a span, and
+  `end_date: null` is open-ended. Temporal cadence moves to a `type: temporal` dimension with an ISO
+  8601 `step`.
 
 ### Fixed
 

@@ -375,6 +375,18 @@ keywords:
   - `deprecated: true` marks a superseded snapshot. Snapshots are frozen and are surfaced only
     through the version chain, not catalog listings.
 
+#### `series`
+
+- **Requirement:** Optional
+- **Expected value:** `{ name, url }`; `name` is required.
+- **Rules:**
+  - Groups records that belong to one dataset series or product family (e.g., MapSPAM, GLW, Africa
+    Agriculture Adaptation Atlas), independent of the version chain.
+  - `name` is the grouping key: use the exact same spelling on every record in the series.
+  - `url` is the series landing page, when one exists.
+  - A series is not a version chain (section 4.7) and not provenance (`processing[].derived_from`).
+    A record derived from a series member belongs to its own series, if any.
+
 ### 5.2 Contact and Citation
 
 #### `contact[]`
@@ -529,26 +541,31 @@ spatial:
 
 ### 5.4 Temporal
 
-Required when the resource has temporal coverage.
+Required when the resource has temporal coverage. `temporal` records the coverage **extent only** -
+temporal cadence is not stored here (see "Temporal cadence" below).
 
 #### `temporal.start_date`, `temporal.end_date`
 
-- **Expected value:** ISO 8601 / RFC 3339 date or datetime. Use `null` for open-ended intervals.
-
-#### `temporal.resolution`
-
-- **Requirement:** Conditional. Required for time-series, forecast, projection, or
-  recurring-observation data.
-- **Expected value:** `{ values, unit, step, note }`.
+- **Expected value:** ISO 8601 / RFC 3339 date or datetime.
 - **Rules:**
-  - `values` lists named or easily interpretable temporal positions when useful (e.g.,
-    `[1, 2, ..., 12]` for months).
-  - `unit` is the author-facing time unit or label (e.g., `day`, `month`, `year`, `daily`,
-    `monthly`).
-  - `step` is the STAC Datacube-compatible step when known, preferably an ISO 8601 duration such as
-    `P1D`, `P1M`, or `P1Y`.
-  - `note` explains temporal interpretation or temporal aggregation, such as "daily data aggregated
-    to monthly using median".
+  - The pair encodes the shape of the coverage, mapping onto STAC's instant-vs-interval model:
+
+    | Meaning                     | Encoding                            | STAC                            |
+    | --------------------------- | ----------------------------------- | ------------------------------- |
+    | Reference point / snapshot  | `start_date` only (omit `end_date`) | `datetime` (instant)            |
+    | Covers a span               | `start_date` + `end_date`           | `start_datetime`/`end_datetime` |
+    | Ongoing / open-ended series | `start_date` + `end_date: null`     | open interval                   |
+
+  - A static reference year (e.g. a 2020 product) is a reference point: give `start_date` only, so
+    it reads as "represents 2020," not "covers the span of 2020."
+
+#### Temporal cadence
+
+Temporal cadence (daily, monthly, seasonal, projection periods, ...) is **not** a `temporal` field.
+Express it as a `type: temporal` dimension in the datacube extension, with an ISO 8601 `step` - one
+dimension per temporal axis, and a cube may have several (e.g. `season` within 20-year `period`s).
+This mirrors `spatial`: the horizontal grid comes from `spatial`, and every other axis - time and
+domain - is a `dimensions[]` entry. See the [datacube extension](extensions/datacube/README.md).
 
 ### 5.5 Extension fields
 

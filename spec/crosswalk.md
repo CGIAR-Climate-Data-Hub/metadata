@@ -34,6 +34,7 @@ field definitions, see `standard.md`; for encoding detail, see the mapping docs.
 | `previous_version`      | Conditional         | `links[rel=predecessor-version]`                                                                                                        | `links[rel=predecessor-version]`                                                                      |
 | version chain (derived) | Encoder output only | Superseded records get `links[rel=successor-version]` and `links[rel=latest-version]`                                                   | Same links on superseded records                                                                      |
 | `funding`               | Optional            | `cgiar-cdh:funding`                                                                                                                     | `properties["cgiar-cdh:funding"]`                                                                     |
+| `series`                | Optional            | `cgiar-cdh:series`                                                                                                                      | `properties["dcat:inSeries"]` (DCAT 3 dataset series)                                                 |
 
 ## Spatial / Temporal
 
@@ -44,8 +45,7 @@ field definitions, see `standard.md`; for encoding detail, see the mapping docs.
 | `spatial.crs`                      | Geospatial conditional         | Projection Extension `proj:code` / `proj:epsg`                                                                | N/A                                               |
 | `spatial.geometry_column`          | Vector conditional             | Table Extension `table:primary_geometry`                                                                      | N/A                                               |
 | `spatial.resolution[]`             | Spatial-unit conditional       | Grid entries map to Datacube `cube:dimensions[].step`; full list also emits as `cgiar-cdh:spatial_resolution` | N/A                                               |
-| `temporal.start_date` / `end_date` | STAC required; OGC conditional | Collection `extent.temporal.interval`; Item `datetime` etc.                                                   | `time` interval                                   |
-| `temporal.resolution`              | Temporal conditional           | `cube:dimensions[time].step` when applicable; also `cgiar-cdh:temporal_resolution`                            | `properties["cgiar-cdh:temporal_resolution"]`     |
+| `temporal.start_date` / `end_date` | STAC required; OGC conditional | `extent.temporal.interval`; Item `datetime` (instant) or `start_datetime`/`end_datetime` (span)               | `time` (instant or interval)                      |
 
 ## Data fields
 

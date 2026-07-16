@@ -10,6 +10,9 @@ extensions:
 id: spam2020
 title: MAPSPAM 2020
 version: v2r2
+series:
+  name: MapSPAM
+  url: https://mapspam.info
 description: >
   Global Spatially-Disaggregated Crop Production Statistics Data for 2020 Version 2.0 Release 2,
   represented as a gridded crop production data cube. The record describes crop area, harvested
@@ -80,12 +83,8 @@ spatial:
       label: 5 arc-minutes (~10km at equator)
 
 temporal:
+  # Static 2020 reference year: a single instant (start_date only), not year-long coverage.
   start_date: "2020-01-01"
-  end_date: "2020-12-31"
-  resolution:
-    unit: year
-    step: P1Y
-    note: Static data for 2020 reference year
 
 dimensions:
   - name: crop

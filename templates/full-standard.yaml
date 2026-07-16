@@ -69,6 +69,11 @@ related_publications: # optional
 version: ""
 previous_version: ""
 
+# Series (optional - dataset series / product family, e.g. MapSPAM, GLW)
+series:
+  name: ""
+  url: ""
+
 # Funding (optional)
 funding:
   - name: ""
@@ -88,15 +93,11 @@ spatial:
       reference_system: ""
       note: ""
 
-temporal: # Temporal (conditional - if data has a temporal aspect/will be in STAC)
+temporal: # Temporal coverage extent (conditional). Omit end_date for a single instant;
+  # set end_date: null for an open-ended series. Temporal cadence is NOT set here -
+  # add a type: temporal dimension (with an ISO 8601 step) below instead.
   start_date: ""
   end_date: ""
-  resolution:
-    values: [] # if named/easily interpretable - 1-12 for months, jan-feb-march, etc
-    unit: "" # unit of the data - e.g., daily
-    step: "" # ISO_8601#Durations (can be auto filled by cdh team)
-    note: > # i.e. time specific usage notes, the aggregation method, etc.
-      ""
 
 # Data fields/Attributes (required)
 dimensions:

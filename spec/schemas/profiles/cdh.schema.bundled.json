@@ -568,6 +568,22 @@
           "type": "string",
           "enum": ["dataset", "software", "service", "document"]
         },
+        "series": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "type": "object",
+          "description": "Dataset series / product family the resource belongs to (e.g., MapSPAM, GLW). `name` is the series label; `url` is the series landing page.",
+          "required": ["name"]
+        },
         "spatial": {
           "additionalProperties": false,
           "properties": {
@@ -1066,11 +1082,12 @@
           "type": "object"
         },
         "temporal": {
+          "description": "Coverage extent only. A single instant (start_date only), a closed span (start_date + end_date), or an open-ended series (start_date + end_date: null). Temporal cadence is not recorded here - declare a type: temporal dimension (datacube extension) instead.",
           "additionalProperties": false,
           "properties": {
             "end_date": {
-              "examples": ["2020-01-01"],
-              "description": "A date, or null for an open-ended interval.",
+              "description": "End of the coverage span. Omit for a single instant; set to null for an open-ended series.",
+              "examples": ["2020-12-31"],
               "anyOf": [
                 {
                   "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
@@ -1090,46 +1107,6 @@
                   "type": "null"
                 }
               ]
-            },
-            "resolution": {
-              "additionalProperties": false,
-              "properties": {
-                "note": {
-                  "minLength": 1,
-                  "type": "string",
-                  "description": "Time-specific interpretation note, e.g. the aggregation method."
-                },
-                "step": {
-                  "minLength": 1,
-                  "type": "string",
-                  "description": "ISO 8601 duration of one step.",
-                  "examples": ["P1D", "P1M"]
-                },
-                "unit": {
-                  "minLength": 1,
-                  "type": "string",
-                  "description": "Time unit of the data, e.g. daily or monthly."
-                },
-                "values": {
-                  "description": "Named or easily interpretable values, e.g. 1-12 for months.",
-                  "items": {
-                    "anyOf": [
-                      {
-                        "minLength": 1,
-                        "type": "string"
-                      },
-                      {
-                        "type": "number"
-                      },
-                      {
-                        "type": "boolean"
-                      }
-                    ]
-                  },
-                  "type": "array"
-                }
-              },
-              "type": "object"
             },
             "start_date": {
               "examples": ["2020-01-01"],
@@ -1403,7 +1380,7 @@
       "type": "object",
       "properties": {
         "dimensions": {
-          "description": "Cube axes, e.g. lat, lon, time, or a domain axis like crop.",
+          "description": "Cube axes: domain axes (e.g. crop, scenario), bands, and temporal axes (each type: temporal with a step). Not the lat/lon grid - that comes from the top-level spatial field; the top-level temporal field holds only the coverage extent.",
           "type": "array",
           "items": {
             "type": "object",
@@ -1424,7 +1401,7 @@
               },
               "type": {
                 "type": "string",
-                "description": "Dimension type: spatial, temporal, bands, or a domain axis (e.g. crop, scenario).",
+                "description": "Dimension type: a domain axis (e.g. crop, scenario), bands, or temporal. Declare every temporal axis here with a step; the top-level temporal field holds only the coverage extent. The lat/lon grid comes from the spatial field, not here.",
                 "minLength": 1
               },
               "reference_system": {
@@ -1449,9 +1426,24 @@
                     }
                   ]
                 }
+              },
+              "step": {
+                "type": "string",
+                "format": "duration",
+                "description": "Spacing of one step, as an ISO 8601 duration. Only valid on a type: temporal dimension.",
+                "examples": ["P3M", "P20Y"]
               }
             },
-            "required": ["name", "type", "description"]
+            "required": ["name", "type", "description"],
+            "dependentSchemas": {
+              "step": {
+                "properties": {
+                  "type": {
+                    "const": "temporal"
+                  }
+                }
+              }
+            }
           }
         },
         "variables": {

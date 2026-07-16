@@ -140,11 +140,12 @@ aliases, method names, acronyms, and user-facing terms that are not already capt
 
 Put these in structured fields instead:
 
-| If the term is a...                              | Put it in...        |
-| ------------------------------------------------ | ------------------- |
-| places, countries, regions, or named geographies | `spatial.geography` |
-| crop, livestock type, or commodity               | `commodities`       |
-| time period or temporal resolution               | `temporal.*`        |
+| If the term is a...                              | Put it in...                      |
+| ------------------------------------------------ | --------------------------------- |
+| places, countries, regions, or named geographies | `spatial.geography`               |
+| crop, livestock type, or commodity               | `commodities`                     |
+| time period (coverage extent)                    | `temporal.*`                      |
+| temporal cadence / step                          | `dimensions[]` (`type: temporal`) |
 
 ```yaml
 keywords:
@@ -374,21 +375,30 @@ Common fields:
 
 - `temporal.start_date`
 - `temporal.end_date`
-- `temporal.resolution`
 
-Use `temporal.resolution.step` for the machine-readable time step when known (ISO 8601 durations
-such as `P1D`, `P1M`, or `P1Y`). If not known, this will be added during CDH review. Use `values`
-for named or easily interpretable temporal positions.
+`temporal` is the coverage extent only. Give `start_date` alone for a single instant / reference
+point, `start_date` + `end_date` for a span, or `end_date: null` for an open-ended series.
 
 ```yaml
 temporal:
   start_date: "1981-01-01"
   end_date: "2020-12-31"
-  resolution:
-    values: []
-    unit: daily
+```
+
+Temporal cadence (daily, monthly, seasonal, projection periods) is not a `temporal` field. Declare a
+`type: temporal` dimension with an ISO 8601 `step` (see
+[Variables and dimensions](#variables-and-dimensions)). A cube may have several temporal axes (e.g.
+`season` within 20-year `period`s).
+
+```yaml
+temporal:
+  start_date: "1981-01-01"
+  end_date: "2020-12-31"
+dimensions:
+  - name: time
+    type: temporal
+    description: Daily time step.
     step: P1D
-    note: ""
 ```
 
 ### Variables and dimensions

@@ -493,52 +493,14 @@
       },
       "type": "object"
     },
-    "temporalResolution": {
-      "additionalProperties": false,
-      "properties": {
-        "note": {
-          "$ref": "#/$defs/nonEmptyString",
-          "description": "Time-specific interpretation note, e.g. the aggregation method."
-        },
-        "step": {
-          "$ref": "#/$defs/nonEmptyString",
-          "description": "ISO 8601 duration of one step.",
-          "examples": ["P1D", "P1M"]
-        },
-        "unit": {
-          "$ref": "#/$defs/nonEmptyString",
-          "description": "Time unit of the data, e.g. daily or monthly."
-        },
-        "values": {
-          "description": "Named or easily interpretable values, e.g. 1-12 for months.",
-          "items": {
-            "anyOf": [
-              {
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "number"
-              },
-              {
-                "type": "boolean"
-              }
-            ]
-          },
-          "type": "array"
-        }
-      },
-      "type": "object"
-    },
     "temporal": {
+      "description": "Coverage extent only. A single instant (start_date only), a closed span (start_date + end_date), or an open-ended series (start_date + end_date: null). Temporal cadence is not recorded here - declare a type: temporal dimension (datacube extension) instead.",
       "additionalProperties": false,
       "properties": {
         "end_date": {
           "$ref": "#/$defs/dateOrOpen",
-          "examples": ["2020-01-01"]
-        },
-        "resolution": {
-          "$ref": "#/$defs/temporalResolution"
+          "description": "End of the coverage span. Omit for a single instant; set to null for an open-ended series.",
+          "examples": ["2020-12-31"]
         },
         "start_date": {
           "$ref": "#/$defs/dateOrOpen",
@@ -729,6 +691,11 @@
     "resource_type": {
       "description": "Kind of resource the record describes (vocab/resource_type.json).",
       "$ref": "vocab/resource_type.schema.json"
+    },
+    "series": {
+      "description": "Dataset series / product family the resource belongs to (e.g., MapSPAM, GLW). `name` is the series label; `url` is the series landing page.",
+      "$ref": "#/$defs/nameUrl",
+      "required": ["name"]
     },
     "spatial": {
       "$ref": "#/$defs/spatial"

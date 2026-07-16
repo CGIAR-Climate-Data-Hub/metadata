@@ -9,6 +9,9 @@ extensions:
 
 id: glw4-2020
 title: Gridded livestock density for 2020 (GLW4)
+series:
+  name: Gridded Livestock of the World (GLW)
+  url: https://www.fao.org/livestock-systems/global-distributions/en/
 description: >
   Gridded Livestock of the World, version 4 (GLW 4) maps modelled densities of six livestock
   species: buffalo, cattle, sheep, goats, pigs, and chickens. This data is for the 2020 reference
@@ -75,12 +78,8 @@ spatial:
       label: 5 arc-minutes (~10km at equator)
 
 temporal:
+  # Static 2020 reference year: a single instant (start_date only), not year-long coverage.
   start_date: "2020-01-01"
-  end_date: "2020-12-31"
-  resolution:
-    unit: year
-    step: P1Y
-    note: Static data for 2020 reference year
 
 dimensions:
   - name: species
