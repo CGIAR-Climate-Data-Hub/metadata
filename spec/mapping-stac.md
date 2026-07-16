@@ -90,7 +90,7 @@ STAC implies resource type through object type and asset media types. CDH also e
 
 | CDH                                | STAC placement                                                                                                                                                    |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `spatial.bbox`                     | `extent.spatial.bbox` (Collection); `bbox` (Item)                                                                                                                 |
+| `spatial.bbox`                     | `extent.spatial.bbox` (Collection) - the encoder prepends the derived overall/union box as the first entry, then the authored boxes; `bbox` (Item)                |
 | `spatial.geography[]`              | `cgiar-cdh:geography` array                                                                                                                                       |
 | `spatial.crs`                      | Projection Extension: `proj:code` (preferred) or `proj:epsg`                                                                                                      |
 | `spatial.geometry_column`          | Table Extension `table:primary_geometry`                                                                                                                          |

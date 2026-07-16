@@ -588,7 +588,7 @@
           "additionalProperties": false,
           "properties": {
             "bbox": {
-              "description": "Spatial extent. A single bounding box, or an array of boxes when sub-regions are needed (the first is the overall extent; add more only when their union would otherwise leave a large uncovered area). 2D = [west, south, east, north] = [xmin, ymin, xmax, ymax]; 3D = [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
+              "description": "Spatial extent. A single bounding box, or a list of boxes for disjoint coverage - each box is a real area covered, in any order; the overall/union extent is derived when serializing, not authored. 2D = [west, south, east, north] = [xmin, ymin, xmax, ymax]; 3D = [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
               "oneOf": [
                 {
                   "description": "A single bounding box: 2D [west, south, east, north], or 3D [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",

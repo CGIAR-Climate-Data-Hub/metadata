@@ -454,9 +454,10 @@ precise footprint.
   - 3D: `[west, south, min_z, east, north, max_z]` (= `[xmin, ymin, zmin, xmax, ymax, zmax]`);
     elevation in metres.
 
-  Single-region datasets use a flat box, e.g. `[-180, -90, 180, 90]`. For sub-regions, pass a list
-  of boxes (`[[...], [...]]`) where the first is the overall extent. Add sub-boxes only when the
-  union would otherwise leave a large uncovered area.
+  Single-region datasets use a flat box, e.g. `[-180, -90, 180, 90]`. For **disjoint** coverage
+  (separate areas with a large gap between them), pass a list of boxes (`[[...], [...]]`), each a
+  real area covered, in any order. Do not author an overall/union box - the encoder derives it when
+  serializing (STAC, for example, wants the union as the first extent entry).
 
 - **Rules:**
   - Coordinates MUST be in WGS84 regardless of `spatial.crs` (which describes the underlying assets,
@@ -487,8 +488,7 @@ spatial:
 
 ```yaml
 spatial:
-  bbox:
-    - [-75.6, -55.9, 15.0, 55.1] # overall (Germany + Chile)
+  bbox: # disjoint coverage; no overall/union box - the encoder derives it
     - [5.9, 47.3, 15.0, 55.1] # Germany
     - [-75.6, -55.9, -66.4, -17.5] # Chile
 ```

@@ -304,8 +304,9 @@ Bounding box coordinate order is:
 - 2D: `[west, south, east, north]` = `[xmin, ymin, xmax, ymax]`
 - 3D: `[west, south, min_z, east, north, max_z]` (elevation in metres)
 
-Use a flat bounding box for one extent. For multiple bounding boxes, use a list and put the overall
-extent first. Add sub-boxes only when the union would otherwise leave a large uncovered area.
+Use a flat bounding box for one extent. Use a list only for **disjoint** coverage (separate areas
+with a large gap), listing each real area in any order. Do not author an overall/union box - the
+encoder derives it when serializing.
 
 When converting from common tools, watch the axis order. Here is a comparison across several tools +
 stac:

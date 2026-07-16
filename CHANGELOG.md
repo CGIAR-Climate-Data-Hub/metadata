@@ -45,6 +45,9 @@ occur between minor versions.
 
 ### Changed
 
+- `spatial.bbox` no longer requires a hand-authored overall/union box first. Provide a single box,
+  or a list of the real areas covered (in any order) for disjoint coverage; the encoder derives the
+  overall extent when serializing.
 - The `service` resource type now maps to schema.org `Service` (a core type) instead of `WebAPI` (a
   pending type with weaker consumer support), matching the concept's broad scope.
 - added a $schema field to allow persistent schema and versioning across tooling/conversion between
