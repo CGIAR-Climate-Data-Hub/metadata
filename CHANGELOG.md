@@ -16,6 +16,12 @@ occur between minor versions.
   extension. Temporal cadence is now expressed as `type: temporal` dimension(s) - one per temporal
   axis, so a cube can carry several (e.g. `season` within 20-year `period`s). The lat/lon grid still
   comes from `spatial` (derived, not declared; `variables[].dimensions` may reference `lat`/`lon`).
+- Added `joins[]` to the datacube extension so a table can join to other catalogued datasets - e.g.
+  a value table keyed to an external boundary set instead of embedding geometry. Each entry is
+  `{ target, left_fields, right_fields }`, pairing this record's key columns with the target's
+  positionally, so composite keys (`[adm0_code, adm2_code]`) and differing column names are handled.
+  `left_fields` are validated against declared `dimensions[]`/`variables[]` names, and the two field
+  arrays must be equal length. Value columns stay `variables[]`; key columns are `dimensions[]`.
 - Added optional `series` (`{ name, url }`, `name` required) to group records by dataset series /
   product family (e.g., MapSPAM, GLW), independent of the version chain. Maps to `cgiar-cdh:series`
   in STAC and `dcat:inSeries` (DCAT 3) in OGC Records.

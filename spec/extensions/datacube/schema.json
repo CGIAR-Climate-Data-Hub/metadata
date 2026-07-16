@@ -50,7 +50,7 @@
           },
           "reference_system": {
             "$ref": "#/$defs/nonEmptyString",
-            "description": "Controlled-vocabulary URI or label defining the dimension's values, when coded."
+            "description": "Vocabulary the dimension's values are coded against; prefer a resolvable URI when one exists (e.g. an AGROVOC concept scheme)."
           },
           "values": {
             "description": "Allowed values along the dimension.",
@@ -111,6 +111,40 @@
           }
         },
         "required": ["name", "description", "unit"]
+      }
+    },
+    "joins": {
+      "description": "Joins from this table to other catalogued datasets. Each entry pairs this record's key columns with the target's columns, positionally.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target", "left_fields", "right_fields"],
+        "properties": {
+          "target": {
+            "type": "string",
+            "format": "uri",
+            "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record)."
+          },
+          "left_fields": {
+            "description": "Key columns in this record; each must be a declared dimensions[]/variables[] name.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "right_fields": {
+            "description": "Matching columns in the target, paired positionally with left_fields (same length).",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
       }
     }
   }

@@ -47,11 +47,11 @@ temporal:
   end_date: ""
 
 dimensions:
-  - name: "" # e.g. adm2_code, station_id
+  # The key column(s) rows are keyed on, e.g. adm0_code + adm2_code, or station_id.
+  - name: "" # e.g. adm2_code
     type: spatial
     description: ""
-    values: []
-    reference_system: "" # same spatial identifier system used for joins
+    reference_system: "" # vocabulary the codes come from, e.g. GAUL 2015 (resolvable URI preferred)
 
 variables:
   - name: ""
@@ -61,6 +61,14 @@ variables:
     unit: ""
     note: >
       ""
+
+# Join to the dataset holding the geometries (its own record). Pair this table's
+# key columns with the target's, positionally; composite keys and differing
+# column names are fine.
+joins:
+  - target: "" # resolvable URI/id of the boundary/station dataset
+    left_fields: [] # key columns in this record, e.g. [adm0_code, adm2_code]
+    right_fields: [] # matching columns in the target, e.g. [ADM0_CODE, ADM2_CODE]
 
 cdh:
   domain: []

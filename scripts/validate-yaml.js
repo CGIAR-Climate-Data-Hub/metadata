@@ -319,6 +319,27 @@ function checkCrossFieldRules(doc) {
       );
     }
   });
+  const columnNames = new Set(
+    [...list(doc?.dimensions), ...list(doc?.variables)]
+      .map((c) => c?.name)
+      .filter((n) => typeof n === "string"),
+  );
+  list(doc?.joins).forEach((join, i) => {
+    const left = list(join?.left_fields);
+    const right = list(join?.right_fields);
+    if (left.length && right.length && left.length !== right.length) {
+      out.push(
+        `/joins/${i}: left_fields (${left.length}) and right_fields (${right.length}) must have the same length`,
+      );
+    }
+    left.forEach((f, k) => {
+      if (typeof f === "string" && !columnNames.has(f)) {
+        out.push(
+          `/joins/${i}/left_fields/${k}: "${f}" does not match any declared dimensions[]/variables[] name`,
+        );
+      }
+    });
+  });
   return out;
 }
 
