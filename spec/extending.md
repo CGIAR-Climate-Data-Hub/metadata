@@ -1,7 +1,7 @@
 # Extending and adopting the standard
 
 Add your own fields to CDH records, or use the core standard in another catalog. The full rule is in
-[`standard.md`](./standard.md) section 4.3.
+[`standard.md`](./standard.md) section 4.2.
 
 ## 1. Author your extension
 

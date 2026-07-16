@@ -65,7 +65,7 @@ Each fact about the resource is recorded in the most structured place available,
 
 1. **A core or CDH extension field** (section 5) when one fits.
 2. **A linked sidecar metadata asset** (`rel=describedby`) for large, nested, or changing detail.
-3. **A custom extension field** (see section 4.3) when no standard placement fits.
+3. **A custom extension field** (see section 4.2) when no standard placement fits.
 4. **Free-text inside `description`**, as a last resort, when the fact cannot be structured.
 
 ### 4.2 Extending the schema
@@ -186,9 +186,8 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
   - The version segment of every CDH-hosted schema URL in the record (`$schema` and `extensions[]`)
     must match `cdh_schema_version`, so a record references one release throughout. Validators
     enforce this as a cross-field rule.
-  - Use this to make the record self-describing for validators, editors, and AI-assisted tooling.
-  - This identifies the validation schema or profile. Continue using `extensions[]` for the
-    extension schemas the record uses.
+  - Identifies the validation schema or profile. Continue using `extensions[]` for the extension
+    schemas the record uses.
 
 #### `cdh_schema_version`
 
@@ -307,7 +306,7 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 - **Definition:** Pinned schema URLs of the extensions the record uses.
 - **Rules:**
   - The record is validated against the core composed with exactly these extensions (see section
-    4.3); fields from an undeclared extension are rejected.
+    4.2); fields from an undeclared extension are rejected.
   - The CDH template pre-lists the CDH-maintained extensions; authors rarely edit this by hand.
 
 #### `keywords`
@@ -330,7 +329,7 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
     [`commodities`](extensions/agriculture/README.md); scenarios, models, baselines, and MIP eras in
     [`climate.*`](extensions/climate/README.md); variables, bands, indicators, and columns in
     [`variables[]`](extensions/datacube/README.md).
-  - Filter/group-by values belong in `cdh.domain`, not here. See section 4.5.
+  - Filter/group-by values belong in `cdh.domain`, not here. See section 4.4.
   - Should use consistent spelling and capitalization.
   - Linked items must include both `scheme` and `uri` to be expanded as themes; a `term`-only object
     is equivalent to a plain string.
@@ -466,7 +465,7 @@ precise footprint.
     out-of-range values.
   - Bbox arrays MUST have length 4 or 6 - other lengths are rejected.
 - **Authoring note:** Provide `spatial.bbox` when known, especially for multi-asset records or when
-  the first asset is not representative; otherwise review may add it (see section 4.7).
+  the first asset is not representative; otherwise review may add it (see section 4.6).
 
 ##### Common-tool mappings
 
@@ -513,7 +512,7 @@ spatial:
 - **Expected value:** EPSG code (e.g., `EPSG:4326`), CRS URI, or PROJ string for custom CRS.
 - **Vocabulary:** [EPSG codes](https://epsg.io/).
 - **Authoring note:** Provide `spatial.crs` when known; otherwise review may add it (see section
-  4.7).
+  4.6).
 
 #### `spatial.resolution`
 
@@ -569,10 +568,10 @@ domain - is a `dimensions[]` entry. See the [datacube extension](extensions/data
 
 ### 5.5 Extension fields
 
-CDH extension fields are declared in `extensions[]` and validated with the core (see section 4.3).
+CDH extension fields are declared in `extensions[]` and validated with the core (see section 4.2).
 Each extension is documented alongside its schema (linked below); all are optional except the `cdh`
 extension, which the CDH profile requires (`cdh.domain`). Encode values you filter or facet on in
-these extension fields, not in `keywords` (see section 4.5).
+these extension fields, not in `keywords` (see section 4.4).
 
 | Extension                                             | Fields                                                 | Applies to                            |
 | ----------------------------------------------------- | ------------------------------------------------------ | ------------------------------------- |
@@ -632,7 +631,7 @@ these extension fields, not in `keywords` (see section 4.5).
   - For restricted resources, `locations[].url` should point to a landing page or access
     instructions.
   - Provide `media_type` and `file_size` when known; otherwise review may add them (see section
-    4.7).
+    4.6).
   - `processing_steps` references `processing[].id` values.
 
 #### `additional_assets[]`

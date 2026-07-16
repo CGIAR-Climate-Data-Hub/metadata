@@ -1,7 +1,7 @@
 # Climate Data Hub Metadata Standard
 
 This repository defines the Climate Data Hub metadata standard, input schema, and authoring
-templates. Records are lightweight, searchable, validated, and mapped to STAC or OGC API Records.
+templates. Records are validated against the schema and mapped to STAC or OGC API Records.
 
 > \[!WARNING] This standard is still a draft. Breaking changes are expected while it is being tested
 > and refined.
@@ -42,9 +42,8 @@ npm run gen-schemas
 
 ## Versioning
 
-The CDH metadata standard, schemas, controlled vocabularies, and the `cgiar-cdh` STAC extension are
-versioned together. A single git tag (`v<MAJOR>.<MINOR>.<PATCH>`) covers all of them.
-`cdh_schema_version` in input YAML records matches the same tag.
+The standard, schemas, vocabularies, and extensions share one `v<MAJOR>.<MINOR>.<PATCH>` git tag
+(see [`spec/standard.md`](spec/standard.md) section 2 for the model).
 
 To cut a release, set `<PREV>` to the current version and `<NEW>` to the next:
 

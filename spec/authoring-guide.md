@@ -283,7 +283,7 @@ available.
 
 For a third-party extension, add its pinned schema URL to `extensions[]`. If the record uses a
 profile, set `$schema` to that profile's canonical schema URL and bind it for editor hints. See
-`standard.md` section 4.3 and [`extending.md`](extending.md).
+`standard.md` section 4.2 and [`extending.md`](extending.md).
 
 ### Spatial
 
@@ -326,9 +326,9 @@ spatial:
 
 ```yaml
 spatial:
-  bbox:
-    - [-180.0, -90.0, 180.0, 90.0] # overall extent
-    - [-10.0, 10.0, 10.0, 20.0] # included sub-region
+  bbox: # disjoint coverage; no overall/union box - the encoder derives it
+    - [5.9, 47.3, 15.0, 55.1] # Germany
+    - [-75.6, -55.9, -66.4, -17.5] # Chile
 ```
 
 `spatial.geography` is the named-place facet for browse and filtering (the precise footprint lives
@@ -426,9 +426,6 @@ For each variable:
 - Include the normal reading guidance in `description` when direction matters.
 - Use `note` for variable-specific limitations, caveats, or warnings.
 - Use the record-level `note` for dataset-wide limitations.
-
-Review may add technical details from inspectable files. It cannot infer meaning, units,
-interpretation, or caveats.
 
 #### Dimensions
 
@@ -529,7 +526,7 @@ Leave a field out when:
 - The detail belongs in a sidecar file because it is long, nested, or likely to change.
 
 Avoid inventing new fields. If the template has no place for something, use `additional_links`,
-`additional_assets`, a sidecar file, or an extension (see `standard.md` section 4.3).
+`additional_assets`, a sidecar file, or an extension (see `standard.md` section 4.2).
 
 ## Practical Authoring Order
 
