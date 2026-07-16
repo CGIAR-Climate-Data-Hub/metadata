@@ -319,6 +319,22 @@ function checkCrossFieldRules(doc) {
       );
     }
   });
+  if (doc?.temporal && typeof doc.temporal === "object") {
+    const { date, start_date, end_date } = doc.temporal;
+    const hasDate = date !== undefined;
+    const hasStart = start_date !== undefined;
+    const hasEnd = end_date !== undefined;
+    if (hasDate && (hasStart || hasEnd)) {
+      out.push(
+        `/temporal: use "date" for a single instant/period, or "start_date"/"end_date" for a span - not both`,
+      );
+    }
+    if (hasStart !== hasEnd) {
+      out.push(
+        `/temporal: "start_date" and "end_date" must be used together (end_date: null for open-ended)`,
+      );
+    }
+  }
   const columnNames = new Set(
     [...list(doc?.dimensions), ...list(doc?.variables)]
       .map((c) => c?.name)

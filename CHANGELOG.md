@@ -12,6 +12,12 @@ occur between minor versions.
 
 ### Added
 
+- Made `temporal` precision-aware: added `date` (a single instant or period) alongside
+  `start_date`/`end_date` (a span; `end_date: null` = open-ended), which are mutually exclusive.
+  Dates take any strict ISO 8601 precision - year (`2020`), month (`2020-06`), day, or datetime -
+  and the precision states the granularity, so `date: 2020` is the whole year. A reduced-precision
+  `end_date` is inclusive through the end of its period. Maps 1:1 to STAC
+  `datetime`/`start_datetime`/`end_datetime`.
 - Added `step` (ISO 8601 duration, valid only on a `type: temporal` dimension) to the datacube
   extension. Temporal cadence is now expressed as `type: temporal` dimension(s) - one per temporal
   axis, so a cube can carry several (e.g. `season` within 20-year `period`s). The lat/lon grid still
@@ -82,10 +88,9 @@ occur between minor versions.
 - **Breaking:** removed the `ai-skill` resource type; AI skills are no longer catalogued as Hub
   records, and its schema.org mapping (`SoftwareApplication`) was a stretch. Remaining values are
   `dataset`, `software`, `service`, and `document`.
-- **Breaking:** removed `temporal.resolution`. `temporal` is now the coverage **extent only**
-  (`start_date` / `end_date`): `start_date` alone is a single instant, both is a span, and
-  `end_date: null` is open-ended. Temporal cadence moves to a `type: temporal` dimension with an ISO
-  8601 `step`.
+- **Breaking:** removed `temporal.resolution`. `temporal` is coverage extent only (see the
+  precision-aware `date`/`start_date`/`end_date` fields under Added); temporal cadence now lives on
+  a `type: temporal` dimension with an ISO 8601 `step`.
 
 ### Fixed
 

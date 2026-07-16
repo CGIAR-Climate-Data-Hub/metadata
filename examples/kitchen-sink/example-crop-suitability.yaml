@@ -117,10 +117,10 @@ spatial:
       note: Regular lat/lon grid; cell ground area shrinks toward the poles.
 
 temporal:
-  # Coverage extent only. The two projection horizons are a temporal axis, so they
-  # are declared as a type: temporal dimension below - cadence is never set here.
-  start_date: "2030-01-01"
-  end_date: "2050-12-31"
+  # Coverage span (year precision). The two projection horizons are a temporal
+  # axis, so they are declared as a type: temporal dimension below - not here.
+  start_date: "2030"
+  end_date: "2050"
 
 # lat/lon come from spatial. Every other axis - the projection horizon (a temporal
 # dimension, with an ISO 8601 step) and the domain axes - is declared here.

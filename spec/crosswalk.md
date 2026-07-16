@@ -38,14 +38,14 @@ field definitions, see `standard.md`; for encoding detail, see the mapping docs.
 
 ## Spatial / Temporal
 
-| CDH field                          | Requirement                    | STAC                                                                                                          | OGC API Records                                   |
-| ---------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `spatial.bbox`                     | STAC required                  | Collection `extent.spatial.bbox`; Item `bbox`                                                                 | N/A                                               |
-| `spatial.geography[]`              | Optional                       | `cgiar-cdh:geography` array                                                                                   | `properties["dct:spatial"]` (place IRIs; GeoDCAT) |
-| `spatial.crs`                      | Geospatial conditional         | Projection Extension `proj:code` / `proj:epsg`                                                                | N/A                                               |
-| `spatial.geometry_column`          | Vector conditional             | Table Extension `table:primary_geometry`                                                                      | N/A                                               |
-| `spatial.resolution[]`             | Spatial-unit conditional       | Grid entries map to Datacube `cube:dimensions[].step`; full list also emits as `cgiar-cdh:spatial_resolution` | N/A                                               |
-| `temporal.start_date` / `end_date` | STAC required; OGC conditional | `extent.temporal.interval`; Item `datetime` (instant) or `start_datetime`/`end_datetime` (span)               | `time` (instant or interval)                      |
+| CDH field                                   | Requirement                    | STAC                                                                                                          | OGC API Records                                   |
+| ------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `spatial.bbox`                              | STAC required                  | Collection `extent.spatial.bbox`; Item `bbox`                                                                 | N/A                                               |
+| `spatial.geography[]`                       | Optional                       | `cgiar-cdh:geography` array                                                                                   | `properties["dct:spatial"]` (place IRIs; GeoDCAT) |
+| `spatial.crs`                               | Geospatial conditional         | Projection Extension `proj:code` / `proj:epsg`                                                                | N/A                                               |
+| `spatial.geometry_column`                   | Vector conditional             | Table Extension `table:primary_geometry`                                                                      | N/A                                               |
+| `spatial.resolution[]`                      | Spatial-unit conditional       | Grid entries map to Datacube `cube:dimensions[].step`; full list also emits as `cgiar-cdh:spatial_resolution` | N/A                                               |
+| `temporal.date` / `start_date` / `end_date` | STAC required; OGC conditional | `date`->`datetime`; `start_date`/`end_date`->`start_datetime`/`end_datetime`; open when `end_date: null`      | `time` (instant or interval)                      |
 
 ## Data fields
 

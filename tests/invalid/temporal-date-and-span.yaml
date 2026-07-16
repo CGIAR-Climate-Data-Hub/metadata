@@ -1,0 +1,27 @@
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
+cdh_schema_version: "v0.1.0"
+extensions:
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
+id: fixture-record
+title: Temporal with both date and a span
+description: A deliberately broken record for the negative test suite.
+license: CC-BY-4.0
+resource_type: dataset
+keywords: [fixture]
+cdh:
+  domain: [climate]
+contact:
+  - organization: Example Org
+    roles: [licensor]
+citation:
+  authors: [Doe, J.]
+  date: "2026"
+data:
+  - name: primary
+    locations:
+      - url: https://example.org/data.tif
+# date and start_date/end_date are mutually exclusive.
+temporal:
+  date: "2020"
+  start_date: "2000"
+  end_date: "2020"

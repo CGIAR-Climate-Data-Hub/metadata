@@ -543,20 +543,26 @@ spatial:
 Required when the resource has temporal coverage. `temporal` records the coverage **extent only** -
 temporal cadence is not stored here (see "Temporal cadence" below).
 
-#### `temporal.start_date`, `temporal.end_date`
+#### `temporal.date`, `temporal.start_date`, `temporal.end_date`
 
-- **Expected value:** ISO 8601 / RFC 3339 date or datetime.
+- **Expected value:** ISO 8601 at any precision - year (`2020`), month (`2020-06`), day
+  (`2020-06-23`), or an instant (`2020-06-23T00:00:00Z`). Nothing looser is accepted.
 - **Rules:**
-  - The pair encodes the shape of the coverage, mapping onto STAC's instant-vs-interval model:
+  - Use `date` for a single instant or period, or `start_date` + `end_date` for a span. They are
+    **mutually exclusive**, and this maps 1:1 onto STAC:
 
-    | Meaning                     | Encoding                            | STAC                            |
-    | --------------------------- | ----------------------------------- | ------------------------------- |
-    | Reference point / snapshot  | `start_date` only (omit `end_date`) | `datetime` (instant)            |
-    | Covers a span               | `start_date` + `end_date`           | `start_datetime`/`end_datetime` |
-    | Ongoing / open-ended series | `start_date` + `end_date: null`     | open interval                   |
+    | Meaning                  | Encoding                        | STAC                            |
+    | ------------------------ | ------------------------------- | ------------------------------- |
+    | Single instant or period | `date`                          | `datetime`                      |
+    | Span                     | `start_date` + `end_date`       | `start_datetime`/`end_datetime` |
+    | Open-ended series        | `start_date` + `end_date: null` | open interval                   |
 
-  - A static reference year (e.g. a 2020 product) is a reference point: give `start_date` only, so
-    it reads as "represents 2020," not "covers the span of 2020."
+  - **Precision states the granularity.** `date: 2020` is the whole year 2020 (a static reference
+    year); `date: 2020-06-23T10:00:00Z` is an instant. To say "all of 2020" you write `2020`, not
+    `2020-01-01`.
+  - **A reduced-precision `end_date` is inclusive through the end of its period** (`end_date: 2010`
+    means through 2010-12-31). Starts expand to the beginning of the period, which naive parsing
+    already does; only ends need the end-of-period expansion. Encoders apply this when serializing.
 
 #### Temporal cadence
 

@@ -220,15 +220,14 @@
         }
       ]
     },
-    "dateOrOpen": {
-      "description": "A date, or null for an open-ended interval.",
+    "coverageDate": {
+      "description": "ISO 8601 date/time; the precision states the granularity - year (2020), month (2020-06), day (2020-06-23), or an instant (2020-06-23T00:00:00Z). As an end, it is inclusive through the end of that period (end: 2010 means through 2010-12-31).",
+      "examples": ["2020", "2020-06", "2020-06-23", "2020-06-23T00:00:00Z"],
       "anyOf": [
-        {
-          "$ref": "#/$defs/date"
-        },
-        {
-          "type": "null"
-        }
+        { "type": "string", "pattern": "^\\d{4}$" },
+        { "type": "string", "pattern": "^\\d{4}-(0[1-9]|1[0-2])$" },
+        { "type": "string", "format": "date" },
+        { "type": "string", "format": "date-time" }
       ]
     },
     "doi": {
@@ -494,17 +493,20 @@
       "type": "object"
     },
     "temporal": {
-      "description": "Coverage extent only. A single instant (start_date only), a closed span (start_date + end_date), or an open-ended series (start_date + end_date: null). Temporal cadence is not recorded here - declare a type: temporal dimension (datacube extension) instead.",
+      "description": "Coverage extent, precision-aware. Use `date` for a single instant or period (date: 2020 = the year 2020), or `start_date` + `end_date` for a span (end_date: null = open-ended). `date` and `start_date`/`end_date` are mutually exclusive. Temporal cadence is not recorded here - declare a type: temporal dimension (datacube extension) instead.",
       "additionalProperties": false,
       "properties": {
-        "end_date": {
-          "$ref": "#/$defs/dateOrOpen",
-          "description": "End of the coverage span. Omit for a single instant; set to null for an open-ended series.",
-          "examples": ["2020-12-31"]
+        "date": {
+          "$ref": "#/$defs/coverageDate",
+          "description": "A single instant or period; its precision sets the granularity (year, month, day, or datetime)."
         },
         "start_date": {
-          "$ref": "#/$defs/dateOrOpen",
-          "examples": ["2020-01-01"]
+          "$ref": "#/$defs/coverageDate",
+          "description": "Start of a span."
+        },
+        "end_date": {
+          "description": "End of a span; null for an open-ended series.",
+          "anyOf": [{ "$ref": "#/$defs/coverageDate" }, { "type": "null" }]
         }
       },
       "type": "object"

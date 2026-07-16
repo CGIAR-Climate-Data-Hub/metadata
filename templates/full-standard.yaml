@@ -93,11 +93,13 @@ spatial:
       reference_system: ""
       note: ""
 
-temporal: # Temporal coverage extent (conditional). Omit end_date for a single instant;
-  # set end_date: null for an open-ended series. Temporal cadence is NOT set here -
-  # add a type: temporal dimension (with an ISO 8601 step) below instead.
-  start_date: ""
-  end_date: ""
+temporal: # Temporal coverage (conditional). Use `date` for a single instant/period, OR
+  # start_date + end_date for a span (end_date: null = open-ended). Any ISO 8601 precision:
+  # year (2020), month (2020-06), day, or datetime - precision sets the granularity. Cadence
+  # goes on a type: temporal dimension below, not here.
+  date: "" # e.g. "2020" for a static year
+  # start_date: "" # use instead of date for a span
+  # end_date: ""
 
 # Data fields/Attributes (required)
 dimensions:

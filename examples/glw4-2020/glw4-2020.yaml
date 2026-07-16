@@ -78,8 +78,7 @@ spatial:
       label: 5 arc-minutes (~10km at equator)
 
 temporal:
-  # Static 2020 reference year: a single instant (start_date only), not year-long coverage.
-  start_date: "2020-01-01"
+  date: "2020" # static 2020 reference year (year precision)
 
 dimensions:
   - name: species
