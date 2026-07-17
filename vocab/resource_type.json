@@ -3,11 +3,11 @@
   "scheme": {
     "id": "cdh-resource-type",
     "title": "Climate Data Hub Resource Type Vocabulary",
-    "description": "Controlled vocabulary of broad resource kinds used to describe the primary thing a CDH record is about. These values describe the record-level resource, not individual asset formats. CDH author-facing ids are mapped to COAR Resource Type concepts.",
+    "description": "Controlled vocabulary of broad resource kinds used to describe the primary thing a CDH record is about. These values describe the record-level resource, not individual asset formats. CDH author-facing ids are mapped to schema.org types, which drive the record's schema.org/JSON-LD output.",
     "source_scheme": {
-      "id": "coar-resource-type",
-      "uri": "http://purl.org/coar/resource_type/",
-      "title": "COAR Resource Type Vocabulary"
+      "id": "schema-org",
+      "uri": "https://schema.org/",
+      "title": "Schema.org"
     }
   },
   "concepts": [
@@ -15,29 +15,29 @@
       "id": "dataset",
       "label": "Dataset",
       "description": "Structured data, observations, model outputs, geospatial layers, tables, or other data products.",
-      "code": "c_ddb1",
-      "uri": "http://purl.org/coar/resource_type/c_ddb1"
+      "code": "Dataset",
+      "uri": "https://schema.org/Dataset"
     },
     {
       "id": "software",
       "label": "Software",
-      "description": "A tool, software, service, dashboard, workflow, model interface, or other usable computational resource.",
-      "code": "c_5ce6",
-      "uri": "http://purl.org/coar/resource_type/c_5ce6"
+      "description": "A runnable or installable computational resource - tool, application, dashboard, workflow, or model interface.",
+      "code": "SoftwareApplication",
+      "uri": "https://schema.org/SoftwareApplication"
     },
     {
-      "id": "ai-skill",
-      "label": "AI skill",
-      "description": "Reusable AI-agent skill, prompt package, workflow capability, or assistant extension intended to perform a defined task.",
-      "code": "c_393c",
-      "uri": "http://purl.org/coar/resource_type/c_393c"
+      "id": "service",
+      "label": "Service",
+      "description": "A hosted, network-accessed endpoint rather than a downloadable artifact - e.g., an API, web/OGC service, or online data catalog.",
+      "code": "Service",
+      "uri": "https://schema.org/Service"
     },
     {
       "id": "document",
       "label": "Document",
       "description": "Written resource such as a report, brief, paper, guidance note, manual, documentation, or other text-based output.",
-      "code": "c_18cf",
-      "uri": "http://purl.org/coar/resource_type/c_18cf"
+      "code": "CreativeWork",
+      "uri": "https://schema.org/CreativeWork"
     }
   ]
 }
