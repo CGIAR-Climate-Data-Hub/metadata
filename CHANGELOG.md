@@ -10,23 +10,100 @@ occur between minor versions.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-17
+
 ### Added
 
-- `access` field (optional; values `public` / `restricted` / `non-public`, default `public`) to
-  declare data access conditions separately from `license` — an embargo (data not yet released) is
-  `restricted`, not a separate value. Encodes as `cgiar-cdh:access` in STAC and `dct:accessRights`
-  (EU accessRights vocabulary, via GeoDCAT) in OGC Records.
+- Made `temporal` precision-aware: added `date` (a single instant or period) alongside
+  `start_date`/`end_date` (a span; `end_date: null` = open-ended), which are mutually exclusive.
+  Dates take any strict ISO 8601 precision - year (`2020`), month (`2020-06`), day, or datetime -
+  and the precision states the granularity, so `date: 2020` is the whole year. A reduced-precision
+  `end_date` is inclusive through the end of its period. Maps 1:1 to STAC
+  `datetime`/`start_datetime`/`end_datetime`.
+- Added `step` (ISO 8601 duration, valid only on a `type: temporal` dimension) to the datacube
+  extension. Temporal cadence is now expressed as `type: temporal` dimension(s) - one per temporal
+  axis, so a cube can carry several (e.g. `season` within 20-year `period`s). The lat/lon grid still
+  comes from `spatial` (derived, not declared; `variables[].dimensions` may reference `lat`/`lon`).
+- Added `joins[]` to the datacube extension so a table can join to other catalogued datasets - e.g.
+  a value table keyed to an external boundary set instead of embedding geometry. Each entry is
+  `{ target, left_fields, right_fields }`, pairing this record's key columns with the target's
+  positionally, so composite keys (`[adm0_code, adm2_code]`) and differing column names are handled.
+  `left_fields` are validated against declared `dimensions[]`/`variables[]` names, and the two field
+  arrays must be equal length. Value columns stay `variables[]`; key columns are `dimensions[]`.
+- Added optional `series` (`{ name, url }`, `name` required) to group records by dataset series /
+  product family (e.g., MapSPAM, GLW), independent of the version chain. Maps to `cgiar-cdh:series`
+  in STAC and `dcat:inSeries` (DCAT 3) in OGC Records.
+
+- Added `access` so access conditions are separate from `license`. Values are `public`,
+  `restricted`, and `non-public`; omitted means `public`.
+- Added resource versioning rules: when to update a record in place, snapshot a superseded release,
+  or fork a new resource. The unversioned `id` always identifies the current release; snapshots
+  append the version to the `id`, set `deprecated: true`, and are linked via `previous_version`.
+  Encoders derive successor/latest links from the chain.
+- Added cross-field validation for rules JSON Schema cannot express: date order, processing-step
+  references, class-variable references, `href_template` tokens, reserved keyword schemes, and
+  unique asset names.
+- Added `--profile`, `--schemas`, and `--expect-fail` to `validate-yaml`, with matching `profile` /
+  `extra-schemas` inputs on the reusable validation workflow. This lets adopters validate their own
+  extensions and policy schemas.
+- Added a bundled CDH profile schema (`cdh.schema.bundled.json`) and bundle checks so validators can
+  use one file without resolving CDH `$refs`.
+- Added extension-adoption docs, an extension template, and the rule that new extensions should use
+  one top-level key named after the extension.
+- Added negative fixtures in `tests/invalid/` to catch schema or validation rules getting
+  accidentally loosened.
+- Added the reserved `{variable}` `href_template` token, which expands over `variables[].name` for
+  datasets split into one file per variable. `variable` is rejected as a dimension name.
+- Added version guards so schema `$id`s must match `package.json`, and release tags must match the
+  package version before publishing.
 
 ### Changed
 
-- OGC Records mapping now prefers a recognized GeoDCAT / `dct:` term over a `cgiar-cdh:*` field
-  wherever one exists — each encoding uses its own ecosystem's standard term. First application:
-  `spatial.geography[]` → `dct:spatial`. STAC continues to use its native extensions and
-  `cgiar-cdh:*`.
-- Records may now use unquoted ISO dates (e.g. `created: 2026-06-23`). The validator parses YAML as
-  1.2 core, so dates remain strings instead of being rejected as date objects; quoting still works.
-- Repository formatting and linting moved from remark to Prettier (Markdown, JSON, YAML) and
-  markdownlint. Contributor-facing only — no change to the schema, vocabularies, or published URLs.
+- `spatial.bbox` no longer requires a hand-authored overall/union box first. Provide a single box,
+  or a list of the real areas covered (in any order) for disjoint coverage; the encoder derives the
+  overall extent when serializing.
+- The `service` resource type now maps to schema.org `Service` (a core type) instead of `WebAPI` (a
+  pending type with weaker consumer support), matching the concept's broad scope.
+- added a $schema field to allow persistent schema and versioning across tooling/conversion between
+  formats.
+- **Breaking:** schemas now reject blank strings, empty required arrays, and stray `null`s. Omit
+  unknown values instead; `null` only remains for open-ended temporal intervals.
+- **Breaking:** every `contact[]` entry must include `organization`.
+- **Breaking:** `data[]` and `additional_assets[]` entries must include `name`; it becomes the
+  serialized asset key and must be unique.
+- `created` and `updated` are optional in input YAML and filled at publication. Serialized records
+  still include both.
+- `extensions[]` is documented as required and must include the `cdh` extension for Hub records.
+- Validation now has two layers: mechanism (core plus declared extensions) and profile (policy
+  schema passed with `--profile`). CDH uses the same path as adopters.
+- Templates now validate in draft mode: blanks are pruned and presence checks are relaxed, while
+  field names, types, enums, and patterns are still checked.
+- OGC Records mapping now uses standard GeoDCAT / `dct:` terms where available, starting with
+  `access` and `spatial.geography[]`.
+- `derived_from[]` entries should point at version-specific source URLs rather than URLs that track
+  the latest release.
+- Unquoted ISO dates in YAML now work because the validator parses YAML 1.2 core values as strings.
+- Formatting and linting moved to Prettier and markdownlint.
+
+### Removed
+
+- **Breaking:** removed the `ai-skill` resource type; AI skills are no longer catalogued as Hub
+  records, and its schema.org mapping (`SoftwareApplication`) was a stretch. Remaining values are
+  `dataset`, `software`, `service`, and `document`.
+- **Breaking:** removed `temporal.resolution`. `temporal` is coverage extent only (see the
+  precision-aware `date`/`start_date`/`end_date` fields under Added); temporal cadence now lives on
+  a `type: temporal` dimension with an ISO 8601 `step`.
+
+### Fixed
+
+- Unknown extension URLs now fail with a clear `--schemas` message instead of a misleading warning.
+- Validation output is shorter and more useful: offending fields are named, enum options are shown,
+  duplicates are collapsed, and noisy Ajv `unevaluatedProperties` cascades are filtered.
+- Fixed field-reference/checklist drift around `cdh_schema_version`, `citation` vs DOI, temporal
+  coverage, variables/dimensions, and `extensions[]`.
+- Fixed the `resource_type` schema description so it matches the vocabulary.
+- Consolidated duplicate bbox and `href_template` guidance, and cleaned up extension README bullets
+  and typos.
 
 ## [0.1.0] - 2026-06-24
 

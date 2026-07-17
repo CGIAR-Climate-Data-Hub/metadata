@@ -1,13 +1,14 @@
 # yaml-language-server: $schema=../spec/schemas/profiles/cdh.schema.json
-cdh_schema_version: "v0.1.0"
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json
+cdh_schema_version: "v0.2.0"
 
 # Extensions this record uses (pinned schema URLs).
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/climate/schema.json
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/datacube/schema.json
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/classification/schema.json
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/agriculture/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/climate/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/classification/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/agriculture/schema.json
 
 # Core Metadata (required)
 id: ""
@@ -16,7 +17,9 @@ description: >
   ""
 license: ""
 access: public # optional - one of: public | restricted | non-public; omit = public
-# Resource type - one of: dataset | document | tool | ai-skill
+access_note: > # required when access is restricted or non-public
+  ""
+# Resource type - one of: dataset | document | software | service
 resource_type: ""
 
 #   keywords:
@@ -31,7 +34,7 @@ note: > # Optional
 # Contact Metadata (required). At least one contact MUST list licensor in roles.
 contact:
   - name: "" # optional when organization is present; required for person-level contacts
-    roles: [licensor] # any of: licensor | producer | processor | point-of-contact
+    roles: [licensor] # any of: licensor | producer | processor | point-of-contact | custodian
     email: ""
     organization: "" # required when name is present; may be used on its own
     url: ""
@@ -58,15 +61,18 @@ related_publications: # optional
       url: ""
     doi: ""
 
-# metadata tracking (required/auto-populated)
-# May be left blank in draft authoring files when CDH review manages metadata
-# timestamps.
-created:
-updated:
+# metadata tracking - optional; filled in at publication if omitted.
+# created: 2026-01-01
+# updated: 2026-01-01
 
 # Version (conditional - if version exists already, or multiple versions are expected)
 version: ""
 previous_version: ""
+
+# Series (optional - dataset series / product family, e.g. MapSPAM, GLW)
+series:
+  name: ""
+  url: ""
 
 # Funding (optional)
 funding:
@@ -87,15 +93,13 @@ spatial:
       reference_system: ""
       note: ""
 
-temporal: # Temporal (conditional - if data has a temporal aspect/will be in STAC)
-  start_date: ""
-  end_date: ""
-  resolution:
-    values: [] # if named/easily interpretable - 1-12 for months, jan-feb-march, etc
-    unit: "" # unit of the data - e.g., daily
-    step: "" # ISO_8601#Durations (can be auto filled by cdh team)
-    note: > # i.e. time specific usage notes, the aggregation method, etc.
-      ""
+temporal: # Temporal coverage (conditional). Use `date` for a single instant/period, OR
+  # start_date + end_date for a span (end_date: null = open-ended). Any ISO 8601 precision:
+  # year (2020), month (2020-06), day, or datetime - precision sets the granularity. Cadence
+  # goes on a type: temporal dimension below, not here.
+  date: "" # e.g. "2020" for a static year
+  # start_date: "" # use instead of date for a span
+  # end_date: ""
 
 # Data fields/Attributes (required)
 dimensions:
@@ -127,7 +131,6 @@ classes: # conditional, if classification scheme exists - must map to a listed v
 
 # Additional fields for searching and filtering
 cdh:
-  use_cases: []
   not_recommended_for:
     - use: ""
       reason: ""

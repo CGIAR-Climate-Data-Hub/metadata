@@ -1,21 +1,103 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json",
   "title": "CDH Profile",
-  "description": "Editor bundle: core composed with all CDH extensions, bound via the yaml-language-server modeline for autocomplete and validation. CI validates dynamically against only the extensions a record declares in extensions[] (see scripts/validate-yaml.js), so the authoritative 'declared what you use' check happens there, not here.",
+  "description": "CDH policy schema: the core composed with all CDH-maintained extensions, requiring the cdh extension on every Hub record. Applied as the policy layer (validate-yaml --profile) on top of the per-record mechanism check (core + declared extensions only), and bound by editors via the yaml-language-server modeline for autocomplete. A single-file bundled copy is published alongside as cdh.schema.bundled.json.",
+  "$defs": {
+    "cdhProfileUrl": {
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/schemas/profiles/cdh\\.schema\\.json$"
+    },
+    "cdhExtensionUrl": {
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/cdh/schema\\.json$"
+    },
+    "climateExtensionUrl": {
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/climate/schema\\.json$"
+    },
+    "datacubeExtensionUrl": {
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/datacube/schema\\.json$"
+    },
+    "classificationExtensionUrl": {
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/classification/schema\\.json$"
+    },
+    "agricultureExtensionUrl": {
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/agriculture/schema\\.json$"
+    },
+    "declaresClimateExtension": {
+      "required": ["extensions"],
+      "properties": {
+        "extensions": {
+          "contains": { "$ref": "#/$defs/climateExtensionUrl" }
+        }
+      }
+    },
+    "declaresDatacubeExtension": {
+      "required": ["extensions"],
+      "properties": {
+        "extensions": {
+          "contains": { "$ref": "#/$defs/datacubeExtensionUrl" }
+        }
+      }
+    },
+    "declaresClassificationExtension": {
+      "required": ["extensions"],
+      "properties": {
+        "extensions": {
+          "contains": { "$ref": "#/$defs/classificationExtensionUrl" }
+        }
+      }
+    },
+    "declaresAgricultureExtension": {
+      "required": ["extensions"],
+      "properties": {
+        "extensions": {
+          "contains": { "$ref": "#/$defs/agricultureExtensionUrl" }
+        }
+      }
+    }
+  },
   "allOf": [
     { "$ref": "../core.schema.json" },
     { "$ref": "../../extensions/cdh/schema.json" },
     { "$ref": "../../extensions/climate/schema.json" },
     { "$ref": "../../extensions/datacube/schema.json" },
     { "$ref": "../../extensions/classification/schema.json" },
-    { "$ref": "../../extensions/agriculture/schema.json" }
+    { "$ref": "../../extensions/agriculture/schema.json" },
+    {
+      "if": { "required": ["climate"] },
+      "then": { "$ref": "#/$defs/declaresClimateExtension" }
+    },
+    {
+      "if": {
+        "anyOf": [{ "required": ["dimensions"] }, { "required": ["variables"] }]
+      },
+      "then": { "$ref": "#/$defs/declaresDatacubeExtension" }
+    },
+    {
+      "if": { "required": ["classes"] },
+      "then": { "$ref": "#/$defs/declaresClassificationExtension" }
+    },
+    {
+      "if": { "required": ["commodities"] },
+      "then": { "$ref": "#/$defs/declaresAgricultureExtension" }
+    }
   ],
-  "required": ["cdh", "extensions"],
+  "required": ["$schema", "cdh", "extensions"],
+  "patternProperties": {
+    "^\\$schema$": {
+      "description": "CDH profile schema URL for any released version; its version segment must match cdh_schema_version (checked by validate-yaml).",
+      "$ref": "#/$defs/cdhProfileUrl"
+    }
+  },
   "properties": {
     "extensions": {
       "contains": {
-        "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json"
+        "$ref": "#/$defs/cdhExtensionUrl"
       }
     }
   },

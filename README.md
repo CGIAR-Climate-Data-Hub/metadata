@@ -1,8 +1,7 @@
 # Climate Data Hub Metadata Standard
 
 This repository defines the Climate Data Hub metadata standard, input schema, and authoring
-templates. The goal is lightweight, searchable, AI-readable metadata that can be validated and
-mapped to STAC or OGC API Records.
+templates. Records are validated against the schema and mapped to STAC or OGC API Records.
 
 > \[!WARNING] This standard is still a draft. Breaking changes are expected while it is being tested
 > and refined.
@@ -15,6 +14,8 @@ mapped to STAC or OGC API Records.
 - [Core schema](./spec/schemas/core.schema.json) - validates the YAML structure and controlled
   values.
 - [Standard](./spec/standard.md) - formal field definitions and validation expectations.
+- [Extending & adopting](./spec/extending.md) - add your own extension, build a profile, or adopt
+  the core standard outside the Hub.
 
 ## Mappings
 
@@ -41,25 +42,24 @@ npm run gen-schemas
 
 ## Versioning
 
-The CDH metadata standard, schemas, controlled vocabularies, and the `cgiar-cdh` STAC extension are
-versioned together. A single git tag (`v<MAJOR>.<MINOR>.<PATCH>`) covers all of them.
-`cdh_schema_version` in input YAML records matches the same tag.
+The standard, schemas, vocabularies, and extensions share one `v<MAJOR>.<MINOR>.<PATCH>` git tag
+(see [`spec/standard.md`](spec/standard.md) section 2 for the model).
 
-To cut a release, set `<PREV>` to the current version and `<NEW>` to the next:
+To cut a release, bump the version and let the tooling propagate it:
 
 ```sh
-npm version --no-git-tag-version <NEW>     # bumps package.json + lock
-npm run gen-schemas                         # regenerates the vocab schemas
-
-# Bump the version pinned in hand-authored files (schema $ids, extension URLs,
-# docs, templates, examples); unrelated code versions are left untouched.
-grep -rl "/v<PREV>/" spec templates examples README.md \
-  | xargs sed -i "s|/v<PREV>/|/v<NEW>/|g"
-sed -i 's/cdh_schema_version: "v<PREV>"/cdh_schema_version: "v<NEW>"/' \
-  templates/*.yaml examples/*/*.yaml
+npm version --no-git-tag-version <NEW>   # bump package.json; the `version` hook
+                                         # (scripts/sync-version.js) rewrites v<PREV> ->
+                                         # v<NEW> across every tracked file (schema $ids,
+                                         # extension URLs, cdh_schema_version, docs),
+                                         # regenerates the vocab schemas, re-bundles the
+                                         # profile, and runs the test suite
 ```
 
-Then commit, run `npm test`, and publish a GitHub release tagged `v<NEW>`.
+Then update `CHANGELOG.md` by hand (the hook leaves it alone): move `[Unreleased]` to
+`[<NEW>] - <date>` and add a fresh empty `[Unreleased]`. Commit, then publish a GitHub release
+tagged `v<NEW>` — that triggers the publish workflow, which re-checks the tag matches
+`package.json`, validates, and deploys the schemas so the `/v<NEW>/` URLs resolve.
 
 ## Validation
 
@@ -67,15 +67,15 @@ All validation runs through `npm`:
 
 ```sh
 npm install        # one-time, installs dev tooling
-npm test           # markdown lint + schema/vocab/yaml validation
-npm run check      # schemas + vocabs + compile + yaml (skips markdown)
+npm test           # formatting + markdown lint + schema/vocab/yaml validation
+npm run check      # schemas + vocabs + compile + bundle + yaml + negative fixtures
 ```
 
 Individual targets: `check-schemas`, `check-vocabs`, `compile-schemas`, `check-yaml`,
-`check-markdown`, `gen-schemas`.
+`check-invalid`, `bundle-profile`, `gen-schemas`, `lint-md`.
 
-The validation scripts use bare ESM imports, so `node` is the supported runtime today but they
-should also run under Deno or bun.
+Records under [`tests/invalid/`](./tests/invalid/README.md) are negative fixtures - each MUST fail
+validation. They catch schema or rule changes that accidentally loosen validation.
 
 ## Acknowledgements
 

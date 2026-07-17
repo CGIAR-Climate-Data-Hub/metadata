@@ -31,6 +31,8 @@ async function walk(dir) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = resolve(dir, entry.name);
+    // _-prefixed dirs (e.g. extensions/_template) are scaffolding, not schemas.
+    if (entry.isDirectory() && entry.name.startsWith("_")) continue;
     if (entry.isDirectory()) out.push(...(await walk(path)));
     else if (
       entry.isFile() &&

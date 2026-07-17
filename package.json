@@ -1,27 +1,35 @@
 {
   "name": "cgiar-cdh-metadata",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Climate Data Hub metadata standard, input schema, and controlled vocabularies.",
   "type": "module",
   "scripts": {
     "test": "npm run check-format && npm run lint-md && npm run check",
-    "check": "npm run check-schemas && npm run check-vocabs && npm run compile-schemas && npm run check-yaml",
+    "check": "npm run check-schemas && npm run check-vocabs && npm run compile-schemas && node scripts/bundle-profile.js --check && npm run check-profile-bundle && npm run check-yaml && npm run check-invalid",
     "build-geography": "node scripts/build-geography-vocab.js",
     "gen-schemas": "node scripts/generate-vocab-schemas.js",
     "check-schemas": "node scripts/generate-vocab-schemas.js --check",
     "check-vocabs": "node scripts/check-vocabs.js",
     "compile-schemas": "node scripts/compile-schemas.js",
-    "check-yaml": "node scripts/validate-yaml.js",
+    "check-profile-bundle": "node scripts/check-profile-bundle.js",
+    "check-yaml": "node scripts/validate-yaml.js --profile spec/schemas/profiles/cdh.schema.json",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "lint-md": "markdownlint-cli2"
+    "lint-md": "markdownlint-cli2",
+    "bundle-profile": "node scripts/bundle-profile.js",
+    "check-invalid": "node scripts/validate-yaml.js --profile spec/schemas/profiles/cdh.schema.json --expect-fail tests/invalid",
+    "version": "node scripts/sync-version.js && npm test"
   },
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "js-yaml": "^4.1.0",
     "markdownlint-cli2": "^0.22.1",
-    "prettier": "^3.8.4"
+    "prettier": "^3.8.4",
+    "spdx-expression-validate": "^2.0.0"
+  },
+  "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "^15.4.0"
   }
 }

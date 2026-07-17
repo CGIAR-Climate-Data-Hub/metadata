@@ -29,5 +29,6 @@ jobs:
     uses: ./.github/workflows/validate-records.yaml
     with:
       path: templates
+      draft: true
       tooling-repository: ${{ github.repository }}
       tooling-ref: ${{ github.sha }}

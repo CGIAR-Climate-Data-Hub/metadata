@@ -58,6 +58,18 @@ jobs:
       - name: Install tooling
         run: npm ci
 
+      # The destination directory comes from the release tag, but the $ids
+      # inside the published files come from the repo. If they disagree, we'd
+      # publish files under one version whose $ids point at another.
+      - name: Check release tag matches package.json version
+        run: |
+          pkg="v$(node -p "require('./package.json').version")"
+          tag="${{ github.event.release.tag_name }}"
+          if [ "$pkg" != "$tag" ]; then
+            echo "::error::Release tag $tag does not match package.json version $pkg. Bump the version before releasing."
+            exit 1
+          fi
+
       # Gate the publish on validation - never publish a broken schema graph.
       - name: Validate before publishing
         run: npm run check

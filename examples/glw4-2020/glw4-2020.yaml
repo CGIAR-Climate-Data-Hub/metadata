@@ -1,13 +1,17 @@
 # yaml-language-server: $schema=../../spec/schemas/profiles/cdh.schema.json
-cdh_schema_version: "v0.1.0"
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json
+cdh_schema_version: "v0.2.0"
 
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/datacube/schema.json
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/agriculture/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/agriculture/schema.json
 
 id: glw4-2020
 title: Gridded livestock density for 2020 (GLW4)
+series:
+  name: Gridded Livestock of the World (GLW)
+  url: https://www.fao.org/livestock-systems/global-distributions/en/
 description: >
   Gridded Livestock of the World, version 4 (GLW 4) maps modelled densities of six livestock
   species: buffalo, cattle, sheep, goats, pigs, and chickens. This data is for the 2020 reference
@@ -45,7 +49,7 @@ contact:
     email: giuseppina.cinardi@fao.org
     organization: Food and Agriculture Organization of the United Nations
   - name: Brayden Youngberg
-    roles: [processor, point-of-contact]
+    roles: [processor, custodian]
     email: b.youngberg@cgiar.org
     organization: The Alliance of Bioversity International and CIAT
 
@@ -74,12 +78,7 @@ spatial:
       label: 5 arc-minutes (~10km at equator)
 
 temporal:
-  start_date: "2020-01-01"
-  end_date: "2020-12-31"
-  resolution:
-    unit: year
-    step: P1Y
-    note: Static data for 2020 reference year
+  date: "2020" # static 2020 reference year (year precision)
 
 dimensions:
   - name: species
@@ -94,16 +93,13 @@ variables:
     unit: "{head}/km-1"
 
 cdh:
-  use_cases:
-    - Livestock exposure to hazards
-    - Comparing livestock densities across systems or regions
   not_recommended_for:
-    - use: Exact livestock counts
-      reason: Values are spatially modeled estimates derived from census and other data
-      use_instead: Official livestock census counts where available
+    - use: exact livestock counts
+      reason: values are spatially modeled estimates derived from census and other data
+      use_instead: official livestock census counts where available
   domain: [agricultural-production]
 
-commodities: [livestock, buffalo, cattle, chickens, goats, swine, sheep]
+commodities: [buffalo, cattle, chickens, goats, swine, sheep]
 
 processing:
   - id: source
@@ -120,7 +116,7 @@ processing:
       version: "885ed96"
 
 data:
-  - name: Zarr
+  - name: zarr
     locations:
       - url: https://digital-atlas.s3.amazonaws.com/cdh/data/glw4-2020/glw4-2020.zarr
         title: HTTPS

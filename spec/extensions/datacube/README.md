@@ -3,35 +3,32 @@
 Dimensions and variables for gridded, multidimensional, or tabular data.
 
 - **Applies to:** datasets with measurement variables, bands, or columns, and any dataset whose
-  meaning depends on axes/codes.- **Declared in** a record's `extensions[]`. See
-  [the standard](../../standard.md), §4.3, for the extension mechanism.
+  meaning depends on axes/codes.
+- **Declared in:** `extensions[]`.
 
 ## `dimensions[]`
 
 - **Requirement:** Conditional. Required for data cubes, tabular data with axes, or any dataset
   whose meaning depends on axes/codes.
-- **Expected value per dimension:** `{ name, type, description, values, reference_system }`.
+- **Expected value per dimension:** `{ name, type, description, values, reference_system, step }`.
 - **Rules:**
-  - `type` should be one of `spatial`, `temporal`, `bands`, or a domain-specific axis name (e.g.,
-    `crop`, `technology`, `scenario`).
-  - `values` lists the allowed values along the dimension.
-  - `reference_system` is a URI or label for a controlled vocabulary when one applies (e.g., the
-    AGROVOC URI for a `crop` dimension).
-  - **Coded values MUST be defined.** If `values` contains short codes whose meaning is not obvious
-    (e.g., `["I", "A", "R"]` for irrigated / all / rainfed, or MAPSPAM crop codes like
-    `["whea", "maiz", "rice"]`), the record MUST resolve them through one of:
-    1. `reference_system` pointing at a published controlled vocabulary that defines the codes, OR
-    2. an inline definition in the dimension's `description` (e.g.,
-       `"I = Irrigated, A = All tech, R = Rainfed"`). Limit this to very short, fixed code sets
-       where the full definition fits cleanly in one sentence, OR
-    3. a sidecar asset (e.g., a JSON or CSV code list) linked from the record with `rel=describedby`
-       and `roles: [metadata, describedby]`. One sidecar file MAY cover the codes for **all**
-       dimensions in the dataset - a separate sidecar per dimension is not required. The dimension's
-       `description` should reference the sidecar.
-  - Do not invent inline structured fields (e.g., `value_definitions`) on `dimensions[]` - that
-    would break Datacube Extension validation. Use one of the three options above.
-  - A coded dimension without any of these will fail review - the codes become unusable for
-    downstream tools.
+  - `type` is a domain axis name (e.g., `crop`, `technology`, `scenario`), `bands`, or `temporal`.
+  - **Do not declare the horizontal lat/lon grid here.** It comes from the top-level `spatial`
+    field, and encoders derive the `x`/`y` cube dimensions from it. `variables[].dimensions` may
+    still reference `lat`/`lon` even though they are not listed here.
+  - **Declare every temporal axis here** as `type: temporal` with a `step`. The top-level `temporal`
+    field carries only the coverage extent (start/end); all temporal cadence lives on these
+    dimensions. A cube may have several temporal axes (e.g. `season` within 20-year `period`s),
+    which STAC datacube permits.
+  - `step` is the spacing of one step, always an ISO 8601 duration (`P3M`, `P20Y`), and valid **only
+    on a `type: temporal` dimension**. It is the only cadence field a dimension carries.
+  - `values` lists the allowed values along the dimension. Omit it for a high-cardinality key column
+    (you would not enumerate every household id or admin code).
+  - `reference_system` is the vocabulary the values are coded against; prefer a resolvable URI when
+    one exists (e.g. the AGROVOC URI for a `crop` dimension).
+  - Define coded values. Use `reference_system`, a short inline explanation in `description`, or a
+    sidecar code list linked with `rel=describedby`.
+  - Do not add custom fields such as `value_definitions` to `dimensions[]`.
 
 ## `variables[]`
 
@@ -45,28 +42,21 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
   - Climate variables should use CF standard names where practical (e.g., `precipitation_flux`,
     `air_temperature`).
   - `data_type` follows numpy-style names (`float32`, `int16`, …).
-  - `description` carries the stable definition and normal reading guidance for the variable. Say
-    what the variable measures, then add the reading rule when it matters (for example, "Higher
-    values indicate greater heat hazard" or "Negative values indicate lower than the baseline").
-  - `note` carries caveats, limitations, warnings, or non-obvious use rules for the variable (e.g.,
-    "Data must be aggregated to with weighted_mean from ... variable"). Dataset-wide limitations
-    belong in the record-level `note` field instead.
-  - For inspectable formats, the CDH review process may add technical variable metadata such as
-    names, data types, bands, nodata values, or dimensions when it can be determined from the asset
-    URL, file extension, or inspectable metadata. Authors are still responsible for descriptions,
-    units, reading guidance, and caveats; these cannot be reliably determined from the file alone.
+  - `description` says what the variable measures. Add reading guidance when direction matters.
+  - `note` is for variable-specific caveats. Use record-level `note` for dataset-wide limitations.
+  - Review may add technical metadata from inspectable files, but not meaning, units, or caveats.
 
 ## Example
 
 ```yaml
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/datacube/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json
 dimensions:
   - name: crop
     type: crop
-    description: MAPSPAM crop code. Full labels are in the dimension codes sidecar.
+    description: Crop code. Full labels are in the dimension codes sidecar.
     values: [whea, maiz, rice]
-    reference_system: https://www.mapspam.info/
+    reference_system: https://example.org/crop-codes
 variables:
   - name: yield
     dimensions: [lat, lon, crop, technology]
@@ -76,4 +66,68 @@ variables:
     note: >
       Relative quantity; do not sum across cells. Use a weighted mean with harvested_area as the
       weight.
+```
+
+### Two temporal axes (seasons within projection periods)
+
+A cube split by 20-year projection `period` and by `season` has two temporal axes. Declare both as
+`type: temporal` dimensions with their own `step`; `temporal` carries only the overall extent.
+
+```yaml
+temporal:
+  start_date: "2020-01-01"
+  end_date: "2080-12-31"
+dimensions:
+  - name: period
+    type: temporal
+    description: 20-year projection window.
+    values: ["2020-2040", "2041-2060", "2061-2080"]
+    step: P20Y
+  - name: season
+    type: temporal
+    description: Meteorological season.
+    values: [DJF, MAM, JJA, SON]
+    step: P3M
+variables:
+  - name: tas
+    dimensions: [lat, lon, period, season]
+    description: Near-surface air temperature.
+    data_type: float32
+    unit: K
+```
+
+## `joins[]`
+
+Joins from this table to other catalogued datasets - typically a value table keyed to an external
+geometry/boundary set rather than embedding geometry.
+
+- **Requirement:** Optional.
+- **Expected value per join:** `{ target, left_fields, right_fields }`.
+- **Rules:**
+  - `target` is the resolvable URI or id of the dataset joined to (its own record).
+  - `left_fields` are this record's key columns; each MUST be a declared
+    `dimensions[]`/`variables[]` name. `right_fields` are the matching columns in the target.
+  - The two arrays pair **positionally** and MUST be the same length, so composite keys (e.g.
+    `[adm0_code, adm2_code]`) and differing column names on each side are both handled.
+  - No join type or cardinality is expressed; an entry is an equi-join on the paired fields.
+
+Model the join as two records: the boundary/index set is its own record (its geometries plus the
+code columns), and the value table declares its key columns and the `joins[]` entry:
+
+```yaml
+dimensions:
+  - name: adm0_code
+    type: spatial
+    description: GAUL 2015 country code.
+  - name: adm2_code
+    type: spatial
+    description: GAUL 2015 admin-2 code.
+variables:
+  - name: population
+    description: Population per admin unit.
+    unit: "1"
+joins:
+  - target: https://cdh.example/boundaries/gaul-2015-admin2
+    left_fields: [adm0_code, adm2_code]
+    right_fields: [ADM0_CODE, ADM2_CODE]
 ```

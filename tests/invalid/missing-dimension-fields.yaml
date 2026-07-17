@@ -1,0 +1,30 @@
+cdh_schema_version: "v0.2.0"
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json
+extensions:
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json
+id: fixture-record
+title: Fixture record
+description: A deliberately broken record for the negative test suite.
+license: CC-BY-4.0
+resource_type: dataset
+keywords: [fixture]
+cdh:
+  domain: [climate]
+contact:
+  - organization: Test Org
+    roles: [licensor]
+citation:
+  authors: [Doe, J.]
+  date: "2026"
+dimensions:
+  - name: scenario
+    values: [ssp126, ssp585]
+variables:
+  - name: precipitation
+    description: Precipitation rate.
+    unit: kg m-2 s-1
+data:
+  - name: primary
+    locations:
+      - url: https://example.org/data.parquet
