@@ -45,21 +45,21 @@ npm run gen-schemas
 The standard, schemas, vocabularies, and extensions share one `v<MAJOR>.<MINOR>.<PATCH>` git tag
 (see [`spec/standard.md`](spec/standard.md) section 2 for the model).
 
-To cut a release, set `<PREV>` to the current version and `<NEW>` to the next:
+To cut a release, bump the version and let the tooling propagate it:
 
 ```sh
-npm version --no-git-tag-version <NEW>     # bumps package.json + lock
-npm run gen-schemas                         # regenerates the vocab schemas
-
-# Bump the version pinned in hand-authored files (schema $ids, extension URLs,
-# docs, templates, examples); unrelated code versions are left untouched.
-grep -rl "/v<PREV>/" spec templates examples README.md \
-  | xargs sed -i "s|/v<PREV>/|/v<NEW>/|g"
-sed -i 's/cdh_schema_version: "v<PREV>"/cdh_schema_version: "v<NEW>"/' \
-  templates/*.yaml examples/*/*.yaml
+npm version --no-git-tag-version <NEW>   # bump package.json; the `version` hook
+                                         # (scripts/sync-version.js) rewrites v<PREV> ->
+                                         # v<NEW> across every tracked file (schema $ids,
+                                         # extension URLs, cdh_schema_version, docs),
+                                         # regenerates the vocab schemas, re-bundles the
+                                         # profile, and runs the test suite
 ```
 
-Then commit, run `npm test`, and publish a GitHub release tagged `v<NEW>`.
+Then update `CHANGELOG.md` by hand (the hook leaves it alone): move `[Unreleased]` to
+`[<NEW>] - <date>` and add a fresh empty `[Unreleased]`. Commit, then publish a GitHub release
+tagged `v<NEW>` — that triggers the publish workflow, which re-checks the tag matches
+`package.json`, validates, and deploys the schemas so the `/v<NEW>/` URLs resolve.
 
 ## Validation
 

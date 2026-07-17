@@ -18,7 +18,7 @@ Class definitions for categorical, classified, or bitfield variables.
 
 ```yaml
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/classification/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/classification/schema.json
 classes:
   - variable: land_cover
     values:

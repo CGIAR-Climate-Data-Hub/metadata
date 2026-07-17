@@ -1,6 +1,6 @@
 # CDH to STAC Mapping
 
-Status: draft
+Status: v0.2.0
 
 This document specifies how a CDH metadata record is encoded as STAC. Field definitions and
 requirements live in `standard.md`..

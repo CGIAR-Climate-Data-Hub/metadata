@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/vocab/vocabulary.schema.json",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/vocab/vocabulary.schema.json",
   "title": "CDH Vocabulary File Schema",
   "description": "Validates the JSON source files in vocab/.",
   "type": "object",

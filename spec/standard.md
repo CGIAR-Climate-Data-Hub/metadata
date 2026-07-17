@@ -1,6 +1,6 @@
 # Climate Data Hub Metadata Standard
 
-Status: v0.1.0
+Status: v0.2.0
 
 This document defines the metadata model used by the Climate Data Hub - the field definitions,
 requirement levels, and rules every Hub record conforms to. The model is self-contained and stands
@@ -180,7 +180,7 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 - **Expected value:**
   - Core-only records: any profile or schema URI, when present.
   - CDH profile records: the CDH profile schema URL for the release the record targets, e.g.
-    `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json`.
+    `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json`.
     Any released version is accepted; the version segment must match `cdh_schema_version`.
 - **Rules:**
   - The version segment of every CDH-hosted schema URL in the record (`$schema` and `extensions[]`)
@@ -194,7 +194,7 @@ The fields below are defined by the core schema (`schemas/core.schema.json`) and
 - **Requirement:** Required
 - **Definition:** The version of the CDH standard this record targets.
 - **Expected value:** The release tag, `v<MAJOR>.<MINOR>.<PATCH>` (see section 2).
-- **Example:** `v0.1.0`
+- **Example:** `v0.2.0`
 
 #### `id`
 

@@ -1,6 +1,6 @@
 # CDH to OGC API Records Mapping
 
-Status: draft
+Status: v0.2.0
 
 This document specifies how a CDH metadata record is encoded as an **OGC API Records** record. Field
 definitions and requirements live in `standard.md`.

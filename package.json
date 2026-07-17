@@ -1,6 +1,6 @@
 {
   "name": "cgiar-cdh-metadata",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Climate Data Hub metadata standard, input schema, and controlled vocabularies.",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.org/my-extensions/v0.1.0/soil/schema.json",
+  "$id": "https://example.org/my-extensions/v0.2.0/soil/schema.json",
   "title": "Soil Extension (template)",
   "description": "Starter for a new CDH extension. Rename the top-level key, set $id to the pinned URL you publish this file at, and replace the example fields.",
   "type": "object",

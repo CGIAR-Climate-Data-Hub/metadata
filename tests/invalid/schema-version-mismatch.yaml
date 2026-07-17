@@ -1,8 +1,10 @@
-# $schema and extensions[] pin v0.1.0 while cdh_schema_version claims v0.2.0.
+# $schema pins v9.9.9 while cdh_schema_version claims the current release - a
+# deliberate mismatch. v9.9.9 is an unreal version, so the release bump script
+# never rewrites it and this stays a genuine mismatch across versions.
 cdh_schema_version: "v0.2.0"
-"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json
+"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v9.9.9/schemas/profiles/cdh.schema.json
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
 id: fixture-record
 title: Fixture record
 description: A deliberately broken record for the negative test suite.

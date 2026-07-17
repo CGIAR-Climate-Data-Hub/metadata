@@ -10,6 +10,8 @@ occur between minor versions.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-17
+
 ### Added
 
 - Made `temporal` precision-aware: added `date` (a single instant or period) alongside

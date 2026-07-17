@@ -11,21 +11,21 @@ import { newAjv, rel, ROOT } from "./_ajv.js";
 const PROFILE = resolve(ROOT, "spec/schemas/profiles/cdh.schema.bundled.json");
 
 const EXTENSIONS = {
-  cdh: "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/cdh/schema.json",
+  cdh: "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json",
   climate:
-    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/climate/schema.json",
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/climate/schema.json",
   datacube:
-    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/datacube/schema.json",
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json",
   classification:
-    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/classification/schema.json",
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/classification/schema.json",
   agriculture:
-    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/extensions/agriculture/schema.json",
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/agriculture/schema.json",
 };
 
 const base = {
   $schema:
-    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.1.0/schemas/profiles/cdh.schema.json",
-  cdh_schema_version: "v0.1.0",
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json",
+  cdh_schema_version: "v0.2.0",
   extensions: [EXTENSIONS.cdh],
   id: "fixture-record",
   title: "Fixture record",
