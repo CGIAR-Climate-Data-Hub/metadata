@@ -13,6 +13,7 @@ name: Validate CDH records
 #         extra-schemas: ./my-extensions    # optional: your own extension schemas
 #         profile: ./my-profile.schema.json # optional: your own policy schema
 #                                           # (default "cdh"; "" = mechanism only)
+#         draft: true                        # optional: allow blank template placeholders
 #
 # Pin both refs to a release tag (e.g. @v0.0.1 above and tooling-ref: v0.0.1)
 # to validate against a fixed version of the standard instead of latest.
@@ -64,6 +65,14 @@ on:
         required: false
         default: cdh
         type: string
+      draft:
+        description: |
+          Validate targets as fillable drafts: blank placeholders are pruned
+          and presence requirements are relaxed. Defaults to false so metadata
+          records are always checked as complete submissions.
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -100,11 +109,13 @@ jobs:
         env:
           EXTRA_SCHEMAS: ${{ inputs.extra-schemas }}
           PROFILE: ${{ inputs.profile }}
+          DRAFT: ${{ inputs.draft }}
         run: |
           flags=()
           [ -n "$EXTRA_SCHEMAS" ] && flags+=(--schemas "$EXTRA_SCHEMAS")
           [ "$PROFILE" = "cdh" ] && PROFILE=_cdh-tooling/spec/schemas/profiles/cdh.schema.json
           [ -n "$PROFILE" ] && flags+=(--profile "$PROFILE")
+          [ "$DRAFT" = "true" ] && flags+=(--draft)
           node _cdh-tooling/scripts/validate-yaml.js "${flags[@]}" "${{ inputs.path }}"
 
       - name: List changed records
@@ -128,9 +139,11 @@ jobs:
           FILES: ${{ steps.changed.outputs.files }}
           EXTRA_SCHEMAS: ${{ inputs.extra-schemas }}
           PROFILE: ${{ inputs.profile }}
+          DRAFT: ${{ inputs.draft }}
         run: |
           flags=()
           [ -n "$EXTRA_SCHEMAS" ] && flags+=(--schemas "$EXTRA_SCHEMAS")
           [ "$PROFILE" = "cdh" ] && PROFILE=_cdh-tooling/spec/schemas/profiles/cdh.schema.json
           [ -n "$PROFILE" ] && flags+=(--profile "$PROFILE")
+          [ "$DRAFT" = "true" ] && flags+=(--draft)
           echo "$FILES" | xargs node _cdh-tooling/scripts/validate-yaml.js "${flags[@]}"

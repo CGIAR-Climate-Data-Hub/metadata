@@ -20,6 +20,8 @@
 //                            adopters pass their own or omit for mechanism-only)
 //   --schemas <file-or-dir>  register additional extension schemas (repeatable),
 //                            e.g. a third-party extension a record declares
+//   --draft                  validate every target as a fillable draft: prune
+//                            blank placeholders and relax presence rules
 //   --expect-fail            invert the outcome: every file MUST be invalid;
 //                            used for the negative fixtures in tests/invalid/
 //
@@ -94,6 +96,7 @@ async function defaultTargets() {
 const argPaths = [];
 const extraSchemaPaths = [];
 let profilePath = null;
+let forceDraft = false;
 let expectFail = false;
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
@@ -112,6 +115,8 @@ for (let i = 0; i < argv.length; i++) {
     }
   } else if (argv[i] === "--expect-fail") {
     expectFail = true;
+  } else if (argv[i] === "--draft") {
+    forceDraft = true;
   } else {
     argPaths.push(argv[i]);
   }
@@ -360,7 +365,7 @@ function checkCrossFieldRules(doc) {
 }
 
 const TEMPLATES_PREFIX = resolve(ROOT, "templates") + sep;
-const isDraft = (file) => file.startsWith(TEMPLATES_PREFIX);
+const isDraft = (file) => forceDraft || file.startsWith(TEMPLATES_PREFIX);
 
 // Turn an Ajv error into something an author can act on: name the offending
 // property for unevaluated/additional-property errors, and show (a sample of)
