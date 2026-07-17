@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json",
+  "title": "Datacube Extension",
+  "description": "Dimensions and variables for gridded, multidimensional, or tabular data.",
+  "type": "object",
+  "$defs": {
+    "nonEmptyString": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "scalar": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "dimensions": {
+      "description": "Cube axes: domain axes (e.g. crop, scenario), bands, and temporal axes (each type: temporal with a step). Not the lat/lon grid - that comes from the top-level spatial field; the top-level temporal field holds only the coverage extent.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "not": { "const": "variable" },
+            "description": "Axis name. Must not be \"variable\": measures are not axes and belong in variables[]; href_template refers to them via the reserved {variable} token."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the dimension is; define coded values here, or via reference_system or a sidecar.",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "description": "Dimension type: a domain axis (e.g. crop, scenario), bands, or temporal. Declare every temporal axis here with a step; the top-level temporal field holds only the coverage extent. The lat/lon grid comes from the spatial field, not here.",
+            "minLength": 1
+          },
+          "reference_system": {
+            "$ref": "#/$defs/nonEmptyString",
+            "description": "Vocabulary the dimension's values are coded against; prefer a resolvable URI when one exists (e.g. an AGROVOC concept scheme)."
+          },
+          "values": {
+            "description": "Allowed values along the dimension.",
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/scalar"
+            }
+          },
+          "step": {
+            "type": "string",
+            "format": "duration",
+            "description": "Spacing of one step, as an ISO 8601 duration. Only valid on a type: temporal dimension.",
+            "examples": ["P3M", "P20Y"]
+          }
+        },
+        "required": ["name", "type", "description"],
+        "dependentSchemas": {
+          "step": { "properties": { "type": { "const": "temporal" } } }
+        }
+      }
+    },
+    "variables": {
+      "description": "Measurement variables, bands, or columns.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "description": "Stable definition and reading guidance for the variable.",
+            "minLength": 1
+          },
+          "data_type": {
+            "$ref": "#/$defs/nonEmptyString",
+            "description": "Data type, numpy-style (e.g. float32, int16)."
+          },
+          "dimensions": {
+            "description": "Axes this variable spans; omit when it spans all declared dimensions.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "unit": {
+            "$ref": "#/$defs/nonEmptyString",
+            "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM.",
+            "examples": ["t ha-1", "{head}/km2"]
+          },
+          "note": {
+            "$ref": "#/$defs/nonEmptyString",
+            "description": "Variable-specific caveats, limitations, or warnings."
+          }
+        },
+        "required": ["name", "description", "unit"]
+      }
+    },
+    "joins": {
+      "description": "Joins from this table to other catalogued datasets. Each entry pairs this record's key columns with the target's columns, positionally.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target", "left_fields", "right_fields"],
+        "properties": {
+          "target": {
+            "type": "string",
+            "format": "uri",
+            "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record)."
+          },
+          "left_fields": {
+            "description": "Key columns in this record; each must be a declared dimensions[]/variables[] name.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "right_fields": {
+            "description": "Matching columns in the target, paired positionally with left_fields (same length).",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

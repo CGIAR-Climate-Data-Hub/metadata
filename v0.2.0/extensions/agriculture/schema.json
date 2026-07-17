@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/agriculture/schema.json",
+  "title": "Agriculture Extension",
+  "description": "Agricultural commodities described by the record.",
+  "type": "object",
+  "properties": {
+    "commodities": {
+      "description": "Agricultural commodities described by the record; CDH vocabulary (vocab/commodity.json).",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../../schemas/vocab/commodity.schema.json"
+      }
+    }
+  }
+}
