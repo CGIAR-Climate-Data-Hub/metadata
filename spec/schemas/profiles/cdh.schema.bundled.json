@@ -596,7 +596,7 @@
             }
           },
           "type": "object",
-          "description": "Dataset series / product family the resource belongs to (e.g., MapSPAM, GLW). `name` is the series label; `url` is the series landing page.",
+          "description": "Program, initiative, or product brand the resource was published under (e.g. Africa Agriculture Adaptation Atlas, MapSPAM, ACASA). Members may span domains, resolutions, and resource types. Not for grouping representations or releases of a single resource. `name` is the grouping key - use the same spelling on every record in the series; `url` is the series landing page.",
           "required": ["name"]
         },
         "spatial": {

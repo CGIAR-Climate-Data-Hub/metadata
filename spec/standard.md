@@ -131,12 +131,32 @@ Use sidecar files (linked with `rel=describedby`) for large, nested, or frequent
 such as long code lists, full [variable dictionaries](extensions/datacube/README.md), QA/QC outputs,
 detailed table schemas, and detailed [classification legends](extensions/classification/README.md).
 
-### 4.6 Author-supplied vs review-inferred
+### 4.6 Author-supplied vs machine-derived
 
-Review MAY add technical facts readable from the asset: `media_type`, `file_size`, `spatial.bbox`,
-`spatial.crs`, and variable `data_type` / `nodata` / `dimensions`. Authors SHOULD provide them when
-known. Fields such as descriptions, units, reading guidance, caveats, license, citation, remain the
-author's responsibility.
+Every field a record can hold is either machine-derivable or directly authored. This implies who is
+expected to provide each field.
+
+| Tier                  | Supplied by                                 | Fields                                                                                                                                                                     |
+| --------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Machine-derivable** | Readable from the data itself               | `media_type`, `file_size`, `spatial.bbox`, `spatial.crs`, `spatial.resolution`, `spatial.geometry_column`, `data[].nodata`, `variables[].data_type`, table columns         |
+| **Authored**          | A person, always - no tool can supply these | `title`, `description`, `note`, `keywords`, `resource_type`, `license`, `access`, `contact`, `citation`, `series`, units, reading guidance, caveats, and every `cdh` field |
+
+Three rules govern how the tiers interact:
+
+1. **An authored value always wins.** A value written by a person is never silently replaced by one
+   read from the data. This holds even when the two disagree.
+2. **Machine-derivable fields are never required of the author.** No machine-derivable field is
+   listed as Required in section 5; leaving one out is not an omission. Authors SHOULD provide them
+   when known, and MUST provide the ones needed to interpret the resource when the data cannot be
+   read - embargoed or `access: restricted` resources, or a record authored before the data is
+   uploaded. Otherwise they can be filled in the review process with the data.
+3. **A disagreement is reported for review.** Where an authored value and the data disagree, the
+   difference is reported for review. Neither value is changed automatically: the data may be wrong,
+   the record may be wrong, and only a person can say which.
+
+Values may be filled in at any time before publication - by the author, by review, or by a tool that
+reads the data - but they are filled **into the record**. A published record is complete on its own
+and never resolves values from another record, a parent, or an external file at read time.
 
 ### 4.7 Versioning a resource
 
@@ -379,8 +399,14 @@ keywords:
 - **Requirement:** Optional
 - **Expected value:** `{ name, url }`; `name` is required.
 - **Rules:**
-  - Groups records that belong to one dataset series or product family (e.g., MapSPAM, GLW, Africa
-    Agriculture Adaptation Atlas), independent of the version chain.
+  - Groups records published under one program, initiative, or product brand (e.g., Africa
+    Agriculture Adaptation Atlas, MapSPAM, GLW), independent of the version chain.
+  - Members are heterogeneous anda one series may span domains, resolutions, and resource types - a
+    program series can hold climate, population, and production datasets at once
+  - Not a product family. Do not use `series` to group representations or releases of a single
+    resource - a grid and its polygon aggregates, or one product at two resolutions. That
+    relationship is expressed by where the records sit in the catalog, plus
+    `processing[].derived_from` for the derivation itself.
   - `name` is the grouping key: use the exact same spelling on every record in the series.
   - `url` is the series landing page, when one exists.
   - A series is not a version chain (section 4.7) and not provenance (`processing[].derived_from`).
