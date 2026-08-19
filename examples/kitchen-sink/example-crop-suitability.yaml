@@ -8,6 +8,8 @@
 # place. Names, orgs, URLs, DOIs, and numbers are all invented.
 # This is the CURRENT release (v2.0); its predecessor snapshot lives in
 # example-crop-suitability-v1.yaml and is referenced via previous_version.
+# admin2/example-crop-suitability-admin2.yaml is its child: the admin-2
+# aggregation of this grid (standard.md section 4.8).
 # ============================================================================
 cdh_schema_version: "v0.2.0"
 extensions:

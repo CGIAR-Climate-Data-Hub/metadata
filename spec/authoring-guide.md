@@ -504,6 +504,30 @@ additional_assets:
       - url: https://example.org/examples/join-admin2.ipynb
 ```
 
+## Where The Record Lives
+
+Put the record in a directory named for the resource. Superseded snapshots sit beside it. When a
+representation exists only because of that resource - an admin-level aggregation, a point
+extraction, a convenience reformat nobody would look for on its own - give it a subdirectory, and it
+becomes a child you can enter from the parent:
+
+```text
+example-crop-suitability/
+  example-crop-suitability.yaml
+  example-crop-suitability-v1.yaml
+  admin2/
+    example-crop-suitability-admin2.yaml
+```
+
+Nothing is inherited. Each record still states its own `license`, `contact`, `citation`, `spatial`,
+and `temporal`, even where the parent repeats it word for word - the position only adds navigation
+links, and a child still records `processing[].derived_from` if it was derived from its parent.
+
+If the thing has standing of its own - its own DOI, its own funding, inputs from several products -
+it is not a child. Give it its own directory and link it with `derived_from`. Do not group by theme
+or program either: a subject area is `cdh.domain` and a program is `series`, and both stay filters
+rather than folders. See `standard.md` section 4.8.
+
 ## Superseding a Record
 
 When a new release of the data ships, snapshot first, then update in place:
