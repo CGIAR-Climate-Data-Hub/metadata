@@ -372,7 +372,8 @@ function validateFile(file, doc) {
     // When any subschema fails, Ajv also flags every legitimate top-level
     // field as "unevaluated" - keep only strays that no composed schema
     // actually defines.
-    const evaluable = new Set();
+    // $schema is allowed via patternProperties, not properties.
+    const evaluable = new Set(["$schema"]);
     for (const id of [CORE_ID, ...known]) {
       for (const key of Object.keys(validator.getSchema(id)?.schema?.properties ?? {})) {
         evaluable.add(key);
