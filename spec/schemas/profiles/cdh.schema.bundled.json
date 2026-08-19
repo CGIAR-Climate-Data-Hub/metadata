@@ -88,10 +88,19 @@
                 "description": "Asset name; becomes the asset key in serialized output, so it must be unique across data[] and additional_assets[]."
               },
               "roles": {
-                "description": "Asset roles, e.g. metadata, thumbnail, or describedby.",
+                "description": "Asset roles. Suggested values, not a closed set: `metadata`, `validation`, `describedby`, `thumbnail`, `overview`, `visual`, `example` (a runnable usage example, e.g. a notebook or SQL file).",
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "minLength": 1,
+                  "examples": [
+                    "metadata",
+                    "validation",
+                    "describedby",
+                    "thumbnail",
+                    "overview",
+                    "visual",
+                    "example"
+                  ]
                 },
                 "type": "array",
                 "uniqueItems": true

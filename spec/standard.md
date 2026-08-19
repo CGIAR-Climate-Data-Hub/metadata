@@ -652,8 +652,10 @@ these extension fields, not in `keywords` (see section 4.4).
 - **Expected value per entry:** `{ name, locations, description, media_type, roles, file_size }`.
 - **`locations[]`:** Same shape and rules as `data[].locations` - required, at least one entry;
   first is canonical; multiple entries only for the same content via a different access path.
-- **Vocabulary for `roles`:** `metadata`, `validation`, `describedby`, `thumbnail`, `overview`,
-  `visual`.
+- **Vocabulary for `roles`:** Suggested, not closed - `metadata`, `validation`, `describedby`,
+  `thumbnail`, `overview`, `visual`, `example`. Use `example` for a runnable usage example (a
+  notebook, script, or SQL file), which is the place for a query a consumer needs but the data
+  cannot carry - a required join, or a non-obvious column meaning.
 - **Rules:** Same as `data[]`.
 
 #### `additional_links[]`

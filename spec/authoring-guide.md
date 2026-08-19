@@ -490,6 +490,20 @@ alternate formats, or services.
 For `additional_assets`, provide `media_type` and `file_size` when known. Review may add them from
 inspectable files.
 
+`roles` is open; the suggested values are `metadata`, `validation`, `describedby`, `thumbnail`,
+`overview`, `visual`, and `example`. Use `example` for a runnable usage example - worth adding when
+consuming the data needs a query that the data itself cannot carry, such as a required join:
+
+```yaml
+additional_assets:
+  - name: join-example
+    roles: [example]
+    media_type: application/x-ipynb+json
+    description: Joins the table to admin-2 boundaries and maps the result.
+    locations:
+      - url: https://example.org/examples/join-admin2.ipynb
+```
+
 ## Superseding a Record
 
 When a new release of the data ships, snapshot first, then update in place:
