@@ -10,6 +10,79 @@ occur between minor versions.
 
 ## [Unreleased]
 
+### Added
+
+- Added the `example` asset role for `additional_assets[]` - a runnable usage example (notebook,
+  script, or SQL file), which is the place for a query a consumer needs but the data itself cannot
+  carry, such as a required join. `roles` stays an open list; the suggested values are now carried
+  in the schema so editors offer them.
+- Added section 4.8, catalog position: a record's place in the catalog comes from where its file
+  sits. The record in a directory is that directory's node, records in subdirectories are its
+  children, and a pure grouping directory (one holding no record of its own) becomes a navigation
+  node named after the directory. Position adds parent and child links only - no value is ever
+  inherited from a parent, child, or sibling - and a child is nested only when it has no standing
+  outside its parent. Version snapshots sit beside their record and are never children.
+- Added `variables[].nodata` to the datacube extension, for stores whose variables carry different
+  fill values (a `float32` measure filled with `-9999` beside a `uint8` classification filled with
+  `255`). `data[].nodata` remains the asset default and a variable's own value replaces it for that
+  variable alone. A single GeoTIFF never needs it, since its bands share one data type and one fill
+  value.
+- Section 4.6 now states which fields are machine-derivable from the data and which are always
+  authored, with three rules: an authored value always wins, machine-derivable fields are never
+  required of the author, and a disagreement between an authored value and the data is a review
+  finding rather than an automatic correction.
+- Added editor hints across the schemas - `examples` on `id`, contact `email`, join `target`, asset
+  `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
+  profile suggest values and label positional array members.
+- Published the cross-field checks as `spec/checks/cross-field.js`, mirrored to
+  `<base>/v<TAG>/checks/cross-field.js` beside the schema and pinned to the same release. It is
+  dependency-free ESM, so the same source runs in Node and in a browser; the SPDX expression
+  validator is injected (`check(record, { isSpdx })`) because it is the only rule that needs a
+  library. `scripts/validate-yaml.js` now imports this module instead of carrying its own copy, so a
+  form or app validates against exactly the rules the pipeline applies.
+- Vendored the pinned OGC API - Records 1.0 record schema under `external/`, so validation of
+  records routed to that encoding is offline and deterministic against a named spec version.
+
+### Changed
+
+- **Breaking:** `spatial.resolution` now allows exactly one spatial characterization per record: a
+  single entry, or an `x` + `y` pair where grid spacing differs. A grid entry beside a `point` or
+  `polygon` entry is rejected. A representation of the same data at a different resolution (polygon
+  aggregates of a grid) is a separate record, and resolution is never stated per asset.
+- **Breaking:** every `spatial.resolution[]` entry must state `type`.
+- **Breaking:** `dimensions[].type` must be lowercase (`^[a-z][a-z0-9_-]*$`), and the aliases
+  `time`, `times`, `date`, `dates`, `datetime`, and `timestamp` are rejected. `temporal` is the only
+  spelling that produces a time axis, so a typo now fails validation instead of silently serializing
+  as a domain axis. `temporal`, `spatial`, and `bands` are documented as reserved values; anything
+  else names a domain axis after what it varies.
+- **Breaking:** classification class values are restricted to a string or an integer, where any
+  number or boolean was previously accepted.
+- `series` is now a program, initiative, or product brand grouping whose members are heterogeneous
+  by design - one series can hold climate, population, and production datasets at once. It is a
+  discovery facet, so filtering by series must keep its members individually listed and filterable,
+  and it is explicitly not a product family: that relationship is catalog position (section 4.8)
+  plus `processing[].derived_from`.
+- Cross-field rules that a schema keyword can express moved out of `scripts/validate-yaml.js` and
+  into the published schema: `temporal` `date` versus `start_date`/`end_date` exclusivity, the
+  reserved CDH vocab schemes on `keywords[]`, and the `rel: license` link required alongside a
+  `LicenseRef-*` expression. Third-party validators now enforce them without this repository's
+  scripts. The script keeps only what a schema cannot state - value comparisons, name cross-
+  references between arrays, per-property uniqueness, and the SPDX expression grammar.
+- On a templated (`href_template`) entry, `file_size` describes one generated file rather than the
+  whole set; omit it where slices differ materially in size instead of averaging them.
+- The mapping documents (`mapping-stac.md`, `mapping-ogc-records.md`, `crosswalk.md`) are now
+  explicitly informative. `standard.md` is normative, a record is validated against the schema and
+  never against a mapping, and routing language that read as a requirement has been removed. Whether
+  non-spatial records are also encoded as STAC, to keep one format across the catalog, is written up
+  as an open question in `mapping-stac.md` section 1.1.
+
+### Fixed
+
+- `$schema` no longer appears in the validator's stray-field report; it is permitted through
+  `patternProperties` rather than `properties`.
+- The kitchen-sink example declared an `int8` variable under an asset-level `nodata: -9999`, a value
+  that type cannot hold. The variable is now `uint8` with its own `nodata: 255`.
+
 ## [0.2.0] - 2026-07-17
 
 ### Added
