@@ -139,6 +139,10 @@ Collection `extent.temporal`.
 
 For grid data, `spatial.resolution[]` derives `cube:dimensions[].step` with native units.
 
+`data[].nodata` is the asset default and fans out to every variable in that asset; a
+`variables[].nodata` replaces it for that variable alone. For an entry templated over `{variable}`
+(section 5.2), each expanded Item takes the nodata of the variable it holds.
+
 - Use Raster Extension on raster assets when band-level physical metadata exists.
 
 - Tabular data uses Table Extension `table:columns`; `spatial.geometry_column` maps to

@@ -34,7 +34,8 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
 
 - **Requirement:** Conditional. Required when the resource has measurement variables, bands, or
   columns.
-- **Expected value per variable:** `{ name, dimensions, description, data_type, unit, note }`.
+- **Expected value per variable:**
+  `{ name, dimensions, description, data_type, unit, nodata, note }`.
 - **Rules:**
   - `unit` is the unit of measurement, preferably compliant with UDUNITS-2 or UCUM (e.g., `ha`, `t`,
     `t ha-1`, `K`, `kg m-2 s-1`, `{head}/km2`) rather than strictly validated. Use `1` or omit for
@@ -42,6 +43,11 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
   - Climate variables should use CF standard names where practical (e.g., `precipitation_flux`,
     `air_temperature`).
   - `data_type` follows numpy-style names (`float32`, `int16`, …).
+  - `nodata` is the fill value for this variable, and is only needed where it differs from the
+    asset's `data[].nodata` - which stays the default for every variable that does not state one.
+    Use it when one store holds variables of different types (a `float32` measure filled with
+    `-9999` beside a `uint8` classification filled with `255`); a single GeoTIFF cannot, since its
+    bands share one data type and one fill value.
   - `description` says what the variable measures. Add reading guidance when direction matters.
   - `note` is for variable-specific caveats. Use record-level `note` for dataset-wide limitations.
   - Review may add technical metadata from inspectable files, but not meaning, units, or caveats.

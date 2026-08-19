@@ -1617,10 +1617,22 @@
                 "minLength": 1,
                 "type": "string"
               },
+              "nodata": {
+                "description": "No-data / fill value for this variable, where it differs from the asset's. Takes precedence over the asset's nodata for this variable only.",
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                ]
+              },
               "note": {
-                "description": "Variable-specific caveats, limitations, or warnings.",
                 "minLength": 1,
-                "type": "string"
+                "type": "string",
+                "description": "Variable-specific caveats, limitations, or warnings."
               }
             },
             "required": ["name", "description", "unit"]

@@ -152,9 +152,13 @@ variables:
     note: Dimensionless index; do not sum across cells.
   - name: suitability_class
     description: Categorical suitability derived by binning suitability_index.
-    data_type: int8
+    data_type: uint8
     dimensions: [crop, scenario, time]
     unit: "1"
+    # This variable's fill value differs from the asset default (-9999, which no
+    # uint8 can hold), so it states its own. The float variable above takes the
+    # asset value.
+    nodata: 255
     note: See the classification classes for value meanings.
 
 cdh:

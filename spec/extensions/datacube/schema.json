@@ -105,6 +105,10 @@
             "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM.",
             "examples": ["t ha-1", "{head}/km2"]
           },
+          "nodata": {
+            "description": "No-data / fill value for this variable, where it differs from the asset's. Takes precedence over the asset's nodata for this variable only.",
+            "anyOf": [{ "type": "number" }, { "$ref": "#/$defs/nonEmptyString" }]
+          },
           "note": {
             "$ref": "#/$defs/nonEmptyString",
             "description": "Variable-specific caveats, limitations, or warnings."

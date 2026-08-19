@@ -138,7 +138,7 @@ expected to provide each field.
 
 | Tier                  | Supplied by                                 | Fields                                                                                                                                                                     |
 | --------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Machine-derivable** | Readable from the data itself               | `media_type`, `file_size`, `spatial.bbox`, `spatial.crs`, `spatial.resolution`, `spatial.geometry_column`, `data[].nodata`, `variables[].data_type`, table columns         |
+| **Machine-derivable** | Readable from the data itself               | `media_type`, `file_size`, `spatial.bbox`, `spatial.crs`, `spatial.resolution`, `spatial.geometry_column`, `nodata`, `variables[].data_type`, table columns                |
 | **Authored**          | A person, always - no tool can supply these | `title`, `description`, `note`, `keywords`, `resource_type`, `license`, `access`, `contact`, `citation`, `series`, units, reading guidance, caveats, and every `cdh` field |
 
 Three rules govern how the tiers interact:

@@ -81,14 +81,15 @@ against the schema, not against this table.
 
 ## Assets and Links
 
-| CDH field             | Scope       | STAC                                                                      | OGC API Records                                                                     |
-| --------------------- | ----------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `data[].locations[]`  | Required    | `locations[0]` = `assets[*].href`; extras to Alternate Assets `alternate` | `locations[0]` = `links[rel=enclosure]`/`service`; extras to `links[rel=alternate]` |
-| `data[].media_type`   | Recommended | `assets[*].type`                                                          | `links[*].type`                                                                     |
-| `data[].file_size`    | Recommended | File Extension `assets[*]["file:size"]`                                   | `links[*].length`                                                                   |
-| `data[].nodata`       | Conditional | Datacube `cube:variables[*].nodata`; Raster `raster:bands[*].nodata`      | `properties["cgiar-cdh:variables"][*].nodata`                                       |
-| `additional_assets[]` | Recommended | `assets[*]` with appropriate `roles`                                      | `links[*]` with appropriate `rel`                                                   |
-| `additional_links[]`  | Optional    | `links[*]`                                                                | `links[*]`                                                                          |
+| CDH field             | Scope       | STAC                                                                             | OGC API Records                                                                     |
+| --------------------- | ----------- | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `data[].locations[]`  | Required    | `locations[0]` = `assets[*].href`; extras to Alternate Assets `alternate`        | `locations[0]` = `links[rel=enclosure]`/`service`; extras to `links[rel=alternate]` |
+| `data[].media_type`   | Recommended | `assets[*].type`                                                                 | `links[*].type`                                                                     |
+| `data[].file_size`    | Recommended | File Extension `assets[*]["file:size"]`                                          | `links[*].length`                                                                   |
+| `data[].nodata`       | Conditional | Datacube `cube:variables[*].nodata`; Raster `raster:bands[*].nodata`             | `properties["cgiar-cdh:variables"][*].nodata`                                       |
+| `variables[].nodata`  | Optional    | Datacube `cube:variables[*].nodata` for that variable; overrides the asset value | `properties["cgiar-cdh:variables"][*].nodata`                                       |
+| `additional_assets[]` | Recommended | `assets[*]` with appropriate `roles`                                             | `links[*]` with appropriate `rel`                                                   |
+| `additional_links[]`  | Optional    | `links[*]`                                                                       | `links[*]`                                                                          |
 
 ## Link relations used
 
