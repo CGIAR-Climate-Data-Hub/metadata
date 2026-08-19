@@ -520,10 +520,14 @@ spatial:
   data (e.g., regular grids, point observations, or polygon reporting units).
 - **Expected value:** List of `{ type, value, unit, label, reference_system, note }`.
 - **Rules:**
-  - `type` is one of `xy`, `x`, `y`, `point`, or `polygon`.
+  - `type` is required, and is one of `xy`, `x`, `y`, `point`, or `polygon`.
+  - **Exactly one spatial characterization per record:** either a single entry, or an `x` + `y` pair
+    when grid spacing differs. No other combination is valid - a grid entry never sits beside a
+    `point` / `polygon` entry.
   - Use `type: xy` for regular grids with the same x/y spacing.
-  - Use separate `type: x` and `type: y` entries only when x/y spacing differs.
-  - Do not mix `xy` with `x` / `y` entries in the same record.
+  - A representation of the same data at a different spatial resolution (e.g. polygon aggregates
+    extracted from a grid) is a **separate record** linked by `derived_from`, not a second entry
+    here. Resolution is record-level, never per asset.
   - For grid entries (`xy`, `x`, `y`), `value` + `unit` describe grid spacing and map to STAC
     Datacube dimension `step` + `unit`.
   - For point or polygon entries, use `label` and `reference_system` to describe the observation
