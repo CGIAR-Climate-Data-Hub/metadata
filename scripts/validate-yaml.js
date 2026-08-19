@@ -220,9 +220,10 @@ function mechanismFor(validator, doc) {
   return { schema, known, unknown };
 }
 
-// Cross-field rules documented in standard.md that the schema cannot express.
-const RESERVED_SCHEME_PREFIX =
-  "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/vocab/";
+// Cross-field rules documented in standard.md that the schema cannot express:
+// value-to-value comparisons (dates, lengths), name cross-references between
+// arrays, per-property uniqueness, and the SPDX expression grammar. Anything a
+// schema keyword can state belongs in the schema, not here.
 function checkCrossFieldRules(doc) {
   const out = [];
   if (typeof doc?.cdh_schema_version === "string") {
@@ -240,20 +241,8 @@ function checkCrossFieldRules(doc) {
       }
     }
   }
-  if (typeof doc?.license === "string") {
-    if (!validateSpdxExpression(doc.license)) {
-      out.push(`/license: must be a valid SPDX license expression`);
-    }
-    if (/\bLicenseRef-[A-Za-z0-9.-]+\b/.test(doc.license)) {
-      const hasLicenseLink = list(doc?.additional_links).some(
-        (link) => link?.rel === "license" && typeof link?.url === "string" && link.url.length > 0,
-      );
-      if (!hasLicenseLink) {
-        out.push(
-          `/license: custom LicenseRef-* expressions require an additional_links[] entry with rel: license and url`,
-        );
-      }
-    }
+  if (typeof doc?.license === "string" && !validateSpdxExpression(doc.license)) {
+    out.push(`/license: must be a valid SPDX license expression`);
   }
   const dims = new Map(list(doc?.dimensions).map((d) => [d?.name, list(d?.values).length]));
   const namedVariables = list(doc?.variables).filter((v) => typeof v?.name === "string").length;
@@ -317,29 +306,6 @@ function checkCrossFieldRules(doc) {
       assetNames.add(asset.name);
     });
   }
-  list(doc?.keywords).forEach((kw, i) => {
-    if (kw && typeof kw === "object" && kw.scheme?.startsWith?.(RESERVED_SCHEME_PREFIX)) {
-      out.push(
-        `/keywords/${i}/scheme: CDH vocab schemes are reserved for encoder expansion (cdh.domain / commodities) - link an external vocabulary instead`,
-      );
-    }
-  });
-  if (doc?.temporal && typeof doc.temporal === "object") {
-    const { date, start_date, end_date } = doc.temporal;
-    const hasDate = date !== undefined;
-    const hasStart = start_date !== undefined;
-    const hasEnd = end_date !== undefined;
-    if (hasDate && (hasStart || hasEnd)) {
-      out.push(
-        `/temporal: use "date" for a single instant/period, or "start_date"/"end_date" for a span - not both`,
-      );
-    }
-    if (hasStart !== hasEnd) {
-      out.push(
-        `/temporal: "start_date" and "end_date" must be used together (end_date: null for open-ended)`,
-      );
-    }
-  }
   const columnNames = new Set(
     [...list(doc?.dimensions), ...list(doc?.variables)]
       .map((c) => c?.name)
@@ -372,6 +338,9 @@ const isDraft = (file) => forceDraft || file.startsWith(TEMPLATES_PREFIX);
 // the allowed values for enum misses.
 function describeError(err) {
   const p = err.params ?? {};
+  // A `false` subschema means "this field is not allowed here" (e.g. temporal
+  // date vs start_date/end_date); Ajv's own wording says nothing useful.
+  if (err.keyword === "false schema") return "must not be present alongside its sibling fields";
   const stray = p.unevaluatedProperty ?? p.additionalProperty;
   if (stray != null) return `${err.message}: "${stray}"`;
   if (Array.isArray(p.allowedValues)) {

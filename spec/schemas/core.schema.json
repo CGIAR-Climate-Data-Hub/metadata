@@ -509,6 +509,15 @@
           "anyOf": [{ "$ref": "#/$defs/coverageDate" }, { "type": "null" }]
         }
       },
+      "dependentRequired": {
+        "start_date": ["end_date"],
+        "end_date": ["start_date"]
+      },
+      "dependentSchemas": {
+        "date": {
+          "properties": { "start_date": false, "end_date": false }
+        }
+      },
       "type": "object"
     }
   },
@@ -633,9 +642,12 @@
                 "minLength": 1
               },
               "scheme": {
-                "description": "Resolvable URI of the controlled vocabulary or ontology this term comes from.",
+                "description": "Resolvable URI of the controlled vocabulary or ontology this term comes from. CDH vocab schemes (.../cdh-metadata-standard/vocab/) are reserved for encoder expansion of cdh.domain / commodities - link an external vocabulary instead.",
                 "type": "string",
-                "format": "uri"
+                "format": "uri",
+                "not": {
+                  "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/vocab/"
+                }
               },
               "uri": {
                 "description": "Resolvable URI of the specific concept within `scheme`.",
@@ -757,6 +769,25 @@
       },
       "then": {
         "required": ["access_note"]
+      }
+    },
+    {
+      "if": {
+        "required": ["license"],
+        "properties": {
+          "license": { "pattern": "\\bLicenseRef-[A-Za-z0-9.-]+\\b" }
+        }
+      },
+      "then": {
+        "required": ["additional_links"],
+        "properties": {
+          "additional_links": {
+            "contains": {
+              "properties": { "rel": { "const": "license" } },
+              "required": ["rel", "url"]
+            }
+          }
+        }
       }
     }
   ],
