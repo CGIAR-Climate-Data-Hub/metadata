@@ -1,12 +1,10 @@
 # CDH Metadata Crosswalk
 
-Single-table view of how CDH fields map to STAC and OGC API Records
-(recordJSON). This is designed to be informative only; rules and field
-definitions live in `standard.md`, and a record is validated against the schema,
-not against this table.
+Single-table view of how CDH fields map to STAC and OGC API Records (recordJSON). This is designed
+to be informative only; rules and field definitions live in `standard.md`, and a record is validated
+against the schema, not against this table.
 
-`cgiar-cdh:` fields are defined by the CDH STAC Extension and CDH OGC Records
-profile.
+`cgiar-cdh:` fields are defined by the CDH STAC Extension and CDH OGC Records profile.
 
 `N/A` means the field has no place in that encoding.
 
@@ -94,8 +92,7 @@ profile.
 
 ## Link relations used
 
-`self`, `root`, `parent`, `child`, `collection`, `cite-as`, `describedby`,
-`describes`, `about`, `via`, `canonical`, `alternate`, `derived_from`,
-`enclosure`, `service`, `license`, `preview`, `icon`, `thumbnail`,
-`processing-expression`, `predecessor-version`, `successor-version`,
+`self`, `root`, `parent`, `child`, `collection`, `cite-as`, `describedby`, `describes`, `about`,
+`via`, `canonical`, `alternate`, `derived_from`, `enclosure`, `service`, `license`, `preview`,
+`icon`, `thumbnail`, `processing-expression`, `predecessor-version`, `successor-version`,
 `latest-version`, `version-history`.
