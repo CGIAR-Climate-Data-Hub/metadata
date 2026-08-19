@@ -268,8 +268,10 @@ Rules:
 - The template assumes every value combination exists.
 - Each file URL is `locations[0].url` + filled template; additional locations become alternates.
 - Without `href_template`, `locations[].url` are full file URLs and the entry stays one asset.
-- A templated entry shares one `description`, `nodata`, and `media_type` across every generated
-  file; split into separate `data[]` entries (e.g. one per variable) when those differ.
+- A templated entry shares one `description`, `nodata`, `media_type`, and `file_size` across every
+  generated file; split into separate `data[]` entries (e.g. one per variable) when those differ.
+  `file_size` is the size of a single generated file, not the set - omit it where slices differ
+  materially in size rather than averaging them.
 
 Only the file-partitioning dimensions go in the template. Dimensions stored inside each file (e.g.
 bands of a multi-band COG) stay out of it.

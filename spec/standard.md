@@ -705,8 +705,9 @@ these extension fields, not in `keywords` (see section 4.4).
   reserved `{variable}` token, which expands over `variables[].name` for files split per variable
   (`variable` is therefore not allowed as a dimension name). The entry serializes as one item per
   combination of the tokens' values. Values are substituted verbatim; every combination is assumed
-  to exist. Omit it for a single file. See the
-  [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
+  to exist. Omit it for a single file. On a templated entry, `file_size` describes **one generated
+  file**, not the set; where slices differ materially in size, omit it rather than averaging. See
+  the [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
 - **Rules:**
   - `name` is required; it becomes the asset key in serialized output and must be unique across
     `data[]` and `additional_assets[]`.
