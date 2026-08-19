@@ -2,13 +2,15 @@
 
 Status: v0.2.0
 
-This document specifies how a CDH metadata record is encoded as an **OGC API Records** record. Field
-definitions and requirements live in `standard.md`.
+This document is **informative**. It describes the reference encoding of a CDH record as an **OGC
+API Records** record. All field definitions and requirements live in `standard.md`, which is the
+normative document: a record is valid or invalid against the schema, never against this mapping.
+Where the two disagree, `standard.md` wins and this document is wrong.
 
-## 1. When to use OGC API Records
+## 1. What OGC API Records encodes well
 
-Use OGC API Records when the resource is discoverable but not naturally modeled as STAC. Typical
-cases:
+OGC API Records fits resources that are discoverable but carry no spatial footprint to hang a STAC
+Collection on:
 
 - Non-spatiotemporal tabular datasets
 - Documents and reports
@@ -17,8 +19,9 @@ cases:
 - Dashboards, services, APIs for non spatial data
 - Knowledge products
 
-This mapping applies to records routed to OGC API Records: everything that is not a spatial
-`dataset` (see `standard.md` section 4.1). Routing is inferred, not author-set.
+Which encoding a record receives is inferred from the record, never author-set. Today that means
+records without a spatial footprint encode here and the rest encode as STAC; a deployment that
+prefers one format for everything is discussed in `mapping-stac.md` section 1.1.
 
 ## 2. Record encoding
 
@@ -108,6 +111,14 @@ Use STAC for tabular datasets with embedded geometry or spatial asset metadata.
 `properties.themes`. OGC Records has no STAC `summaries`, so faceted values are direct array
 properties.
 
+### 4.5 Catalog position
+
+A record's position (`standard.md` section 4.8) creates no new resource here. Records stay
+individual records in the same record collection, and the hierarchy is carried as `parent` and
+`child` links between them. Unlike the STAC encoding (`mapping-stac.md` section 4.7), no
+intermediate catalog resource is generated for a pure grouping directory, because a record
+collection is already the unit an OGC API - Records deployment serves.
+
 ## 5. Links
 
 OGC API Records uses `links` for access, citation targets, services, related resources,
@@ -119,6 +130,7 @@ documentation, and provenance.
 | ------------------------------------------- | -------------------------------------------- |
 | `self`                                      | This record                                  |
 | `collection`                                | Parent record collection                     |
+| `parent` / `child`                          | Family position (section 4.5)                |
 | `cite-as`                                   | DOI or preferred citation target             |
 | `describes` / `describedby`                 | Described resource / documentation or schema |
 | `enclosure`                                 | Downloadable file                            |
