@@ -56,7 +56,8 @@
       "properties": {
         "email": {
           "format": "email",
-          "type": "string"
+          "type": "string",
+          "examples": ["ada.placeholder@example.org"]
         },
         "name": {
           "type": "string",
@@ -143,26 +144,31 @@
       "description": "A single bounding box: 2D [west, south, east, north], or 3D [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
       "oneOf": [
         {
+          "title": "2D box",
           "type": "array",
           "minItems": 4,
           "maxItems": 4,
           "prefixItems": [
             {
+              "title": "West",
               "type": "number",
               "minimum": -180,
               "maximum": 180
             },
             {
+              "title": "South",
               "type": "number",
               "minimum": -90,
               "maximum": 90
             },
             {
+              "title": "East",
               "type": "number",
               "minimum": -180,
               "maximum": 180
             },
             {
+              "title": "North",
               "type": "number",
               "minimum": -90,
               "maximum": 90
@@ -171,34 +177,41 @@
           "items": false
         },
         {
+          "title": "3D box",
           "type": "array",
           "minItems": 6,
           "maxItems": 6,
           "prefixItems": [
             {
+              "title": "West",
               "type": "number",
               "minimum": -180,
               "maximum": 180
             },
             {
+              "title": "South",
               "type": "number",
               "minimum": -90,
               "maximum": 90
             },
             {
+              "title": "Min elevation",
               "type": "number"
             },
             {
+              "title": "East",
               "type": "number",
               "minimum": -180,
               "maximum": 180
             },
             {
+              "title": "North",
               "type": "number",
               "minimum": -90,
               "maximum": 90
             },
             {
+              "title": "Max elevation",
               "type": "number"
             }
           ],
@@ -239,7 +252,8 @@
     "id": {
       "description": "Short, stable, URL-safe identifier (lowercase letters, digits, hyphens).",
       "pattern": "^[a-z0-9][a-z0-9-]*$",
-      "type": "string"
+      "type": "string",
+      "examples": ["example-crop-suitability", "spam2020"]
     },
     "link": {
       "additionalProperties": false,
@@ -562,6 +576,7 @@
       "$ref": "#/$defs/citation"
     },
     "contact": {
+      "description": "People or organizations responsible for the resource. At least one entry must hold the `licensor` role - the party that granted the license.",
       "items": {
         "$ref": "#/$defs/contact"
       },

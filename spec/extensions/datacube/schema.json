@@ -124,7 +124,8 @@
           "target": {
             "type": "string",
             "format": "uri",
-            "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record)."
+            "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record).",
+            "examples": ["https://cdh.example/boundaries/gaul-2015-admin2"]
           },
           "left_fields": {
             "description": "Key columns in this record; each must be a declared dimensions[]/variables[] name.",
