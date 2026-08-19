@@ -1537,8 +1537,13 @@
               },
               "type": {
                 "type": "string",
-                "description": "Dimension type: a domain axis (e.g. crop, scenario), bands, or temporal. Declare every temporal axis here with a step; the top-level temporal field holds only the coverage extent. The lat/lon grid comes from the spatial field, not here.",
-                "minLength": 1
+                "description": "Dimension type. Three values are reserved and change how the dimension is read: `temporal` (a time axis, the only type that may carry a step), `spatial` (a column identifying a place, such as an admin code), and `bands`. Any other value names a domain axis after what it varies (crop, scenario, technology). Lowercase; aliases of `temporal` are rejected so a time axis cannot silently become a domain axis. The lat/lon grid comes from the spatial field, not here.",
+                "minLength": 1,
+                "pattern": "^[a-z][a-z0-9_-]*$",
+                "not": {
+                  "enum": ["time", "times", "date", "dates", "datetime", "timestamp"]
+                },
+                "examples": ["temporal", "spatial", "bands", "crop", "scenario"]
               },
               "reference_system": {
                 "description": "Vocabulary the dimension's values are coded against; prefer a resolvable URI when one exists (e.g. an AGROVOC concept scheme).",

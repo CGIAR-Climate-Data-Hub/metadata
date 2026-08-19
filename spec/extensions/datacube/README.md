@@ -12,7 +12,15 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
   whose meaning depends on axes/codes.
 - **Expected value per dimension:** `{ name, type, description, values, reference_system, step }`.
 - **Rules:**
-  - `type` is a domain axis name (e.g., `crop`, `technology`, `scenario`), `bands`, or `temporal`.
+  - `type` is either one of three **reserved** values or a domain axis name:
+    - `temporal` - a time axis. The only type that may carry a `step`, and the only spelling that
+      works: `time`, `date`, `datetime`, and `timestamp` are rejected rather than silently read as
+      domain axes.
+    - `spatial` - a column identifying a place rather than measuring something, such as an admin or
+      station code. Not the lat/lon grid, which comes from the top-level `spatial` field.
+    - `bands` - a band axis inside a single file.
+    - Anything else names a domain axis after what it varies (`crop`, `technology`, `scenario`).
+      Lowercase, digits, `-` and `_`.
   - **Do not declare the horizontal lat/lon grid here.** It comes from the top-level `spatial`
     field, and encoders derive the `x`/`y` cube dimensions from it. `variables[].dimensions` may
     still reference `lat`/`lon` even though they are not listed here.
