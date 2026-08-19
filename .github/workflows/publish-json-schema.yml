@@ -95,6 +95,9 @@ jobs:
           # STAC extensions (and any other schema groups under spec/extensions/)
           mirror spec/extensions publish/extensions
 
+          # Cross-field checks the schema cannot express, pinned to this release
+          mirror spec/checks publish/checks
+
           # Source controlled vocabularies (the concept lists themselves)
           mkdir -p publish/vocab
           find vocab -maxdepth 1 -type f -name '*.json' -exec cp {} publish/vocab/ \;
