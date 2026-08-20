@@ -1,0 +1,59 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json"
+  ],
+  "id": "example-crop-suitability-ssp245-maiz-suitability_index",
+  "collection": "example-crop-suitability",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [10, -5],
+        [40, -5],
+        [40, 20],
+        [10, 20],
+        [10, -5]
+      ]
+    ]
+  },
+  "bbox": [10, -5, 40, 20],
+  "properties": {
+    "datetime": "2030-01-01T00:00:00Z",
+    "cgiar-cdh:domain": ["agricultural-production"],
+    "cgiar-cdh:access": "restricted",
+    "cgiar-cdh:scenarios": ["ssp245"],
+    "cgiar-cdh:spatial_resolution": [
+      {
+        "type": "xy",
+        "value": 0.05,
+        "unit": "degree",
+        "label": "3 arc-minutes (~5 km at equator)"
+      }
+    ],
+    "cgiar-cdh:partition": {
+      "scenario": ["ssp245"],
+      "crop": ["maiz"],
+      "variable": ["suitability_index"]
+    }
+  },
+  "links": [
+    {
+      "rel": "collection",
+      "href": "https://example.org/stac/example-crop-suitability/collection.json"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_maiz_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": ["data"],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "maiz",
+        "variable": "suitability_index"
+      }
+    }
+  }
+}

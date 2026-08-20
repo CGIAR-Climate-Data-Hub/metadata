@@ -34,6 +34,24 @@ occur between minor versions.
 - Added editor hints across the schemas - `examples` on `id`, contact `email`, join `target`, asset
   `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
   profile suggest values and label positional array members.
+- Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
+  official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
+  with the field tables, and examples including a deliberately invalid one. It defines the sixteen
+  `cgiar-cdh:*` fields a record carries into STAC that no native field or community extension
+  covers, and closes the namespace with `additionalProperties: false` plus a negative-lookahead
+  `patternProperties`, so an undefined `cgiar-cdh:*` field - or a defined one in the wrong place -
+  fails validation. Scope is Collection, Item properties, assets, and links; a Catalog carries none,
+  since a CDH grouping node has no description of its own. Published to
+  `<base>/v<TAG>/encodings/stac/schema.json` with the rest of the release, and checked in CI by
+  `npm run check-stac-extension`, which also asserts the schema's `$id` and required
+  `stac_extensions` URL name the current version. This makes the "every `cgiar-cdh:*` field MUST be
+  defined" rule in `mapping-stac.md` true rather than aspirational.
+- Added `cgiar-cdh:partition`, which records where a file or Item sits on the axes its record
+  declares. The shape is contextual: an asset states one scalar per axis (the file's exact
+  position), an Item lists the values it spans. This gives the token values from an `href_template`
+  expansion a named home, which `mapping-stac.md` section 5.2 previously described without naming.
+- Added `cgiar-cdh:previous_version`, the superseded record's identifier repeated from the
+  `predecessor-version` link so a search can filter on it without following links.
 - Published the cross-field checks as `spec/checks/cross-field.js`, mirrored to
   `<base>/v<TAG>/checks/cross-field.js` beside the schema and pinned to the same release. It is
   dependency-free ESM, so the same source runs in Node and in a browser; the SPDX expression

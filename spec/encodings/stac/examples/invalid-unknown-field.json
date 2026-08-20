@@ -1,0 +1,17 @@
+{
+  "$comment": "Deliberately invalid: cgiar-cdh:made_up is not defined by this extension, so the closed namespace must reject it. Every other field here is valid.",
+  "type": "Collection",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json"
+  ],
+  "id": "example-invalid",
+  "description": "A Collection carrying an undefined cgiar-cdh field.",
+  "license": "CC-BY-4.0",
+  "extent": {
+    "spatial": { "bbox": [[10, -5, 40, 20]] },
+    "temporal": { "interval": [["2030-01-01T00:00:00Z", null]] }
+  },
+  "cgiar-cdh:domain": ["climate"],
+  "cgiar-cdh:made_up": "this field does not exist"
+}

@@ -98,6 +98,9 @@ jobs:
           # Cross-field checks the schema cannot express, pinned to this release
           mirror spec/checks publish/checks
 
+          # Output encodings (STAC extension schema + examples), same release tag
+          mirror spec/encodings publish/encodings
+
           # Source controlled vocabularies (the concept lists themselves)
           mkdir -p publish/vocab
           find vocab -maxdepth 1 -type f -name '*.json' -exec cp {} publish/vocab/ \;

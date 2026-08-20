@@ -1,0 +1,509 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json#",
+  "title": "CGIAR CDH Extension",
+  "description": "STAC extension for the CGIAR Climate Data Hub: the fields a CDH record carries into STAC that no native field or community extension covers. Fields whose meaning STAC already expresses natively (title, license, extent, sci:citation, cube:dimensions, proj:code) are not repeated here - see mapping-stac.md.",
+  "type": "object",
+  "required": ["stac_extensions", "type"],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "contains": {
+        "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json"
+      }
+    },
+    "type": {
+      "$comment": "Catalog is absent on purpose: a CDH grouping node carries no cgiar-cdh field (standard.md section 4.8).",
+      "type": "string",
+      "enum": ["Collection", "Feature"]
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/assetFields"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/linkFields"
+      }
+    },
+    "linkTemplates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/linkFields"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$comment": "Item: an expanded slice of a templated data entry carries the same descriptive fields as its Collection.",
+      "type": "object",
+      "required": ["type", "properties"],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "properties": {
+          "$ref": "#/definitions/itemFields"
+        }
+      }
+    },
+    {
+      "$comment": "Collection: the usual home for every field below.",
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "const": "Collection"
+        },
+        "summaries": {
+          "$ref": "#/definitions/summaries"
+        },
+        "item_assets": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/assetFields"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/fields"
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coverageDate": {
+      "$comment": "ISO 8601 at any precision, as authored: year, month, day, or an instant.",
+      "type": "string",
+      "minLength": 4
+    },
+    "nameUrl": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "url": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cgiar-cdh:resource_type": {
+      "description": "Kind of resource the record describes. STAC implies this through object type and asset media types; the field is carried for consistency across encodings.",
+      "type": "string",
+      "enum": ["dataset", "software", "service", "document"]
+    },
+    "cgiar-cdh:domain": {
+      "description": "CDH domains, most significant first. Values come from the CDH domain vocabulary (vocab/domain.json), which the input schema enforces; not re-enumerated here so the two cannot drift.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "cgiar-cdh:access": {
+      "description": "Access condition for the data, distinct from license. Absent means public.",
+      "type": "string",
+      "enum": ["public", "restricted", "non-public"]
+    },
+    "cgiar-cdh:access_note": {
+      "description": "What a user must do to obtain the data: request steps, authentication, or why it is catalogued but unavailable.",
+      "$ref": "#/definitions/nonEmptyString"
+    },
+    "cgiar-cdh:note": {
+      "description": "Caveats, warnings, or interpretation-critical context that is not part of the description.",
+      "$ref": "#/definitions/nonEmptyString"
+    },
+    "cgiar-cdh:funding": {
+      "description": "Funding sources for the resource.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/nameUrl"
+      }
+    },
+    "cgiar-cdh:series": {
+      "description": "Program, initiative, or product brand the resource was published under. Members are heterogeneous by design, so this is a discovery facet rather than a hierarchy.",
+      "$ref": "#/definitions/nameUrl"
+    },
+    "cgiar-cdh:geography": {
+      "description": "Place facet from the CDH geography vocabulary. Complements the spatial extent; it does not replace it.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "cgiar-cdh:spatial_resolution": {
+      "description": "Format-independent spatial resolution. Grid entries also become cube:dimensions[].step; point and polygon reporting units have no native STAC home, which is why the full list is carried here.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "description": "xy (regular grid), x, y, point, or polygon.",
+            "type": "string",
+            "enum": ["xy", "x", "y", "point", "polygon"]
+          },
+          "value": {
+            "description": "Grid spacing, or the administrative level.",
+            "type": ["number", "string"]
+          },
+          "unit": {
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "label": {
+            "description": "Human-readable resolution, e.g. 5 arc-minutes or Kenya counties.",
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "reference_system": {
+            "description": "For point and polygon types, the system defining the reporting units (e.g. GAUL 2015).",
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "note": {
+            "$ref": "#/definitions/nonEmptyString"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cgiar-cdh:not_recommended_for": {
+      "description": "Uses to avoid, each with a reason and an optional alternative.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["use", "reason"],
+        "properties": {
+          "use": {
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "reason": {
+            "$ref": "#/definitions/nonEmptyString"
+          },
+          "use_instead": {
+            "$ref": "#/definitions/nonEmptyString"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cgiar-cdh:mip_era": {
+      "description": "CMIP era of the source models.",
+      "type": "string",
+      "enum": ["CMIP5", "CMIP6"]
+    },
+    "cgiar-cdh:scenarios": {
+      "description": "Scenario labels, e.g. SSP/RCP or historic. Belongs in Collection summaries when it applies across Items, and additionally as a cube dimension when it is a data axis.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "cgiar-cdh:models": {
+      "description": "Climate model source IDs; 'ensemble' for a multi-model ensemble.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "cgiar-cdh:baseline": {
+      "description": "Reference period the projections are expressed against.",
+      "type": "object",
+      "properties": {
+        "start_date": {
+          "$ref": "#/definitions/coverageDate"
+        },
+        "end_date": {
+          "$ref": "#/definitions/coverageDate"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cgiar-cdh:bias_adjustment": {
+      "description": "Bias adjustment applied to the projections.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "reference_dataset": {
+          "$ref": "#/definitions/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cgiar-cdh:downscaling": {
+      "description": "Downscaling applied to the projections.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "$ref": "#/definitions/nonEmptyString"
+        },
+        "resolution": {
+          "type": ["number", "string"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "cgiar-cdh:code_version": {
+      "description": "Version of the code or workflow a processing-expression link points at.",
+      "$ref": "#/definitions/nonEmptyString"
+    },
+    "cgiar-cdh:left_fields": {
+      "description": "Key columns in this resource, paired positionally with cgiar-cdh:right_fields on a link to the joined resource.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "cgiar-cdh:right_fields": {
+      "description": "Matching columns in the joined resource, paired positionally with cgiar-cdh:left_fields.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
+    "fields": {
+      "$comment": "Fields allowed on a Collection. Nothing is required: this is referenced from every place the fields MAY appear.",
+      "type": "object",
+      "properties": {
+        "cgiar-cdh:resource_type": {
+          "$ref": "#/definitions/cgiar-cdh:resource_type"
+        },
+        "cgiar-cdh:domain": {
+          "$ref": "#/definitions/cgiar-cdh:domain"
+        },
+        "cgiar-cdh:not_recommended_for": {
+          "$ref": "#/definitions/cgiar-cdh:not_recommended_for"
+        },
+        "cgiar-cdh:access": {
+          "$ref": "#/definitions/cgiar-cdh:access"
+        },
+        "cgiar-cdh:access_note": {
+          "$ref": "#/definitions/cgiar-cdh:access_note"
+        },
+        "cgiar-cdh:note": {
+          "$ref": "#/definitions/cgiar-cdh:note"
+        },
+        "cgiar-cdh:previous_version": {
+          "$ref": "#/definitions/cgiar-cdh:previous_version"
+        },
+        "cgiar-cdh:mip_era": {
+          "$ref": "#/definitions/cgiar-cdh:mip_era"
+        },
+        "cgiar-cdh:baseline": {
+          "$ref": "#/definitions/cgiar-cdh:baseline"
+        },
+        "cgiar-cdh:bias_adjustment": {
+          "$ref": "#/definitions/cgiar-cdh:bias_adjustment"
+        },
+        "cgiar-cdh:downscaling": {
+          "$ref": "#/definitions/cgiar-cdh:downscaling"
+        },
+        "cgiar-cdh:scenarios": {
+          "$ref": "#/definitions/cgiar-cdh:scenarios"
+        },
+        "cgiar-cdh:models": {
+          "$ref": "#/definitions/cgiar-cdh:models"
+        },
+        "cgiar-cdh:spatial_resolution": {
+          "$ref": "#/definitions/cgiar-cdh:spatial_resolution"
+        },
+        "cgiar-cdh:funding": {
+          "$ref": "#/definitions/cgiar-cdh:funding"
+        },
+        "cgiar-cdh:series": {
+          "$ref": "#/definitions/cgiar-cdh:series"
+        },
+        "cgiar-cdh:geography": {
+          "$ref": "#/definitions/cgiar-cdh:geography"
+        }
+      },
+      "patternProperties": {
+        "^(?!cgiar-cdh:)": {
+          "$comment": "Anything outside the cgiar-cdh: namespace is someone else's business and passes untouched."
+        }
+      },
+      "additionalProperties": false
+    },
+    "linkFields": {
+      "$comment": "The only cgiar-cdh fields a link may carry.",
+      "type": "object",
+      "properties": {
+        "cgiar-cdh:code_version": {
+          "$ref": "#/definitions/cgiar-cdh:code_version"
+        },
+        "cgiar-cdh:left_fields": {
+          "$ref": "#/definitions/cgiar-cdh:left_fields"
+        },
+        "cgiar-cdh:right_fields": {
+          "$ref": "#/definitions/cgiar-cdh:right_fields"
+        }
+      },
+      "patternProperties": {
+        "^(?!cgiar-cdh:)": {}
+      },
+      "additionalProperties": false
+    },
+    "summaries": {
+      "$comment": "Faceted fields summarised across a Collection's Items. Lists and ranges validate; a JSON Schema summary (type: object) is always permitted.",
+      "type": "object",
+      "properties": {
+        "cgiar-cdh:scenarios": {
+          "type": ["array", "object"],
+          "items": {
+            "$ref": "#/definitions/nonEmptyString"
+          }
+        },
+        "cgiar-cdh:models": {
+          "type": ["array", "object"],
+          "items": {
+            "$ref": "#/definitions/nonEmptyString"
+          }
+        },
+        "cgiar-cdh:domain": {
+          "type": ["array", "object"],
+          "items": {
+            "$ref": "#/definitions/nonEmptyString"
+          }
+        },
+        "cgiar-cdh:geography": {
+          "type": ["array", "object"],
+          "items": {
+            "$ref": "#/definitions/nonEmptyString"
+          }
+        },
+        "cgiar-cdh:spatial_resolution": {
+          "type": ["array", "object"]
+        }
+      },
+      "patternProperties": {
+        "^(?!cgiar-cdh:)": {}
+      },
+      "additionalProperties": false
+    },
+    "cgiar-cdh:previous_version": {
+      "description": "Identifier of the record this one supersedes. The Version extension carries the same relationship as a predecessor-version link; the identifier is repeated as a property so a search can filter on it without following links.",
+      "$ref": "#/definitions/nonEmptyString"
+    },
+    "partitionScalar": {
+      "$comment": "Asset form: one exact value per axis - this file's position.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": ["string", "number", "boolean"]
+      }
+    },
+    "partitionValues": {
+      "$comment": "Item form: the values each axis spans within this Item.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": ["string", "number", "boolean"]
+        }
+      }
+    },
+    "itemFields": {
+      "$comment": "Item properties: the Collection's fields, plus the partition this Item covers.",
+      "type": "object",
+      "properties": {
+        "cgiar-cdh:resource_type": {
+          "$ref": "#/definitions/cgiar-cdh:resource_type"
+        },
+        "cgiar-cdh:domain": {
+          "$ref": "#/definitions/cgiar-cdh:domain"
+        },
+        "cgiar-cdh:not_recommended_for": {
+          "$ref": "#/definitions/cgiar-cdh:not_recommended_for"
+        },
+        "cgiar-cdh:access": {
+          "$ref": "#/definitions/cgiar-cdh:access"
+        },
+        "cgiar-cdh:access_note": {
+          "$ref": "#/definitions/cgiar-cdh:access_note"
+        },
+        "cgiar-cdh:note": {
+          "$ref": "#/definitions/cgiar-cdh:note"
+        },
+        "cgiar-cdh:previous_version": {
+          "$ref": "#/definitions/cgiar-cdh:previous_version"
+        },
+        "cgiar-cdh:mip_era": {
+          "$ref": "#/definitions/cgiar-cdh:mip_era"
+        },
+        "cgiar-cdh:baseline": {
+          "$ref": "#/definitions/cgiar-cdh:baseline"
+        },
+        "cgiar-cdh:bias_adjustment": {
+          "$ref": "#/definitions/cgiar-cdh:bias_adjustment"
+        },
+        "cgiar-cdh:downscaling": {
+          "$ref": "#/definitions/cgiar-cdh:downscaling"
+        },
+        "cgiar-cdh:scenarios": {
+          "$ref": "#/definitions/cgiar-cdh:scenarios"
+        },
+        "cgiar-cdh:models": {
+          "$ref": "#/definitions/cgiar-cdh:models"
+        },
+        "cgiar-cdh:spatial_resolution": {
+          "$ref": "#/definitions/cgiar-cdh:spatial_resolution"
+        },
+        "cgiar-cdh:funding": {
+          "$ref": "#/definitions/cgiar-cdh:funding"
+        },
+        "cgiar-cdh:series": {
+          "$ref": "#/definitions/cgiar-cdh:series"
+        },
+        "cgiar-cdh:geography": {
+          "$ref": "#/definitions/cgiar-cdh:geography"
+        },
+        "cgiar-cdh:partition": {
+          "$ref": "#/definitions/partitionValues"
+        }
+      },
+      "patternProperties": {
+        "^(?!cgiar-cdh:)": {
+          "$comment": "Anything outside the cgiar-cdh: namespace is someone else's business and passes untouched."
+        }
+      },
+      "additionalProperties": false
+    },
+    "assetFields": {
+      "$comment": "An asset describes one file, so the only cgiar-cdh field it carries is that file's exact position. Per-asset provenance uses the Processing extension.",
+      "type": "object",
+      "properties": {
+        "cgiar-cdh:partition": {
+          "$ref": "#/definitions/partitionScalar"
+        }
+      },
+      "patternProperties": {
+        "^(?!cgiar-cdh:)": {
+          "$comment": "Anything outside the cgiar-cdh: namespace is someone else's business and passes untouched."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

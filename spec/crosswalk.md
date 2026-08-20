@@ -4,7 +4,9 @@ Single-table view of how CDH fields map to STAC and OGC API Records (recordJSON)
 to be informative only; rules and field definitions live in `standard.md`, and a record is validated
 against the schema, not against this table.
 
-`cgiar-cdh:` fields are defined by the CDH STAC Extension and CDH OGC Records profile.
+`cgiar-cdh:` fields in the STAC column are defined by the
+[CDH STAC extension](./encodings/stac/schema.json); the OGC Records column awaits its profile
+schema.
 
 `N/A` means the field has no place in that encoding.
 
@@ -32,7 +34,7 @@ against the schema, not against this table.
 | `note`                  | Optional            | `cgiar-cdh:note`                                                                                                                        | `properties["cgiar-cdh:note"]`                                                                        |
 | `version`               | Conditional         | Version Extension `version`                                                                                                             | `properties.version`                                                                                  |
 | `deprecated`            | Conditional         | Version Extension `deprecated`                                                                                                          | `properties["cgiar-cdh:deprecated"]`                                                                  |
-| `previous_version`      | Conditional         | `links[rel=predecessor-version]`                                                                                                        | `links[rel=predecessor-version]`                                                                      |
+| `previous_version`      | Conditional         | `cgiar-cdh:previous_version` + `links[rel=predecessor-version]`                                                                         | `links[rel=predecessor-version]`                                                                      |
 | version chain (derived) | Encoder output only | Superseded records get `links[rel=successor-version]` and `links[rel=latest-version]`                                                   | Same links on superseded records                                                                      |
 | `funding`               | Optional            | `cgiar-cdh:funding`                                                                                                                     | `properties["cgiar-cdh:funding"]`                                                                     |
 | `series`                | Optional            | `cgiar-cdh:series`                                                                                                                      | `properties["dcat:inSeries"]` (DCAT 3 dataset series)                                                 |

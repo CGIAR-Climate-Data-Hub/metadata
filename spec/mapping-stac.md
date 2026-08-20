@@ -72,29 +72,29 @@ Searchable structured facts MUST NOT live only in free text.
 
 ### 4.1 Core
 
-| CDH                         | STAC placement                                                                                                                                                                                                                        |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                        | `id`                                                                                                                                                                                                                                  |
-| `title`                     | `title`                                                                                                                                                                                                                               |
-| `description`               | `description`                                                                                                                                                                                                                         |
-| `created` / `updated`       | `created` / `updated`                                                                                                                                                                                                                 |
-| `keywords`                  | `keywords`                                                                                                                                                                                                                            |
-| `license`                   | `license` (SPDX preferred)                                                                                                                                                                                                            |
-| `access`                    | `cgiar-cdh:access` (STAC has no native access-rights field). Omitted = `public`; `public` MAY be left unencoded.                                                                                                                      |
-| `access_note`               | `cgiar-cdh:access_note`; also suitable for schema.org `conditionsOfAccess` on generated landing pages.                                                                                                                                |
-| `contact[]`                 | `providers[]` and contacts extension `contacts[]` for additional contact info. At least one contact must include `licensor` in `roles`, which maps to a `licensor` provider.                                                          |
-| `citation`                  | `sci:citation`                                                                                                                                                                                                                        |
-| `doi`                       | `sci:doi` and `links[rel=cite-as]`                                                                                                                                                                                                    |
-| `related_publications[]`    | `sci:publications[]`                                                                                                                                                                                                                  |
-| `note`                      | `cgiar-cdh:note`                                                                                                                                                                                                                      |
-| `version`                   | `version` (Version Extension)                                                                                                                                                                                                         |
-| `deprecated`                | `deprecated` (Version Extension)                                                                                                                                                                                                      |
-| `previous_version`          | `links[rel=predecessor-version]`. The encoder derives the rest of the chain from the `previous_version` graph: superseded records get `links[rel=successor-version]` and `links[rel=latest-version]` (see `standard.md` section 4.7). |
-| `funding[]`                 | `cgiar-cdh:funding`                                                                                                                                                                                                                   |
-| `series`                    | `cgiar-cdh:series` (`{ name, url }`). `name` is the grouping key for series facets and listings.                                                                                                                                      |
-| `cdh.domain[]`              | `cgiar-cdh:domain` on the Collection; also expanded into Themes Extension `themes[]` under the CDH domain scheme. First entry drives sub-catalog placement.                                                                           |
-| `keywords[]` (linked items) | Each linked-keyword entry (`{ term, scheme, uri }`) is also emitted as a Themes Extension `themes[]` concept, grouped by `scheme`. Plain-string keywords are emitted only into STAC `keywords`.                                       |
-| Themes Extension `themes[]` | Encoder output only - populated from `cdh.domain`, `commodities`, and any linked-keyword entries. Not an author-facing input field.                                                                                                   |
+| CDH                         | STAC placement                                                                                                                                                                                                                                                           |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                        | `id`                                                                                                                                                                                                                                                                     |
+| `title`                     | `title`                                                                                                                                                                                                                                                                  |
+| `description`               | `description`                                                                                                                                                                                                                                                            |
+| `created` / `updated`       | `created` / `updated`                                                                                                                                                                                                                                                    |
+| `keywords`                  | `keywords`                                                                                                                                                                                                                                                               |
+| `license`                   | `license` (SPDX preferred)                                                                                                                                                                                                                                               |
+| `access`                    | `cgiar-cdh:access` (STAC has no native access-rights field). Omitted = `public`; `public` MAY be left unencoded.                                                                                                                                                         |
+| `access_note`               | `cgiar-cdh:access_note`; also suitable for schema.org `conditionsOfAccess` on generated landing pages.                                                                                                                                                                   |
+| `contact[]`                 | `providers[]` and contacts extension `contacts[]` for additional contact info. At least one contact must include `licensor` in `roles`, which maps to a `licensor` provider.                                                                                             |
+| `citation`                  | `sci:citation`                                                                                                                                                                                                                                                           |
+| `doi`                       | `sci:doi` and `links[rel=cite-as]`                                                                                                                                                                                                                                       |
+| `related_publications[]`    | `sci:publications[]`                                                                                                                                                                                                                                                     |
+| `note`                      | `cgiar-cdh:note`                                                                                                                                                                                                                                                         |
+| `version`                   | `version` (Version Extension)                                                                                                                                                                                                                                            |
+| `deprecated`                | `deprecated` (Version Extension)                                                                                                                                                                                                                                         |
+| `previous_version`          | `cgiar-cdh:previous_version`, plus `links[rel=predecessor-version]`. The encoder derives the rest of the chain from the `previous_version` graph: superseded records get `links[rel=successor-version]` and `links[rel=latest-version]` (see `standard.md` section 4.7). |
+| `funding[]`                 | `cgiar-cdh:funding`                                                                                                                                                                                                                                                      |
+| `series`                    | `cgiar-cdh:series` (`{ name, url }`). `name` is the grouping key for series facets and listings.                                                                                                                                                                         |
+| `cdh.domain[]`              | `cgiar-cdh:domain` on the Collection; also expanded into Themes Extension `themes[]` under the CDH domain scheme. First entry drives sub-catalog placement.                                                                                                              |
+| `keywords[]` (linked items) | Each linked-keyword entry (`{ term, scheme, uri }`) is also emitted as a Themes Extension `themes[]` concept, grouped by `scheme`. Plain-string keywords are emitted only into STAC `keywords`.                                                                          |
+| Themes Extension `themes[]` | Encoder output only - populated from `cdh.domain`, `commodities`, and any linked-keyword entries. Not an author-facing input field.                                                                                                                                      |
 
 ### 4.2 Resource type
 
@@ -234,7 +234,9 @@ A `data[]` entry with `href_template` emits one STAC Item per token combination:
 - For each combination, `locations[0]` + filled template is the canonical asset `href`. Additional
   locations become Alternate Assets entries.
 - The Item inherits the Collection's `dimensions` / `variables`; the token values pin its position
-  on those axes and SHOULD be emitted as Item properties so each slice is independently searchable.
+  on those axes and are emitted as `cgiar-cdh:partition` so each slice is independently searchable.
+  The shape is contextual: an Item's partition lists the values it spans (`{"crop": ["maiz"]}`),
+  while the asset inside it states the one value it holds (`{"crop": "maiz"}`).
 - A `data[]` entry **without** `href_template` serializes as a single asset, per 5.1.
 
 ### 5.3 Asset roles
@@ -299,6 +301,9 @@ Encoding rules:
 For STAC validation to pass:
 
 - Every declared extension URI in `stac_extensions` MUST be valid and pinned.
-- Every `cgiar-cdh:*` field MUST be defined in the CDH STAC Extension schema. Adding undefined
-  `cgiar-cdh:*` fields will fail validation.
+- Every `cgiar-cdh:*` field MUST be defined in the
+  [CDH STAC extension schema](./encodings/stac/schema.json), which closes the namespace: an
+  undefined `cgiar-cdh:*` field, or a defined one in the wrong place, fails validation.
+- Every emitted record MUST declare the extension in `stac_extensions`, pinned to the release the
+  record targets.
 - File sizes and projection codes SHOULD be present on assets that need them.
