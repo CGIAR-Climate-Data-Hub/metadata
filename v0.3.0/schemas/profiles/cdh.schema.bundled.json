@@ -1,0 +1,1982 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/schemas/profiles/cdh.schema.bundled.json",
+  "title": "CDH Profile",
+  "description": "CDH policy schema: the core composed with all CDH-maintained extensions, requiring the cdh extension on every Hub record. Applied as the policy layer (validate-yaml --profile) on top of the per-record mechanism check (core + declared extensions only), and bound by editors via the yaml-language-server modeline for autocomplete. A single-file bundled copy is published alongside as cdh.schema.bundled.json.",
+  "allOf": [
+    {
+      "description": "JSON Schema for validating CDH metadata input YAML records before serialization to STAC or OGC API Records. This validates structure, types, controlled values, and basic input rules; CDH review still handles contextual and curatorial checks.",
+      "patternProperties": {
+        "^\\$schema$": {
+          "description": "Canonical JSON Schema URL for validating this metadata record.",
+          "format": "uri",
+          "type": "string"
+        }
+      },
+      "properties": {
+        "access": {
+          "description": "Access condition for the resource's data, distinct from license. Omitting it means public. Aligned to the DCAT / EU accessRights vocabulary: public (openly accessible); restricted (discoverable, but obtaining the data requires a request or authentication); non-public (catalogued but not available through public channels).",
+          "default": "public",
+          "enum": ["public", "restricted", "non-public"]
+        },
+        "access_note": {
+          "minLength": 1,
+          "type": "string",
+          "description": "Human-readable access conditions or instructions. Required when access is restricted or non-public; maps to schema.org conditionsOfAccess."
+        },
+        "additional_assets": {
+          "description": "Sidecar or auxiliary assets, e.g. metadata files or thumbnails.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "file_size": {
+                "description": "File size in bytes (integer) or a human-readable string (e.g. 1.2 GB).",
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                ]
+              },
+              "locations": {
+                "description": "Access paths to the same content; the first is canonical.",
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Optional access label, e.g. HTTPS or S3.",
+                      "minLength": 1
+                    },
+                    "url": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["url"],
+                  "type": "object"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "media_type": {
+                "description": "Media type (IANA), optionally with format parameters such as profile or version.",
+                "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+(\\s*;\\s*[^;=]+=[^;]+)*$",
+                "type": "string",
+                "examples": [
+                  "image/tiff; application=geotiff; profile=cloud-optimized",
+                  "image/tiff; application=geotiff",
+                  "application/vnd.zarr; version=3",
+                  "application/netcdf",
+                  "application/vnd.apache.parquet",
+                  "application/geopackage+sqlite3",
+                  "application/json",
+                  "text/csv"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Asset name; becomes the asset key in serialized output, so it must be unique across data[] and additional_assets[]."
+              },
+              "roles": {
+                "description": "Asset roles. Suggested values, not a closed set: `metadata`, `validation`, `describedby`, `thumbnail`, `overview`, `visual`, `example` (a runnable usage example, e.g. a notebook or SQL file).",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "examples": [
+                    "metadata",
+                    "validation",
+                    "describedby",
+                    "thumbnail",
+                    "overview",
+                    "visual",
+                    "example"
+                  ]
+                },
+                "type": "array",
+                "uniqueItems": true
+              }
+            },
+            "required": ["name", "locations"],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "additional_links": {
+          "description": "Related links: citation targets, services, or related resources.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rel": {
+                "type": "string",
+                "description": "Link relation type, e.g. cite-as or describedby.",
+                "minLength": 1
+              },
+              "url": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": ["rel", "url"],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "cdh_schema_version": {
+          "type": "string",
+          "description": "CDH standard version this record targets. Matches the release tag: v<MAJOR>.<MINOR>.<PATCH>.",
+          "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "citation": {
+          "additionalProperties": false,
+          "description": "Structured citation for the resource.",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Cite-as title; may differ from the record's top-level title.",
+              "minLength": 1
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Names in citation order.",
+              "minItems": 1
+            },
+            "date": {
+              "minLength": 1,
+              "type": "string",
+              "description": "Publication date or year, e.g. 2024 or 2024-07-15.",
+              "examples": ["2024", "2024-07-15"]
+            },
+            "publisher": {
+              "minLength": 1,
+              "type": "string",
+              "description": "Publisher or venue: the data publisher/repository for datasets, or the journal for articles."
+            },
+            "url": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": ["authors", "date"],
+          "type": "object"
+        },
+        "contact": {
+          "description": "People or organizations responsible for the resource. At least one entry must hold the `licensor` role - the party that granted the license.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "email": {
+                "format": "email",
+                "type": "string",
+                "examples": ["ada.placeholder@example.org"]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "organization": {
+                "type": "string",
+                "minLength": 1,
+                "examples": [
+                  "Africa Rice Center (AfricaRice)",
+                  "Alliance of Bioversity International and CIAT",
+                  "CIFOR-ICRAF",
+                  "International Center for Agricultural Research in the Dry Areas (ICARDA)",
+                  "International Crops Research Institute for the Semi-Arid Tropics (ICRISAT)",
+                  "International Food Policy Research Institute (IFPRI)",
+                  "International Institute of Tropical Agriculture (IITA)",
+                  "International Livestock Research Institute (ILRI)",
+                  "International Maize and Wheat Improvement Center (CIMMYT)",
+                  "International Potato Center (CIP)",
+                  "International Rice Research Institute (IRRI)",
+                  "International Water Management Institute (IWMI)",
+                  "WorldFish"
+                ]
+              },
+              "roles": {
+                "description": "Roles this contact holds (one or more).",
+                "type": "array",
+                "items": {
+                  "enum": ["licensor", "producer", "processor", "point-of-contact", "custodian"]
+                },
+                "uniqueItems": true
+              },
+              "url": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": ["roles", "organization"],
+            "type": "object"
+          },
+          "minItems": 1,
+          "contains": {
+            "type": "object",
+            "properties": {
+              "roles": {
+                "contains": {
+                  "const": "licensor"
+                }
+              }
+            },
+            "required": ["roles"]
+          },
+          "type": "array"
+        },
+        "created": {
+          "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
+          "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "format": "date-time",
+              "type": "string"
+            }
+          ]
+        },
+        "data": {
+          "description": "Data assets for the resource; at least one entry.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string",
+                "minLength": 1
+              },
+              "file_size": {
+                "description": "File size in bytes (integer) or a human-readable string (e.g. 1.2 GB).",
+                "anyOf": [
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                ]
+              },
+              "locations": {
+                "description": "Access paths to the same content; the first is canonical.",
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Optional access label, e.g. HTTPS or S3.",
+                      "minLength": 1
+                    },
+                    "url": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": ["url"],
+                  "type": "object"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              "media_type": {
+                "description": "Media type (IANA), optionally with format parameters such as profile or version.",
+                "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+(\\s*;\\s*[^;=]+=[^;]+)*$",
+                "type": "string",
+                "examples": [
+                  "image/tiff; application=geotiff; profile=cloud-optimized",
+                  "image/tiff; application=geotiff",
+                  "application/vnd.zarr; version=3",
+                  "application/netcdf",
+                  "application/vnd.apache.parquet",
+                  "application/geopackage+sqlite3",
+                  "application/json",
+                  "text/csv"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Asset name; becomes the asset key in serialized output, so it must be unique across data[] and additional_assets[]."
+              },
+              "href_template": {
+                "type": "string",
+                "description": "Optional relative file-name pattern appended to each locations[].url. Each {token} must match a dimensions[].name or be the reserved {variable} token, which expands over variables[].name (requires the datacube extension); the entry expands to one item per combination of the tokens' values. When absent, locations[].url are full file URLs and the entry is a single asset.",
+                "examples": ["mapspam_{crop}_{technology}_{variable}.tif"],
+                "minLength": 1
+              },
+              "nodata": {
+                "description": "No-data / fill value for the asset.",
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                ]
+              },
+              "processing_steps": {
+                "description": "ids of processing[] steps that produced this asset.",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "type": "array"
+              }
+            },
+            "required": ["name", "locations"],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "deprecated": {
+          "type": "boolean",
+          "description": "true when a newer release supersedes this record. Set on version snapshots."
+        },
+        "description": {
+          "type": "string",
+          "description": "Canonical human- and AI-readable summary of the resource.",
+          "minLength": 1
+        },
+        "doi": {
+          "description": "Bare DOI (not a URL).",
+          "type": "string",
+          "pattern": "^10\\.\\d{2,}(\\.\\d+)*/\\S+$",
+          "examples": ["10.7910/DVN/SWPENT"]
+        },
+        "extensions": {
+          "description": "Pinned URLs of the CDH extension schemas this record uses.",
+          "items": {
+            "format": "uri",
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "funding": {
+          "description": "Funding sources for the resource.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "Short, stable, URL-safe identifier (lowercase letters, digits, hyphens).",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "type": "string",
+          "examples": ["example-crop-suitability", "spam2020"]
+        },
+        "keywords": {
+          "description": "Free-text search terms. Each item is either a plain string, or an object linking the term to an external vocabulary/ontology (e.g., AGROVOC, GEMET). Linked-keyword items are also emitted as ontology themes in the serialized output, grouped by `scheme`.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["term"],
+                "properties": {
+                  "term": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "scheme": {
+                    "description": "Resolvable URI of the controlled vocabulary or ontology this term comes from. CDH vocab schemes (.../cdh-metadata-standard/vocab/) are reserved for encoder expansion of cdh.domain / commodities - link an external vocabulary instead.",
+                    "type": "string",
+                    "format": "uri",
+                    "not": {
+                      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/vocab/"
+                    }
+                  },
+                  "uri": {
+                    "description": "Resolvable URI of the specific concept within `scheme`.",
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          },
+          "minItems": 1
+        },
+        "license": {
+          "type": "string",
+          "description": "License of the data as an SPDX license expression. Custom LicenseRef-* expressions must be accompanied by an additional_links[] entry with rel: license.",
+          "examples": ["CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0", "CC-BY-4.0 OR CC0-1.0"],
+          "minLength": 1
+        },
+        "note": {
+          "minLength": 1,
+          "type": "string",
+          "description": "Caveats, warnings, or interpretation-critical remarks not captured in description."
+        },
+        "previous_version": {
+          "minLength": 1,
+          "type": "string",
+          "description": "id of the predecessor record, when this supersedes an earlier version."
+        },
+        "processing": {
+          "description": "Ordered processing/provenance steps; at least one must have id: source.",
+          "contains": {
+            "properties": {
+              "id": {
+                "const": "source"
+              }
+            },
+            "required": ["id"],
+            "type": "object"
+          },
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "additionalProperties": false,
+                "description": "Software or code that produced this step's output. Omit when none is published.",
+                "properties": {
+                  "url": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Link to the production code or repository."
+                  },
+                  "version": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Version, tag, or commit of the code."
+                  }
+                },
+                "type": "object"
+              },
+              "date": {
+                "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
+                "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
+                "anyOf": [
+                  {
+                    "format": "date",
+                    "type": "string"
+                  },
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  }
+                ]
+              },
+              "derived_from": {
+                "description": "Upstream sources this step derived from - the data (e.g. a Zenodo/Dataverse landing page), not code.",
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "title": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "url": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "description": {
+                "minLength": 1,
+                "type": "string",
+                "description": "What this step did."
+              },
+              "id": {
+                "minLength": 1,
+                "type": "string",
+                "description": "Step identifier; one step must use id: source for the original generation."
+              }
+            },
+            "type": "object"
+          },
+          "minContains": 1,
+          "type": "array"
+        },
+        "related_publications": {
+          "description": "Related works such as papers or reports.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "citation": {
+                "additionalProperties": false,
+                "description": "Structured citation for the resource.",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Cite-as title; may differ from the record's top-level title.",
+                    "minLength": 1
+                  },
+                  "authors": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": "Names in citation order.",
+                    "minItems": 1
+                  },
+                  "date": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Publication date or year, e.g. 2024 or 2024-07-15.",
+                    "examples": ["2024", "2024-07-15"]
+                  },
+                  "publisher": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Publisher or venue: the data publisher/repository for datasets, or the journal for articles."
+                  },
+                  "url": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": ["authors", "date"],
+                "type": "object"
+              },
+              "doi": {
+                "description": "Bare DOI (not a URL).",
+                "type": "string",
+                "pattern": "^10\\.\\d{2,}(\\.\\d+)*/\\S+$",
+                "examples": ["10.7910/DVN/SWPENT"]
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "resource_type": {
+          "description": "Kind of resource the record describes (vocab/resource_type.json).",
+          "title": "CDH Resource Type Vocabulary",
+          "type": "string",
+          "enum": ["dataset", "software", "service", "document"]
+        },
+        "series": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "url": {
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "type": "object",
+          "description": "Program, initiative, or product brand the resource was published under (e.g. Africa Agriculture Adaptation Atlas, MapSPAM, ACASA). Members may span domains, resolutions, and resource types. Not for grouping representations or releases of a single resource. `name` is the grouping key - use the same spelling on every record in the series; `url` is the series landing page.",
+          "required": ["name"]
+        },
+        "spatial": {
+          "additionalProperties": false,
+          "properties": {
+            "bbox": {
+              "description": "Spatial extent. A single bounding box, or a list of boxes for disjoint coverage - each box is a real area covered, in any order; the overall/union extent is derived when serializing, not authored. 2D = [west, south, east, north] = [xmin, ymin, xmax, ymax]; 3D = [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
+              "oneOf": [
+                {
+                  "description": "A single bounding box: 2D [west, south, east, north], or 3D [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
+                  "oneOf": [
+                    {
+                      "title": "2D box",
+                      "type": "array",
+                      "minItems": 4,
+                      "maxItems": 4,
+                      "prefixItems": [
+                        {
+                          "title": "West",
+                          "type": "number",
+                          "minimum": -180,
+                          "maximum": 180
+                        },
+                        {
+                          "title": "South",
+                          "type": "number",
+                          "minimum": -90,
+                          "maximum": 90
+                        },
+                        {
+                          "title": "East",
+                          "type": "number",
+                          "minimum": -180,
+                          "maximum": 180
+                        },
+                        {
+                          "title": "North",
+                          "type": "number",
+                          "minimum": -90,
+                          "maximum": 90
+                        }
+                      ],
+                      "items": false
+                    },
+                    {
+                      "title": "3D box",
+                      "type": "array",
+                      "minItems": 6,
+                      "maxItems": 6,
+                      "prefixItems": [
+                        {
+                          "title": "West",
+                          "type": "number",
+                          "minimum": -180,
+                          "maximum": 180
+                        },
+                        {
+                          "title": "South",
+                          "type": "number",
+                          "minimum": -90,
+                          "maximum": 90
+                        },
+                        {
+                          "title": "Min elevation",
+                          "type": "number"
+                        },
+                        {
+                          "title": "East",
+                          "type": "number",
+                          "minimum": -180,
+                          "maximum": 180
+                        },
+                        {
+                          "title": "North",
+                          "type": "number",
+                          "minimum": -90,
+                          "maximum": 90
+                        },
+                        {
+                          "title": "Max elevation",
+                          "type": "number"
+                        }
+                      ],
+                      "items": false
+                    }
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "description": "A single bounding box: 2D [west, south, east, north], or 3D [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
+                    "oneOf": [
+                      {
+                        "title": "2D box",
+                        "type": "array",
+                        "minItems": 4,
+                        "maxItems": 4,
+                        "prefixItems": [
+                          {
+                            "title": "West",
+                            "type": "number",
+                            "minimum": -180,
+                            "maximum": 180
+                          },
+                          {
+                            "title": "South",
+                            "type": "number",
+                            "minimum": -90,
+                            "maximum": 90
+                          },
+                          {
+                            "title": "East",
+                            "type": "number",
+                            "minimum": -180,
+                            "maximum": 180
+                          },
+                          {
+                            "title": "North",
+                            "type": "number",
+                            "minimum": -90,
+                            "maximum": 90
+                          }
+                        ],
+                        "items": false
+                      },
+                      {
+                        "title": "3D box",
+                        "type": "array",
+                        "minItems": 6,
+                        "maxItems": 6,
+                        "prefixItems": [
+                          {
+                            "title": "West",
+                            "type": "number",
+                            "minimum": -180,
+                            "maximum": 180
+                          },
+                          {
+                            "title": "South",
+                            "type": "number",
+                            "minimum": -90,
+                            "maximum": 90
+                          },
+                          {
+                            "title": "Min elevation",
+                            "type": "number"
+                          },
+                          {
+                            "title": "East",
+                            "type": "number",
+                            "minimum": -180,
+                            "maximum": 180
+                          },
+                          {
+                            "title": "North",
+                            "type": "number",
+                            "minimum": -90,
+                            "maximum": 90
+                          },
+                          {
+                            "title": "Max elevation",
+                            "type": "number"
+                          }
+                        ],
+                        "items": false
+                      }
+                    ]
+                  },
+                  "minItems": 1
+                }
+              ],
+              "examples": [[-180, -90, 180, 90], [[-180, -90, 180, 90]]]
+            },
+            "crs": {
+              "minLength": 1,
+              "type": "string",
+              "description": "Coordinate reference system of the data: EPSG code, CRS URI, or PROJ string.",
+              "examples": ["EPSG:4326"]
+            },
+            "geography": {
+              "description": "Named places for discovery (vocab/geography.json ids, UN M49).",
+              "items": {
+                "title": "CDH Geography Vocabulary",
+                "description": "Generated from vocab/geography.json. Do not edit this file directly; update the JSON vocabulary and regenerate schemas.",
+                "type": "string",
+                "enum": [
+                  "afghanistan",
+                  "africa",
+                  "aland-islands",
+                  "albania",
+                  "algeria",
+                  "american-samoa",
+                  "americas",
+                  "andorra",
+                  "angola",
+                  "anguilla",
+                  "antarctica",
+                  "antigua-and-barbuda",
+                  "argentina",
+                  "armenia",
+                  "aruba",
+                  "asia",
+                  "australia",
+                  "australia-and-new-zealand",
+                  "austria",
+                  "azerbaijan",
+                  "bahamas",
+                  "bahrain",
+                  "bangladesh",
+                  "barbados",
+                  "belarus",
+                  "belgium",
+                  "belize",
+                  "benin",
+                  "bermuda",
+                  "bhutan",
+                  "bolivia-plurinational-state-of",
+                  "bonaire-sint-eustatius-and-saba",
+                  "bosnia-and-herzegovina",
+                  "botswana",
+                  "bouvet-island",
+                  "brazil",
+                  "british-indian-ocean-territory",
+                  "british-virgin-islands",
+                  "brunei-darussalam",
+                  "bulgaria",
+                  "burkina-faso",
+                  "burundi",
+                  "cabo-verde",
+                  "cambodia",
+                  "cameroon",
+                  "canada",
+                  "caribbean",
+                  "cayman-islands",
+                  "central-african-republic",
+                  "central-america",
+                  "central-asia",
+                  "chad",
+                  "chile",
+                  "china",
+                  "china-hong-kong-special-administrative-region",
+                  "china-macao-special-administrative-region",
+                  "christmas-island",
+                  "cocos-keeling-islands",
+                  "colombia",
+                  "comoros",
+                  "congo",
+                  "cook-islands",
+                  "costa-rica",
+                  "cote-d-ivoire",
+                  "croatia",
+                  "cuba",
+                  "curacao",
+                  "cyprus",
+                  "czechia",
+                  "democratic-people-s-republic-of-korea",
+                  "democratic-republic-of-the-congo",
+                  "denmark",
+                  "djibouti",
+                  "dominica",
+                  "dominican-republic",
+                  "eastern-africa",
+                  "eastern-asia",
+                  "eastern-europe",
+                  "ecuador",
+                  "egypt",
+                  "el-salvador",
+                  "equatorial-guinea",
+                  "eritrea",
+                  "estonia",
+                  "eswatini",
+                  "ethiopia",
+                  "europe",
+                  "falkland-islands-malvinas",
+                  "faroe-islands",
+                  "fiji",
+                  "finland",
+                  "france",
+                  "french-guiana",
+                  "french-polynesia",
+                  "french-southern-territories",
+                  "gabon",
+                  "gambia",
+                  "georgia",
+                  "germany",
+                  "ghana",
+                  "gibraltar",
+                  "greece",
+                  "greenland",
+                  "grenada",
+                  "guadeloupe",
+                  "guam",
+                  "guatemala",
+                  "guernsey",
+                  "guinea",
+                  "guinea-bissau",
+                  "guyana",
+                  "haiti",
+                  "heard-island-and-mcdonald-islands",
+                  "holy-see",
+                  "honduras",
+                  "hungary",
+                  "iceland",
+                  "india",
+                  "indonesia",
+                  "iran-islamic-republic-of",
+                  "iraq",
+                  "ireland",
+                  "isle-of-man",
+                  "israel",
+                  "italy",
+                  "jamaica",
+                  "japan",
+                  "jersey",
+                  "jordan",
+                  "kazakhstan",
+                  "kenya",
+                  "kiribati",
+                  "kuwait",
+                  "kyrgyzstan",
+                  "lao-people-s-democratic-republic",
+                  "latin-america-and-the-caribbean",
+                  "latvia",
+                  "lebanon",
+                  "lesotho",
+                  "liberia",
+                  "libya",
+                  "liechtenstein",
+                  "lithuania",
+                  "luxembourg",
+                  "madagascar",
+                  "malawi",
+                  "malaysia",
+                  "maldives",
+                  "mali",
+                  "malta",
+                  "marshall-islands",
+                  "martinique",
+                  "mauritania",
+                  "mauritius",
+                  "mayotte",
+                  "melanesia",
+                  "mexico",
+                  "micronesia",
+                  "micronesia-federated-states-of",
+                  "middle-africa",
+                  "monaco",
+                  "mongolia",
+                  "montenegro",
+                  "montserrat",
+                  "morocco",
+                  "mozambique",
+                  "myanmar",
+                  "namibia",
+                  "nauru",
+                  "nepal",
+                  "netherlands-kingdom-of-the",
+                  "new-caledonia",
+                  "new-zealand",
+                  "nicaragua",
+                  "niger",
+                  "nigeria",
+                  "niue",
+                  "norfolk-island",
+                  "north-macedonia",
+                  "northern-africa",
+                  "northern-america",
+                  "northern-europe",
+                  "northern-mariana-islands",
+                  "norway",
+                  "oceania",
+                  "oman",
+                  "pakistan",
+                  "palau",
+                  "panama",
+                  "papua-new-guinea",
+                  "paraguay",
+                  "peru",
+                  "philippines",
+                  "pitcairn",
+                  "poland",
+                  "polynesia",
+                  "portugal",
+                  "puerto-rico",
+                  "qatar",
+                  "republic-of-korea",
+                  "republic-of-moldova",
+                  "reunion",
+                  "romania",
+                  "russian-federation",
+                  "rwanda",
+                  "saint-barthelemy",
+                  "saint-helena",
+                  "saint-kitts-and-nevis",
+                  "saint-lucia",
+                  "saint-martin-french-part",
+                  "saint-pierre-and-miquelon",
+                  "saint-vincent-and-the-grenadines",
+                  "samoa",
+                  "san-marino",
+                  "sao-tome-and-principe",
+                  "saudi-arabia",
+                  "senegal",
+                  "serbia",
+                  "seychelles",
+                  "sierra-leone",
+                  "singapore",
+                  "sint-maarten-dutch-part",
+                  "slovakia",
+                  "slovenia",
+                  "solomon-islands",
+                  "somalia",
+                  "south-africa",
+                  "south-america",
+                  "south-eastern-asia",
+                  "south-georgia-and-the-south-sandwich-islands",
+                  "south-sudan",
+                  "southern-africa",
+                  "southern-asia",
+                  "southern-europe",
+                  "spain",
+                  "sri-lanka",
+                  "state-of-palestine",
+                  "sub-saharan-africa",
+                  "sudan",
+                  "suriname",
+                  "svalbard-and-jan-mayen-islands",
+                  "sweden",
+                  "switzerland",
+                  "syrian-arab-republic",
+                  "tajikistan",
+                  "thailand",
+                  "timor-leste",
+                  "togo",
+                  "tokelau",
+                  "tonga",
+                  "trinidad-and-tobago",
+                  "tunisia",
+                  "turkiye",
+                  "turkmenistan",
+                  "turks-and-caicos-islands",
+                  "tuvalu",
+                  "uganda",
+                  "ukraine",
+                  "united-arab-emirates",
+                  "united-kingdom-of-great-britain-and-northern-ireland",
+                  "united-republic-of-tanzania",
+                  "united-states-minor-outlying-islands",
+                  "united-states-of-america",
+                  "united-states-virgin-islands",
+                  "uruguay",
+                  "uzbekistan",
+                  "vanuatu",
+                  "venezuela-bolivarian-republic-of",
+                  "viet-nam",
+                  "wallis-and-futuna-islands",
+                  "western-africa",
+                  "western-asia",
+                  "western-europe",
+                  "western-sahara",
+                  "world",
+                  "yemen",
+                  "zambia",
+                  "zimbabwe"
+                ]
+              },
+              "type": "array",
+              "uniqueItems": true
+            },
+            "geometry_column": {
+              "minLength": 1,
+              "type": "string",
+              "description": "Name of the geometry column, for vector tables."
+            },
+            "resolution": {
+              "description": "Spatial resolution / spacing. Exactly one characterization per record: a single entry, or an `x` + `y` pair when grid spacing differs. A representation at a different resolution (e.g. polygon aggregates of a grid) is a separate record.",
+              "items": {
+                "additionalProperties": false,
+                "required": ["type"],
+                "properties": {
+                  "label": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Human-readable resolution, e.g. 5 arc-minutes or Kenya counties."
+                  },
+                  "reference_system": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "For point/polygon types, the system defining the reporting units (e.g. GAUL 2015, GADM)."
+                  },
+                  "type": {
+                    "description": "Resolution type: xy (regular grid), x, y, point, or polygon.",
+                    "enum": ["xy", "x", "y", "point", "polygon"]
+                  },
+                  "unit": {
+                    "minLength": 1,
+                    "type": "string",
+                    "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM. Non-grid spatial units may use clear labels such as admin-level."
+                  },
+                  "value": {
+                    "description": "Numeric resolution value (grid spacing, or admin level).",
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              "type": "array",
+              "minItems": 1,
+              "anyOf": [
+                {
+                  "maxItems": 1
+                },
+                {
+                  "maxItems": 2,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": {
+                          "type": {
+                            "const": "x"
+                          }
+                        },
+                        "required": ["type"]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "type": {
+                            "const": "y"
+                          }
+                        },
+                        "required": ["type"]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "type": "object"
+        },
+        "temporal": {
+          "description": "Coverage extent, precision-aware. Use `date` for a single instant or period (date: 2020 = the year 2020), or `start_date` + `end_date` for a span (end_date: null = open-ended). `date` and `start_date`/`end_date` are mutually exclusive. Temporal cadence is not recorded here - declare a type: temporal dimension (datacube extension) instead.",
+          "additionalProperties": false,
+          "properties": {
+            "date": {
+              "description": "A single instant or period; its precision sets the granularity (year, month, day, or datetime).",
+              "examples": ["2020", "2020-06", "2020-06-23", "2020-06-23T00:00:00Z"],
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+                },
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ]
+            },
+            "start_date": {
+              "description": "Start of a span.",
+              "examples": ["2020", "2020-06", "2020-06-23", "2020-06-23T00:00:00Z"],
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+                },
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ]
+            },
+            "end_date": {
+              "description": "End of a span; null for an open-ended series.",
+              "anyOf": [
+                {
+                  "description": "ISO 8601 date/time; the precision states the granularity - year (2020), month (2020-06), day (2020-06-23), or an instant (2020-06-23T00:00:00Z). As an end, it is inclusive through the end of that period (end: 2010 means through 2010-12-31).",
+                  "examples": ["2020", "2020-06", "2020-06-23", "2020-06-23T00:00:00Z"],
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^\\d{4}$"
+                    },
+                    {
+                      "type": "string",
+                      "pattern": "^\\d{4}-(0[1-9]|1[0-2])$"
+                    },
+                    {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "dependentRequired": {
+            "start_date": ["end_date"],
+            "end_date": ["start_date"]
+          },
+          "dependentSchemas": {
+            "date": {
+              "properties": {
+                "start_date": false,
+                "end_date": false
+              }
+            }
+          },
+          "type": "object"
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable title of the resource.",
+          "minLength": 1
+        },
+        "updated": {
+          "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
+          "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "format": "date-time",
+              "type": "string"
+            }
+          ]
+        },
+        "version": {
+          "minLength": 1,
+          "type": "string",
+          "description": "Version of the resource, when versioned.",
+          "examples": ["v1.0", "2.0-release-2"]
+        }
+      },
+      "required": [
+        "cdh_schema_version",
+        "id",
+        "title",
+        "description",
+        "license",
+        "resource_type",
+        "keywords",
+        "contact",
+        "data"
+      ],
+      "anyOf": [
+        {
+          "required": ["citation"]
+        },
+        {
+          "properties": {
+            "doi": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": ["doi"]
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "required": ["access"],
+            "properties": {
+              "access": {
+                "enum": ["restricted", "non-public"]
+              }
+            }
+          },
+          "then": {
+            "required": ["access_note"]
+          }
+        },
+        {
+          "if": {
+            "required": ["license"],
+            "properties": {
+              "license": {
+                "pattern": "\\bLicenseRef-[A-Za-z0-9.-]+\\b"
+              }
+            }
+          },
+          "then": {
+            "required": ["additional_links"],
+            "properties": {
+              "additional_links": {
+                "contains": {
+                  "properties": {
+                    "rel": {
+                      "const": "license"
+                    }
+                  },
+                  "required": ["rel", "url"]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": "Climate Data Hub Metadata Input Schema",
+      "type": "object"
+    },
+    {
+      "title": "CDH Extension",
+      "description": "CGIAR Climate Data Hub governance fields.",
+      "type": "object",
+      "properties": {
+        "cdh": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["domain"],
+          "properties": {
+            "domain": {
+              "description": "CDH domain(s); closed vocabulary (vocab/domain.json). Drives catalog browse and filtering.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "title": "CDH Domain Vocabulary",
+                "description": "Generated from vocab/domain.json. Do not edit this file directly; update the JSON vocabulary and regenerate schemas.",
+                "type": "string",
+                "enum": [
+                  "adaptation",
+                  "agricultural-production",
+                  "boundaries",
+                  "climate",
+                  "hydrology",
+                  "mitigation",
+                  "socioeconomic"
+                ]
+              }
+            },
+            "usage": {
+              "description": "Use guidance for the resource: what it was produced for, and what to avoid. Both entries are optional; omit `usage` entirely when there is nothing to say.",
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "intended_uses": {
+                  "description": "Uses the resource was produced for, as free text. Illustrative and never exhaustive: a use that is absent is not thereby excluded, and a use that is listed is not thereby endorsed for any particular decision. Suitability for anything not listed is judged from description, variables, coverage, and resolution.",
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "examples": [
+                    [
+                      "national and sub-national hotspot mapping",
+                      "targeting of adaptation investment"
+                    ]
+                  ]
+                },
+                "not_recommended_for": {
+                  "description": "Uses to avoid, each with a reason and optional alternative.",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["use", "reason"],
+                    "properties": {
+                      "reason": {
+                        "type": "string",
+                        "description": "Why this use is discouraged.",
+                        "minLength": 1
+                      },
+                      "use": {
+                        "type": "string",
+                        "description": "The use being discouraged.",
+                        "minLength": 1
+                      },
+                      "use_instead": {
+                        "type": "string",
+                        "description": "Recommended alternative, if any.",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Climate Extension",
+      "description": "Climate projection provenance: baseline, bias adjustment, downscaling, scenarios.",
+      "type": "object",
+      "properties": {
+        "climate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "baseline": {
+              "description": "Reference/baseline period the projections are expressed against.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "start_date": {
+                  "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
+                  "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "end_date": {
+                  "description": "Date or date-time. Use YYYY-MM-DD (e.g. 2026-06-23) or an RFC 3339 date-time (e.g. 2026-06-23T00:00:00Z).",
+                  "examples": ["2026-06-23", "2026-06-23T00:00:00Z"],
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            "bias_adjustment": {
+              "description": "Bias adjustment applied to the projections.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "description": "Bias-adjustment method.",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "reference_dataset": {
+                  "description": "Reference dataset used for bias adjustment.",
+                  "minLength": 1,
+                  "type": "string"
+                }
+              }
+            },
+            "downscaling": {
+              "description": "Downscaling applied to the projections.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "method": {
+                  "description": "Downscaling method.",
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "resolution": {
+                  "description": "Target resolution of the downscaling.",
+                  "anyOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  ]
+                }
+              }
+            },
+            "mip_era": {
+              "description": "CMIP era of the source models.",
+              "enum": ["CMIP5", "CMIP6"]
+            },
+            "models": {
+              "description": "Climate model source IDs; use 'ensemble' for a multi-model ensemble.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "scenarios": {
+              "description": "Scenario labels, e.g. SSP/RCP or historic.",
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Datacube Extension",
+      "description": "Dimensions and variables for gridded, multidimensional, or tabular data.",
+      "type": "object",
+      "properties": {
+        "dimensions": {
+          "description": "Cube axes: domain axes (e.g. crop, scenario), a vertical axis (type: z), place-key columns (type: location), and temporal axes (each type: temporal with a step). The horizontal lat/lon grid is derived from the top-level spatial field and is not declared here, and bands are variables rather than an axis.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "not": {
+                  "const": "variable"
+                },
+                "description": "Axis name. Must not be \"variable\": measures are not axes and belong in variables[]; href_template refers to them via the reserved {variable} token."
+              },
+              "description": {
+                "type": "string",
+                "description": "What the dimension is; define coded values here, or via reference_system or a sidecar.",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "description": "Dimension type. Reserved values change how the dimension is read: `temporal` (an axis of ISO 8601 dates or instants - the only type that may carry a step, and a record may declare several, e.g. a year axis files are split on plus a day column inside them) and `z` (a vertical axis - depth, height, or pressure level - at most one per record, serialized as a spatial dimension on the z axis). `location` names a column identifying a place, such as an admin or station code. Any other value names a domain axis after what it varies (crop, scenario, season). `spatial` and `geometry` are rejected: the horizontal grid is derived from the top-level spatial field and never declared here, and STAC forbids both words as custom dimension types. Lowercase; aliases of `temporal` are rejected so a time axis cannot silently become a domain axis.",
+                "minLength": 1,
+                "pattern": "^[a-z][a-z0-9_-]*$",
+                "not": {
+                  "enum": [
+                    "time",
+                    "times",
+                    "date",
+                    "dates",
+                    "datetime",
+                    "timestamp",
+                    "spatial",
+                    "geometry"
+                  ]
+                },
+                "examples": ["temporal", "z", "location", "crop", "scenario"]
+              },
+              "reference_system": {
+                "description": "Vocabulary the dimension's values are coded against; prefer a resolvable URI when one exists (e.g. an AGROVOC concept scheme).",
+                "minLength": 1,
+                "type": "string"
+              },
+              "values": {
+                "description": "Allowed values along the dimension.",
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "step": {
+                "type": "string",
+                "format": "duration",
+                "description": "Spacing of one step, as an ISO 8601 duration. Only valid on a type: temporal dimension.",
+                "examples": ["P3M", "P20Y"]
+              },
+              "unit": {
+                "description": "Unit of measurement for the values, preferably compliant with UDUNITS-2 or UCUM. Needed on a `z` dimension (m, cm, hPa) and useful on any numeric domain axis; not a substitute for reference_system, which names the vocabulary or vertical CRS the values are coded against.",
+                "examples": ["cm", "m", "hPa"],
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": ["name", "type", "description"],
+            "dependentSchemas": {
+              "step": {
+                "properties": {
+                  "type": {
+                    "const": "temporal"
+                  }
+                }
+              }
+            },
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "temporal"
+                }
+              },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "description": "On a temporal dimension, every value is an ISO 8601 date or instant, as a string. A binned axis lists each bin's start and states its length in step, so a 30-year period axis is values: [\"2021\", \"2051\"] with step: P30Y. A cyclic label axis (DJF/MAM/JJA/SON) is not temporal - name it after what it varies and describe the labels.",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?(Z|[+-]\\d{2}:\\d{2})?)?$"
+                  }
+                }
+              }
+            }
+          },
+          "contains": {
+            "properties": {
+              "type": {
+                "const": "z"
+              }
+            },
+            "required": ["type"]
+          },
+          "minContains": 0,
+          "maxContains": 1
+        },
+        "variables": {
+          "description": "Measurement variables, bands, or columns.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": {
+                "type": "string",
+                "description": "Stable definition and reading guidance for the variable.",
+                "minLength": 1
+              },
+              "data_type": {
+                "description": "Data type, numpy-style (e.g. float32, int16).",
+                "minLength": 1,
+                "type": "string"
+              },
+              "dimensions": {
+                "description": "Axes this variable spans; omit when it spans all declared dimensions.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "unit": {
+                "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM.",
+                "examples": ["t ha-1", "{head}/km2"],
+                "minLength": 1,
+                "type": "string"
+              },
+              "nodata": {
+                "description": "No-data / fill value for this variable, where it differs from the asset's. Takes precedence over the asset's nodata for this variable only.",
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                ]
+              },
+              "note": {
+                "minLength": 1,
+                "type": "string",
+                "description": "Variable-specific caveats, limitations, or warnings."
+              }
+            },
+            "required": ["name", "description", "unit"]
+          }
+        },
+        "joins": {
+          "description": "Joins from this table to other catalogued datasets. Each entry pairs this record's key columns with the target's columns, positionally.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["target", "left_fields", "right_fields"],
+            "properties": {
+              "target": {
+                "type": "string",
+                "format": "uri",
+                "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record).",
+                "examples": ["https://cdh.example/boundaries/gaul-2015-admin2"]
+              },
+              "left_fields": {
+                "description": "Key columns in this record; each must be a declared dimensions[]/variables[] name.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "right_fields": {
+                "description": "Matching columns in the target, paired positionally with left_fields (same length).",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Classification Extension",
+      "description": "Class definitions for categorical / classified variables.",
+      "type": "object",
+      "properties": {
+        "classes": {
+          "description": "Class definitions for categorical variables; each entry maps to a variable.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "variable": {
+                "type": "string",
+                "description": "Name of the variable these classes apply to.",
+                "minLength": 1
+              },
+              "values": {
+                "description": "The class values for the variable.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": {
+                      "type": "string",
+                      "description": "Human-readable class label.",
+                      "minLength": 1
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "What this class means.",
+                      "minLength": 1
+                    },
+                    "value": {
+                      "description": "The coded value as stored in the data.",
+                      "anyOf": [
+                        {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        {
+                          "type": "integer"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Agriculture Extension",
+      "description": "Agricultural commodities described by the record.",
+      "type": "object",
+      "properties": {
+        "commodities": {
+          "description": "Agricultural commodities described by the record; CDH vocabulary (vocab/commodity.json).",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "title": "CDH Commodity Vocabulary",
+            "description": "Generated from vocab/commodity.json. Do not edit this file directly; update the JSON vocabulary and regenerate schemas.",
+            "type": "string",
+            "enum": [
+              "arabica-coffee",
+              "banana",
+              "barley",
+              "buffalo",
+              "cassava",
+              "cattle",
+              "cereals",
+              "chickens",
+              "chickpeas",
+              "citrus",
+              "cocoa",
+              "coconuts",
+              "coffee",
+              "common-bean",
+              "cotton",
+              "cowpeas",
+              "crops",
+              "ducks",
+              "fibre-crops",
+              "fruits",
+              "goats",
+              "groundnuts",
+              "horses",
+              "legumes",
+              "lentils",
+              "livestock",
+              "maize",
+              "millets",
+              "oil-crops",
+              "oil-palms",
+              "onions",
+              "pearl-millet",
+              "pigeon-pea",
+              "plantains",
+              "potato",
+              "pulses",
+              "rapeseed",
+              "rice",
+              "robusta-coffee",
+              "root-vegetables",
+              "rubber",
+              "sesame",
+              "sheep",
+              "small-millet",
+              "sorghum",
+              "soybeans",
+              "sugarbeet",
+              "sugarcane",
+              "sunflower",
+              "sweet-potatoes",
+              "swine",
+              "tea",
+              "temperate-fruit",
+              "tobacco",
+              "tomatoes",
+              "tropical-fruits",
+              "vegetables",
+              "wheat",
+              "yams"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["climate"]
+      },
+      "then": {
+        "required": ["extensions"],
+        "properties": {
+          "extensions": {
+            "contains": {
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/climate/schema\\.json$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "required": ["dimensions"]
+          },
+          {
+            "required": ["variables"]
+          }
+        ]
+      },
+      "then": {
+        "required": ["extensions"],
+        "properties": {
+          "extensions": {
+            "contains": {
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/datacube/schema\\.json$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["classes"]
+      },
+      "then": {
+        "required": ["extensions"],
+        "properties": {
+          "extensions": {
+            "contains": {
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/classification/schema\\.json$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["commodities"]
+      },
+      "then": {
+        "required": ["extensions"],
+        "properties": {
+          "extensions": {
+            "contains": {
+              "type": "string",
+              "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/agriculture/schema\\.json$"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "required": ["$schema", "cdh", "extensions"],
+  "patternProperties": {
+    "^\\$schema$": {
+      "description": "CDH profile schema URL for any released version; its version segment must match cdh_schema_version (checked by validate-yaml).",
+      "type": "string",
+      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/schemas/profiles/cdh\\.schema\\.json$"
+    }
+  },
+  "properties": {
+    "extensions": {
+      "contains": {
+        "type": "string",
+        "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/v[0-9]+\\.[0-9]+\\.[0-9]+/extensions/cdh/schema\\.json$"
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

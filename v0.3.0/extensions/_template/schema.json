@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/my-extensions/v0.3.0/soil/schema.json",
+  "title": "Soil Extension (template)",
+  "description": "Starter for a new CDH extension. Rename the top-level key, set $id to the pinned URL you publish this file at, and replace the example fields.",
+  "type": "object",
+  "properties": {
+    "soil": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sampling or reference depth, e.g. 0-30cm."
+        },
+        "properties_measured": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Measured soil properties, e.g. ph, organic-carbon."
+        }
+      }
+    }
+  }
+}

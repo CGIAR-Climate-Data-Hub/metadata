@@ -1,0 +1,43 @@
+{
+  "$schema": "../spec/schemas/vocab/vocabulary.schema.json",
+  "scheme": {
+    "id": "cdh-resource-type",
+    "title": "Climate Data Hub Resource Type Vocabulary",
+    "description": "Controlled vocabulary of broad resource kinds used to describe the primary thing a CDH record is about. These values describe the record-level resource, not individual asset formats. CDH author-facing ids are mapped to schema.org types, which drive the record's schema.org/JSON-LD output.",
+    "source_scheme": {
+      "id": "schema-org",
+      "uri": "https://schema.org/",
+      "title": "Schema.org"
+    }
+  },
+  "concepts": [
+    {
+      "id": "dataset",
+      "label": "Dataset",
+      "description": "Structured data, observations, model outputs, geospatial layers, tables, or other data products.",
+      "code": "Dataset",
+      "uri": "https://schema.org/Dataset"
+    },
+    {
+      "id": "software",
+      "label": "Software",
+      "description": "A runnable or installable computational resource - tool, application, dashboard, workflow, or model interface.",
+      "code": "SoftwareApplication",
+      "uri": "https://schema.org/SoftwareApplication"
+    },
+    {
+      "id": "service",
+      "label": "Service",
+      "description": "A hosted, network-accessed endpoint rather than a downloadable artifact - e.g., an API, web/OGC service, or online data catalog.",
+      "code": "Service",
+      "uri": "https://schema.org/Service"
+    },
+    {
+      "id": "document",
+      "label": "Document",
+      "description": "Written resource such as a report, brief, paper, guidance note, manual, documentation, or other text-based output.",
+      "code": "CreativeWork",
+      "uri": "https://schema.org/CreativeWork"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/extensions/cdh/schema.json",
+  "title": "CDH Extension",
+  "description": "CGIAR Climate Data Hub governance fields.",
+  "type": "object",
+  "properties": {
+    "cdh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain"],
+      "properties": {
+        "domain": {
+          "description": "CDH domain(s); closed vocabulary (vocab/domain.json). Drives catalog browse and filtering.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../schemas/vocab/domain.schema.json"
+          }
+        },
+        "usage": {
+          "description": "Use guidance for the resource: what it was produced for, and what to avoid. Both entries are optional; omit `usage` entirely when there is nothing to say.",
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "intended_uses": {
+              "description": "Uses the resource was produced for, as free text. Illustrative and never exhaustive: a use that is absent is not thereby excluded, and a use that is listed is not thereby endorsed for any particular decision. Suitability for anything not listed is judged from description, variables, coverage, and resolution.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "examples": [
+                ["national and sub-national hotspot mapping", "targeting of adaptation investment"]
+              ]
+            },
+            "not_recommended_for": {
+              "description": "Uses to avoid, each with a reason and optional alternative.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["use", "reason"],
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "description": "Why this use is discouraged.",
+                    "minLength": 1
+                  },
+                  "use": {
+                    "type": "string",
+                    "description": "The use being discouraged.",
+                    "minLength": 1
+                  },
+                  "use_instead": {
+                    "type": "string",
+                    "description": "Recommended alternative, if any.",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

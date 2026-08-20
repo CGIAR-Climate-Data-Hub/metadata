@@ -1,0 +1,115 @@
+{
+  "type": "Collection",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json"
+  ],
+  "id": "example-crop-suitability",
+  "title": "Example Gridded Crop Suitability Projections (SAMPLE - NOT REAL DATA)",
+  "description": "Encoded form of examples/kitchen-sink/example-crop-suitability.yaml, trimmed to the fields this extension defines.",
+  "license": "CC-BY-4.0",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          10,
+          -5,
+          40,
+          20
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2030-01-01T00:00:00Z",
+          "2050-12-31T23:59:59Z"
+        ]
+      ]
+    }
+  },
+  "cgiar-cdh:resource_type": "dataset",
+  "cgiar-cdh:domain": [
+    "agricultural-production",
+    "adaptation"
+  ],
+  "cgiar-cdh:intended_uses": [
+    "national and sub-national suitability screening",
+    "targeting of adaptation investment"
+  ],
+  "cgiar-cdh:access": "restricted",
+  "cgiar-cdh:access_note": "Discoverable, but obtaining the data requires an account request.",
+  "cgiar-cdh:note": "Suitability classes are illustrative and were generated for documentation purposes only. The regular latitude/longitude grid has cells whose ground area shrinks toward the poles.",
+  "cgiar-cdh:geography": [
+    "africa"
+  ],
+  "cgiar-cdh:series": {
+    "name": "Example Suitability Atlas",
+    "url": "https://example.org/atlas"
+  },
+  "cgiar-cdh:funding": [
+    {
+      "name": "Example Funding Programme",
+      "url": "https://example.org/funding"
+    }
+  ],
+  "cgiar-cdh:not_recommended_for": [
+    {
+      "use": "field-scale planting decisions",
+      "reason": "the grid is far too coarse, and the data is fictional.",
+      "use_instead": "real, locally validated agronomic data."
+    }
+  ],
+  "cgiar-cdh:mip_era": "CMIP6",
+  "cgiar-cdh:baseline": {
+    "start_date": "1995-01-01",
+    "end_date": "2014-12-31"
+  },
+  "cgiar-cdh:bias_adjustment": {
+    "method": "Example quantile mapping",
+    "reference_dataset": "Example reference climatology v1"
+  },
+  "cgiar-cdh:downscaling": {
+    "method": "Example statistical downscaling",
+    "resolution": "0.05 degree"
+  },
+  "summaries": {
+    "cgiar-cdh:scenarios": [
+      "ssp245",
+      "ssp585"
+    ],
+    "cgiar-cdh:models": [
+      "EXAMPLE-ESM1",
+      "EXAMPLE-ESM2"
+    ]
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://example.org/stac/example-crop-suitability/collection.json"
+    },
+    {
+      "rel": "license",
+      "href": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "rel": "processing-expression",
+      "href": "https://example.org/code/cdh-pipeline",
+      "cgiar-cdh:code_version": "abc1234"
+    },
+    {
+      "rel": "child",
+      "href": "https://example.org/stac/example-crop-suitability/admin2/collection.json",
+      "title": "Admin-2 aggregates"
+    }
+  ],
+  "assets": {
+    "zarr": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cube.zarr",
+      "type": "application/vnd.zarr; version=3",
+      "roles": [
+        "data"
+      ]
+    }
+  }
+}

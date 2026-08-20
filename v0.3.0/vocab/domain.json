@@ -1,0 +1,64 @@
+{
+  "$schema": "../spec/schemas/vocab/vocabulary.schema.json",
+  "scheme": {
+    "id": "cdh-domain",
+    "title": "Climate Data Hub Domain Vocabulary",
+    "description": "Controlled vocabulary of high-level CDH domains used for catalog browse, filter, and group-by. The first concept on a record is treated as the primary domain and drives STAC sub-catalog placement. Subsequent concepts enable cross-cutting search.",
+    "source_scheme": {
+      "id": "agrovoc",
+      "uri": "https://agrovoc.fao.org/",
+      "title": "AGROVOC"
+    }
+  },
+  "concepts": [
+    {
+      "id": "adaptation",
+      "label": "Adaptation",
+      "description": "Climate-change adaptation: vulnerability, exposure, risk assessment, and adaptation planning resources.",
+      "code": "c_117",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_117"
+    },
+    {
+      "id": "agricultural-production",
+      "label": "Agricultural production",
+      "description": "Production-focused agriculture: yields, harvested area, livestock numbers, and related production statistics.",
+      "code": "c_2ac7c9e1",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_2ac7c9e1"
+    },
+    {
+      "id": "boundaries",
+      "label": "Boundaries",
+      "description": "Spatial boundary datasets used to delineate or aggregate data, including administrative units (e.g. GAUL country and subnational areas) and watershed or river-basin boundaries.",
+      "code": "c_15686",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_15686"
+    },
+    {
+      "id": "climate",
+      "label": "Climate",
+      "description": "Observed, reanalysis, projection, and scenario-based climate data including temperature, precipitation, and other climate variables.",
+      "code": "c_1665",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_1665"
+    },
+    {
+      "id": "hydrology",
+      "label": "Hydrology",
+      "description": "Hydrology, water resources, irrigation, and water-related hazards.",
+      "code": "c_3731",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_3731"
+    },
+    {
+      "id": "mitigation",
+      "label": "Mitigation",
+      "description": "Climate-change mitigation: emissions, carbon stocks, sequestration, and mitigation pathways.",
+      "code": "c_10a6fbd8",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_10a6fbd8"
+    },
+    {
+      "id": "socioeconomic",
+      "label": "Socioeconomic",
+      "description": "Population, livelihoods, poverty, food security, and socioeconomic indicators.",
+      "code": "c_2c482ac4",
+      "uri": "http://aims.fao.org/aos/agrovoc/c_2c482ac4"
+    }
+  ]
+}

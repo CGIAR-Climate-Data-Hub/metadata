@@ -1,0 +1,222 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json"
+  ],
+  "id": "example-crop-suitability-cogs",
+  "collection": "example-crop-suitability",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          10,
+          -5
+        ],
+        [
+          40,
+          -5
+        ],
+        [
+          40,
+          20
+        ],
+        [
+          10,
+          20
+        ],
+        [
+          10,
+          -5
+        ]
+      ]
+    ]
+  },
+  "bbox": [
+    10,
+    -5,
+    40,
+    20
+  ],
+  "properties": {
+    "datetime": null,
+    "start_datetime": "2030-01-01T00:00:00Z",
+    "end_datetime": "2050-12-31T23:59:59Z",
+    "cgiar-cdh:domain": [
+      "agricultural-production"
+    ],
+    "cgiar-cdh:access": "restricted",
+    "cgiar-cdh:scenarios": [
+      "ssp245",
+      "ssp585"
+    ],
+    "cgiar-cdh:partition": {
+      "scenario": [
+        "ssp245",
+        "ssp585"
+      ],
+      "crop": [
+        "maiz",
+        "rice",
+        "whea"
+      ],
+      "variable": [
+        "suitability_index",
+        "suitability_class"
+      ]
+    }
+  },
+  "links": [
+    {
+      "rel": "collection",
+      "href": "https://example.org/stac/example-crop-suitability/collection.json"
+    }
+  ],
+  "assets": {
+    "ssp245-maiz-suitability_index": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_maiz_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "maiz",
+        "variable": "suitability_index"
+      }
+    },
+    "ssp245-maiz-suitability_class": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_maiz_suitability_class.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "maiz",
+        "variable": "suitability_class"
+      }
+    },
+    "ssp245-rice-suitability_index": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_rice_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "rice",
+        "variable": "suitability_index"
+      }
+    },
+    "ssp245-rice-suitability_class": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_rice_suitability_class.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "rice",
+        "variable": "suitability_class"
+      }
+    },
+    "ssp245-whea-suitability_index": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_whea_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "whea",
+        "variable": "suitability_index"
+      }
+    },
+    "ssp245-whea-suitability_class": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_whea_suitability_class.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp245",
+        "crop": "whea",
+        "variable": "suitability_class"
+      }
+    },
+    "ssp585-maiz-suitability_index": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp585_maiz_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp585",
+        "crop": "maiz",
+        "variable": "suitability_index"
+      }
+    },
+    "ssp585-maiz-suitability_class": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp585_maiz_suitability_class.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp585",
+        "crop": "maiz",
+        "variable": "suitability_class"
+      }
+    },
+    "ssp585-rice-suitability_index": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp585_rice_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp585",
+        "crop": "rice",
+        "variable": "suitability_index"
+      }
+    },
+    "ssp585-rice-suitability_class": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp585_rice_suitability_class.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp585",
+        "crop": "rice",
+        "variable": "suitability_class"
+      }
+    },
+    "ssp585-whea-suitability_index": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp585_whea_suitability_index.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp585",
+        "crop": "whea",
+        "variable": "suitability_index"
+      }
+    },
+    "ssp585-whea-suitability_class": {
+      "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp585_whea_suitability_class.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data"
+      ],
+      "cgiar-cdh:partition": {
+        "scenario": "ssp585",
+        "crop": "whea",
+        "variable": "suitability_class"
+      }
+    }
+  }
+}
