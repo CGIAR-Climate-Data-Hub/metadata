@@ -130,7 +130,7 @@ dimensions:
   - name: time
     type: temporal
     description: Projection horizon (reference year).
-    values: [2030, 2050]
+    values: ["2030", "2050"] # ISO 8601 strings; a temporal axis takes no bare numbers
     step: P20Y
   - name: crop
     type: crop

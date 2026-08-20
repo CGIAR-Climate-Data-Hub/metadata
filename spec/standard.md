@@ -643,11 +643,17 @@ temporal cadence is not stored here (see "Temporal cadence" below).
 
 #### Temporal cadence
 
-Temporal cadence (daily, monthly, seasonal, projection periods, ...) is **not** a `temporal` field.
-Express it as a `type: temporal` dimension in the datacube extension, with an ISO 8601 `step` - one
-dimension per temporal axis, and a cube may have several (e.g. `season` within 20-year `period`s).
-This mirrors `spatial`: the horizontal grid comes from `spatial`, and every other axis - time and
-domain - is a `dimensions[]` entry. See the [datacube extension](extensions/datacube/README.md).
+Temporal cadence (daily, monthly, projection periods, ...) is **not** a `temporal` field. Express it
+as a `type: temporal` dimension in the datacube extension, with an ISO 8601 `step` - one dimension
+per temporal axis, and a record may have several (files split by year, each holding a day column).
+
+A temporal dimension's values are ISO 8601 dates or instants. A binned axis lists each bin's start
+and gives its length as the `step`, so 20-year projection windows are `values: ["2021", "2041"]`
+with `step: P20Y`. A **cyclic** label axis - `DJF`/`MAM`/`JJA`/`SON` - is not temporal: it repeats
+every year rather than running in one direction, so it is a domain axis named after what it varies,
+and how long each label covers is stated in its `description`. This mirrors `spatial`: the
+horizontal grid comes from `spatial`, and every other axis - time and domain - is a `dimensions[]`
+entry. See the [datacube extension](extensions/datacube/README.md).
 
 ### 5.5 Extension fields
 
