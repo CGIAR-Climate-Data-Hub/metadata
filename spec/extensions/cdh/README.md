@@ -1,6 +1,6 @@
 # CDH Extension
 
-CGIAR Climate Data Hub governance: domain classification and use limitations.
+CGIAR Climate Data Hub governance: domain classification and use guidance.
 
 - **Applies to:** all CDH records - the CDH profile requires this extension.
 - **Declared in:** `extensions[]`.
@@ -17,6 +17,22 @@ CGIAR Climate Data Hub governance: domain classification and use limitations.
   - Encoded as `cgiar-cdh:domain` (STAC) / `properties["cgiar-cdh:domain"]` (OGC Records).
   - Also expanded into `themes` under the CDH domain scheme.
 
+## `cdh.intended_uses[]`
+
+- **Requirement:** Optional
+- **Definition:** Uses the resource was produced for.
+- **Expected value:** List of short free-text phrases. No controlled vocabulary.
+- **Rules:**
+  - **Illustrative, never exhaustive.** A use that is absent MUST NOT be read as excluded, and a use
+    that is listed MUST NOT be read as endorsed for a particular decision. Suitability for anything
+    not listed is judged from `description`, `variables`, coverage, and resolution.
+  - Not a filter facet: `cdh.domain` is the field catalog browse and filtering use. Faceting on
+    `intended_uses` would turn an illustrative list into a closed one.
+  - State what the producers built the resource for, not what it could conceivably support. Vague
+    entries (`research`, `decision-making`) carry no information and should be omitted.
+  - Limitations belong in `cdh.not_recommended_for`, which carries the reason and, where one exists,
+    the alternative.
+
 ## `cdh.not_recommended_for[]`
 
 - **Requirement:** Optional
@@ -29,6 +45,9 @@ extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
 cdh:
   domain: [agricultural-production] # primary first; rest are secondary
+  intended_uses: # illustrative, not exhaustive; absence excludes nothing
+    - national and sub-national hotspot mapping
+    - targeting of adaptation investment
   not_recommended_for:
     - use: field-scale farm management
       reason: The grid is too coarse for field-scale operational decisions.

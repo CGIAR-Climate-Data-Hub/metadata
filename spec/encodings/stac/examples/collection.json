@@ -19,6 +19,10 @@
   "cgiar-cdh:resource_type": "dataset",
   "cgiar-cdh:previous_version": "example-crop-suitability-v1",
   "cgiar-cdh:domain": ["agricultural-production", "adaptation"],
+  "cgiar-cdh:intended_uses": [
+    "national and sub-national suitability screening",
+    "targeting of adaptation investment"
+  ],
   "cgiar-cdh:access": "restricted",
   "cgiar-cdh:access_note": "Discoverable, but obtaining the data requires an account request.",
   "cgiar-cdh:note": "Suitability classes are illustrative and were generated for documentation purposes only.",

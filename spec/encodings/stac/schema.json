@@ -112,6 +112,15 @@
         "$ref": "#/definitions/nonEmptyString"
       }
     },
+    "cgiar-cdh:intended_uses": {
+      "description": "Uses the resource was produced for. Illustrative and never exhaustive: an absent use is not excluded, and a listed use is not endorsed for any particular decision.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/nonEmptyString"
+      }
+    },
     "cgiar-cdh:access": {
       "description": "Access condition for the data, distinct from license. Absent means public.",
       "type": "string",
@@ -291,6 +300,9 @@
         "cgiar-cdh:domain": {
           "$ref": "#/definitions/cgiar-cdh:domain"
         },
+        "cgiar-cdh:intended_uses": {
+          "$ref": "#/definitions/cgiar-cdh:intended_uses"
+        },
         "cgiar-cdh:not_recommended_for": {
           "$ref": "#/definitions/cgiar-cdh:not_recommended_for"
         },
@@ -433,6 +445,9 @@
         },
         "cgiar-cdh:domain": {
           "$ref": "#/definitions/cgiar-cdh:domain"
+        },
+        "cgiar-cdh:intended_uses": {
+          "$ref": "#/definitions/cgiar-cdh:intended_uses"
         },
         "cgiar-cdh:not_recommended_for": {
           "$ref": "#/definitions/cgiar-cdh:not_recommended_for"

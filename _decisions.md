@@ -236,6 +236,32 @@ One reference field, one reverse lookup, sections fall out of `type`.
   description, variables, coverage, resolution, domain, and limitations, but those
   examples should not be stored as canonical metadata.
 
+### Reversed 2026-08-20: `cdh.intended_uses` added on management request
+
+`cdh.use_cases[]` was removed for the reasons above (commit `7897ac6`). A
+positive use list is now back as `cdh.intended_uses`, **added on management
+request and against the maintainer's recommendation**. The objection above still
+stands and is not withdrawn: an enumerated list of uses can be read as
+exhaustive or as institutional endorsement, so anything unlisted reads as an
+implied no, and with no controlled vocabulary the entries tend toward
+unfilterable filler.
+
+Mitigations, since the field is going in regardless:
+
+- Optional, and never required by the profile.
+- **Not a filter facet.** `cdh.domain` remains the field browse and filtering
+  use; faceting on `intended_uses` would convert an illustrative list into a
+  closed one, which is the whole failure mode.
+- The schema description and the spec both state the list is illustrative, that
+  an absent use is not excluded, and that a listed use is not endorsed for a
+  particular decision.
+- Guidance tells authors to omit vague entries (`research`,
+  `decision-making`) rather than fill the field for its own sake.
+
+If the field turns out to be read as a closed list in practice, the fix is to
+remove it again rather than to add a vocabulary - a controlled list of approved
+uses would make the closure explicit instead of accidental.
+
 ## Extensions (STAC method)
 
 Goal: any project/center adopts or extends the schema — validated, with editor

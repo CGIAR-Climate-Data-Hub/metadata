@@ -176,8 +176,8 @@ The `cdh.*`, `climate.*`, and `commodities` fields in the input record are encod
 commodity JSON lookup.
 
 Faceted fields such as `scenarios` and `models` live in Collection `summaries` when they apply
-across Items. `mip_era`, `baseline`, `bias_adjustment`, `downscaling`, and `not_recommended_for` are
-Collection-level `cgiar-cdh:*` fields.
+across Items. `mip_era`, `baseline`, `bias_adjustment`, `downscaling`, `intended_uses`, and
+`not_recommended_for` are Collection-level `cgiar-cdh:*` fields.
 
 When a faceted value is also a data axis, emit it in both places: discovery fields and
 `cube:dimensions`.

@@ -34,6 +34,13 @@ occur between minor versions.
 - Added editor hints across the schemas - `examples` on `id`, contact `email`, join `target`, asset
   `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
   profile suggest values and label positional array members.
+- Added `cdh.intended_uses`, a free-text list of the uses a resource was produced for, encoded as
+  `cgiar-cdh:intended_uses`. The list is **illustrative and never exhaustive**: a use that is absent
+  is not excluded, and a listed use is not an endorsement for a particular decision. It is optional,
+  is not a filter facet (`cdh.domain` remains the field browse and filtering use), and limitations
+  stay in `cdh.not_recommended_for` with their reasons. Added on request from CDH management, over
+  the objection recorded in `_decisions.md` - the same objection that removed `cdh.use_cases` in
+  `7897ac6`.
 - Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
   official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
   with the field tables, and examples including a deliberately invalid one. It defines the sixteen
