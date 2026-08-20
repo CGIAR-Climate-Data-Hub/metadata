@@ -2,7 +2,7 @@
 
 - **Title:** CGIAR CDH
 - **Identifier:**
-  <https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json>
+  <https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json>
 - **Field Name Prefix:** cgiar-cdh
 - **Scope:** Collection, Item, Links
 - **Extension

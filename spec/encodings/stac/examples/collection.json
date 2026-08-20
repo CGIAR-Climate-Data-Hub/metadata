@@ -2,7 +2,7 @@
   "type": "Collection",
   "stac_version": "1.1.0",
   "stac_extensions": [
-    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json"
+    "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json"
   ],
   "id": "example-crop-suitability",
   "title": "Example Gridded Crop Suitability Projections (SAMPLE - NOT REAL DATA)",

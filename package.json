@@ -1,6 +1,6 @@
 {
   "name": "cgiar-cdh-metadata",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Climate Data Hub metadata standard, input schema, and controlled vocabularies.",
   "type": "module",
@@ -20,8 +20,8 @@
     "bundle-profile": "node scripts/bundle-profile.js",
     "check-invalid": "node scripts/validate-yaml.js --profile spec/schemas/profiles/cdh.schema.json --expect-fail tests/invalid",
     "version": "node scripts/sync-version.js && npm test",
-    "check-examples": "stac-node-validator . --lint --verbose --schemaMap https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json=./spec/encodings/stac/schema.json",
-    "format-examples": "stac-node-validator . --format --schemaMap https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json=./spec/encodings/stac/schema.json"
+    "check-examples": "stac-node-validator . --lint --verbose --schemaMap https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json=./spec/encodings/stac/schema.json",
+    "format-examples": "stac-node-validator . --format --schemaMap https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json=./spec/encodings/stac/schema.json"
   },
   "dependencies": {
     "ajv": "^8.17.1",

@@ -1,6 +1,6 @@
 # CDH to STAC Mapping
 
-Status: v0.2.0
+Status: v0.3.0
 
 This document describes the mapping of a CDH record as STAC. All field definitions and requirements
 live in `standard.md`, A record is valid or invalid against the schema, never against this mapping.
