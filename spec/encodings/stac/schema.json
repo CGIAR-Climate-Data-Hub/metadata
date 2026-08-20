@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json#",
+  "$id": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json#",
   "title": "CGIAR CDH Extension",
   "description": "STAC extension for the CGIAR Climate Data Hub: the fields a CDH record carries into STAC that no native field or community extension covers. Fields whose meaning STAC already expresses natively (title, license, extent, sci:citation, cube:dimensions, proj:code) are not repeated here - see mapping-stac.md.",
   "type": "object",
@@ -9,7 +9,7 @@
     "stac_extensions": {
       "type": "array",
       "contains": {
-        "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/encodings/stac/schema.json"
+        "const": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/encodings/stac/schema.json"
       }
     },
     "type": {

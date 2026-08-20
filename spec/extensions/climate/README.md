@@ -46,7 +46,7 @@ with `rel: via` for major upstream products such as NEX-GDDP-CMIP6, CHIRPS, NASA
 
 ```yaml
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/climate/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/extensions/climate/schema.json
 climate:
   mip_era: CMIP6
   scenarios: [ssp245, ssp585]

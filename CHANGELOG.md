@@ -10,6 +10,8 @@ occur between minor versions.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-20
+
 ### Added
 
 - Added the `example` asset role for `additional_assets[]` - a runnable usage example (notebook,
@@ -57,8 +59,6 @@ occur between minor versions.
   declares. The shape is contextual: an asset states one scalar per axis (the file's exact
   position), an Item lists the values it spans. This gives the token values from an `href_template`
   expansion a named home, which `mapping-stac.md` section 5.2 previously described without naming.
-- Added `cgiar-cdh:previous_version`, the superseded record's identifier repeated from the
-  `predecessor-version` link so a search can filter on it without following links.
 - Published the cross-field checks as `spec/checks/cross-field.js`, mirrored to
   `<base>/v<TAG>/checks/cross-field.js` beside the schema and pinned to the same release. It is
   dependency-free ESM, so the same source runs in Node and in a browser; the SPDX expression
@@ -308,6 +308,8 @@ occur between minor versions.
 - Initial prototype of the core metadata specification, controlled vocabularies, and supporting
   build scripts.
 
-[Unreleased]: https://github.com/CGIAR-Climate-Data-Hub/cdh-metadata-standard/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/CGIAR-Climate-Data-Hub/cdh-metadata-standard/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/CGIAR-Climate-Data-Hub/cdh-metadata-standard/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/CGIAR-Climate-Data-Hub/cdh-metadata-standard/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/CGIAR-Climate-Data-Hub/cdh-metadata-standard/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/CGIAR-Climate-Data-Hub/cdh-metadata-standard/releases/tag/v0.0.1

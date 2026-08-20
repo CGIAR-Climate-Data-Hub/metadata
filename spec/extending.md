@@ -30,7 +30,7 @@ Publish it at a stable, version-pinned URL and set `$id` to that URL.
 
 ```yaml
 extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
+  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/extensions/cdh/schema.json
   - https://<you>.github.io/<repo>/v1.0.0/soil/schema.json
 soil:
   depth: 0-30cm
@@ -51,7 +51,7 @@ schema is enough:
   "$id": "https://<you>.github.io/<repo>/v1.0.0/profiles/mine.schema.json",
   "allOf": [
     {
-      "$ref": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/core.schema.json"
+      "$ref": "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/schemas/core.schema.json"
     },
     { "$ref": "https://<you>.github.io/<repo>/v1.0.0/soil/schema.json" }
   ],
@@ -73,7 +73,7 @@ Any JSON Schema 2020-12 validator works. For CDH records, use the bundled profil
 
 ```sh
 check-jsonschema \
-  --schemafile https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.bundled.json \
+  --schemafile https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/schemas/profiles/cdh.schema.bundled.json \
   record.yaml
 ```
 
