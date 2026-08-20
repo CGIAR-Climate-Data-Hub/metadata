@@ -95,6 +95,10 @@ variables:
 cdh:
   domain: [agricultural-production]
   usage:
+    intended_uses:
+      - global and regional analysis of livestock distribution
+      - livestock exposure layers for hazard, disease, and emissions assessment
+      - spatial targeting at national and sub-national scale
     not_recommended_for:
       - use: exact livestock counts
         reason: values are spatially modeled estimates derived from census and other data

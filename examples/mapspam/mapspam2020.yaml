@@ -168,6 +168,10 @@ variables:
 cdh:
   domain: [agricultural-production]
   usage:
+    intended_uses:
+      - global and regional analysis of crop area, production, and yield patterns
+      - food security and agricultural systems assessment
+      - spatial targeting at national and sub-national scale
     not_recommended_for:
       - use: field-scale farm management
         reason: the grid is too coarse for field-scale operational decisions.
