@@ -197,7 +197,22 @@
               },
               "organization": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "examples": [
+                  "Africa Rice Center",
+                  "Alliance of Bioversity International and CIAT",
+                  "CIFOR-ICRAF",
+                  "International Center for Agricultural Research in the Dry Areas",
+                  "International Crops Research Institute for the Semi-Arid Tropics",
+                  "International Food Policy Research Institute",
+                  "International Institute of Tropical Agriculture",
+                  "International Livestock Research Institute",
+                  "International Maize and Wheat Improvement Center",
+                  "International Potato Center",
+                  "International Rice Research Institute",
+                  "International Water Management Institute",
+                  "WorldFish"
+                ]
               },
               "roles": {
                 "description": "Roles this contact holds (one or more).",
