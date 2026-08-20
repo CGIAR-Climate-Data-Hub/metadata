@@ -91,7 +91,6 @@ spatial:
       value:
       label: ""
       reference_system: ""
-      note: ""
 
 temporal: # Temporal coverage (conditional). Use `date` for a single instant/period, OR
   # start_date + end_date for a span (end_date: null = open-ended). Any ISO 8601 precision:

@@ -42,8 +42,7 @@
       "type": "xy",
       "value": 0.05,
       "unit": "degree",
-      "label": "3 arc-minutes (~5 km at equator)",
-      "note": "Regular lat/lon grid; cell ground area shrinks toward the poles."
+      "label": "3 arc-minutes (~5 km at equator)"
     }
   ],
   "cgiar-cdh:not_recommended_for": [

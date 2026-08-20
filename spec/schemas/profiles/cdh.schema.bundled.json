@@ -1082,11 +1082,6 @@
                     "type": "string",
                     "description": "Human-readable resolution, e.g. 5 arc-minutes or Kenya counties."
                   },
-                  "note": {
-                    "minLength": 1,
-                    "type": "string",
-                    "description": "Short spatial interpretation note."
-                  },
                   "reference_system": {
                     "minLength": 1,
                     "type": "string",

@@ -82,7 +82,6 @@ spatial:
       unit: admin-level
       label: Admin-2 units (Farland)
       reference_system: Example GAUL-like boundaries 2024
-      note: Units follow the boundary record joined below; codes are stable within a release.
 
 temporal:
   start_date: "2030"

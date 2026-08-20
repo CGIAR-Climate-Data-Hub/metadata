@@ -82,6 +82,8 @@ occur between minor versions.
   `polygon` entry is rejected. A representation of the same data at a different resolution (polygon
   aggregates of a grid) is a separate record, and resolution is never stated per asset.
 - **Breaking:** every `spatial.resolution[]` entry must state `type`.
+- **Breaking:** removed `spatial.resolution[].note`. With one characterization allowed per record it
+  was a record-level caveat living inside an array; use the record-level `note`.
 - **Breaking:** a `type: temporal` dimension's `values` must be ISO 8601 dates or instants, written
   as strings. Bare numbers (`2030`) and range labels (`2020-2040`) are rejected, because the STAC
   datacube extension requires ISO 8601 strings there and neither form is one. A **binned** axis

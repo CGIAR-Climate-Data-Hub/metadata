@@ -607,7 +607,6 @@ spatial:
     locations or reporting units. `value` + `unit` may be used when a meaningful level exists, such
     as `value: 2`, `unit: admin-level`.
   - `label` is the human-readable form (e.g., `5 arc-minutes`, `Kenya counties`).
-  - `note` is for short spatial interpretation notes that do not belong in the record-level `note`.
 
 #### `spatial.geometry_column`
 

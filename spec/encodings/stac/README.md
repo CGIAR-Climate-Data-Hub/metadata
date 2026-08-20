@@ -135,7 +135,6 @@ closed lists at authoring time.
 | unit             | string           | Unit of measurement, preferably UDUNITS-2 or UCUM; `admin-level` and similar for non-grid. |
 | label            | string           | Human-readable resolution, e.g. `5 arc-minutes`, `Kenya counties`.                         |
 | reference_system | string           | For `point` and `polygon`, the system defining the reporting units, e.g. `GAUL 2015`.      |
-| note             | string           | Short spatial interpretation note.                                                         |
 
 Exactly one characterization is carried: a single entry, or an `x` + `y` pair where grid spacing
 differs.

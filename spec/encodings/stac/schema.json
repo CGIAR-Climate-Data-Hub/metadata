@@ -181,9 +181,6 @@
           "reference_system": {
             "description": "For point and polygon types, the system defining the reporting units (e.g. GAUL 2015).",
             "$ref": "#/definitions/nonEmptyString"
-          },
-          "note": {
-            "$ref": "#/definitions/nonEmptyString"
           }
         },
         "additionalProperties": false

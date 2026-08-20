@@ -459,10 +459,6 @@
           "$ref": "#/$defs/nonEmptyString",
           "description": "Human-readable resolution, e.g. 5 arc-minutes or Kenya counties."
         },
-        "note": {
-          "$ref": "#/$defs/nonEmptyString",
-          "description": "Short spatial interpretation note."
-        },
         "reference_system": {
           "$ref": "#/$defs/nonEmptyString",
           "description": "For point/polygon types, the system defining the reporting units (e.g. GAUL 2015, GADM)."

@@ -39,8 +39,9 @@ spatial:
       unit: "" # e.g. admin-level
       label: ""
       reference_system: "" # boundary/station system used by the join key
-      note: >
-        Rows are keyed to external spatial features or locations; geometries are not embedded.
+
+note: > # dataset-wide caveats
+  Rows are keyed to external spatial features or locations; geometries are not embedded.
 
 temporal:
   start_date: ""

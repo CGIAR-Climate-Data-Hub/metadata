@@ -116,7 +116,6 @@ spatial:
       unit: degree
       value: 0.05
       label: 3 arc-minutes (~5 km at equator)
-      note: Regular lat/lon grid; cell ground area shrinks toward the poles.
 
 temporal:
   # Coverage span (year precision). The two projection horizons are a temporal
