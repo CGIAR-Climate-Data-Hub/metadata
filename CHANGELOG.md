@@ -82,11 +82,45 @@ occur between minor versions.
   `polygon` entry is rejected. A representation of the same data at a different resolution (polygon
   aggregates of a grid) is a separate record, and resolution is never stated per asset.
 - **Breaking:** every `spatial.resolution[]` entry must state `type`.
+- **Breaking:** a `type: temporal` dimension's `values` must be ISO 8601 dates or instants, written
+  as strings. Bare numbers (`2030`) and range labels (`2020-2040`) are rejected, because the STAC
+  datacube extension requires ISO 8601 strings there and neither form is one. A **binned** axis
+  lists each bin's start and gives its length as the `step` - 20-year windows are
+  `values: ["2021", "2041"]` with `step: P20Y` - and the readable form (`2021-2050`) is derived from
+  value plus step rather than authored. A **cyclic** label axis (`DJF`/`MAM`/`JJA`/`SON`) is not
+  temporal at all: it repeats every year instead of running in one direction, so it is a domain axis
+  named after what it varies, with the duration each label covers stated in `description`. Several
+  temporal dimensions remain valid when each carries real dates - files split by year with a day
+  column inside, or one store holding a yearly climatology beside a daily field.
+- **Breaking:** `dimensions[]` and `variables[]` names must now be unique across both arrays. They
+  share one namespace: `cube:dimensions` and `cube:variables` are keyed by name, so a duplicate
+  silently overwrote its twin on encode and an axis or a measure vanished from the published cube
+  with no error anywhere. The names are also a table's columns and the tokens `href_template`
+  resolves against, both of which a duplicate makes ambiguous.
+- **Breaking:** `dimensions[].type` no longer accepts `spatial` or `geometry`. Neither is encodable:
+  the STAC datacube extension requires `axis` and `extent` on a spatial dimension, which a CDH
+  record does not carry, and it forbids both words outright as custom dimension types. The
+  horizontal grid stays derived from the top-level `spatial` field. Two reserved values replace the
+  uses that were being made of `spatial`:
+  - `z` for a vertical axis - soil depth, height, pressure level - which serializes as
+    `{ type: spatial, axis: z }`. **At most one per record**, since it is the only spatial axis a
+    record ever declares.
+  - `location` for a column identifying a place, such as an admin or station code. It is a key
+    rather than an axis of space, and serializes as an Additional Dimension. Any number are allowed,
+    so composite keys such as `adm0_code` + `adm2_code` still work.
 - **Breaking:** `dimensions[].type` must be lowercase (`^[a-z][a-z0-9_-]*$`), and the aliases
   `time`, `times`, `date`, `dates`, `datetime`, and `timestamp` are rejected. `temporal` is the only
   spelling that produces a time axis, so a typo now fails validation instead of silently serializing
   as a domain axis. `temporal`, `spatial`, and `bands` are documented as reserved values; anything
   else names a domain axis after what it varies.
+- `bands` is no longer suggested as a `dimensions[].type`. The datacube extension has no band
+  dimension type - a multi-band file's bands are `variables[]`, serializing as `cube:variables` and
+  `raster:bands` - so the value was advertising something that does not exist. It is still accepted
+  as an ordinary axis name for a resource that genuinely varies along what it calls a band.
+- Added `unit` to `dimensions[]`, mapping to `cube:dimensions[].unit`, which the datacube extension
+  defines on every dimension flavour while CDH carried it only on `variables[]`. Needed on a `z`
+  dimension (`cm`, `m`, `hPa`); it is not a substitute for `reference_system`, and a `z` dimension
+  may carry both.
 - **Breaking:** classification class values are restricted to a string or an integer, where any
   number or boolean was previously accepted.
 - `series` is now a program, initiative, or product brand grouping whose members are heterogeneous
