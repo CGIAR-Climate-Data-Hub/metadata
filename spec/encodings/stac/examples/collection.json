@@ -29,7 +29,6 @@
     }
   },
   "cgiar-cdh:resource_type": "dataset",
-  "cgiar-cdh:previous_version": "example-crop-suitability-v1",
   "cgiar-cdh:domain": [
     "agricultural-production",
     "adaptation"
@@ -52,14 +51,6 @@
     {
       "name": "Example Funding Programme",
       "url": "https://example.org/funding"
-    }
-  ],
-  "cgiar-cdh:spatial_resolution": [
-    {
-      "type": "xy",
-      "value": 0.05,
-      "unit": "degree",
-      "label": "3 arc-minutes (~5 km at equator)"
     }
   ],
   "cgiar-cdh:not_recommended_for": [
@@ -118,10 +109,7 @@
       "type": "application/vnd.zarr; version=3",
       "roles": [
         "data"
-      ],
-      "cgiar-cdh:partition": {
-        "variable": "suitability_index"
-      }
+      ]
     }
   }
 }

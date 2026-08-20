@@ -64,7 +64,13 @@
         "item_assets": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/assetFields"
+            "$ref": "#/definitions/collectionAssetFields"
+          }
+        },
+        "assets": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/collectionAssetFields"
           }
         }
       },
@@ -155,7 +161,7 @@
       }
     },
     "cgiar-cdh:spatial_resolution": {
-      "description": "Format-independent spatial resolution. Grid entries also become cube:dimensions[].step; point and polygon reporting units have no native STAC home, which is why the full list is carried here.",
+      "description": "Spatial resolution that STAC cannot state natively: point and polygon reporting units. Grid spacing is not carried here - it becomes cube:dimensions[].step in the Datacube extension.",
       "type": "array",
       "minItems": 1,
       "items": {
@@ -163,12 +169,12 @@
         "required": ["type"],
         "properties": {
           "type": {
-            "description": "xy (regular grid), x, y, point, or polygon.",
+            "description": "point or polygon reporting unit. Grid types belong in cube:dimensions.",
             "type": "string",
-            "enum": ["xy", "x", "y", "point", "polygon"]
+            "enum": ["point", "polygon"]
           },
           "value": {
-            "description": "Grid spacing, or the administrative level.",
+            "description": "Numeric characterization of the reporting unit, e.g. the administrative level.",
             "type": ["number", "string"]
           },
           "unit": {
@@ -312,9 +318,6 @@
         "cgiar-cdh:note": {
           "$ref": "#/definitions/cgiar-cdh:note"
         },
-        "cgiar-cdh:previous_version": {
-          "$ref": "#/definitions/cgiar-cdh:previous_version"
-        },
         "cgiar-cdh:mip_era": {
           "$ref": "#/definitions/cgiar-cdh:mip_era"
         },
@@ -409,10 +412,6 @@
       },
       "additionalProperties": false
     },
-    "cgiar-cdh:previous_version": {
-      "description": "Identifier of the record this one supersedes. The Version extension carries the same relationship as a predecessor-version link; the identifier is repeated as a property so a search can filter on it without following links.",
-      "$ref": "#/definitions/nonEmptyString"
-    },
     "partitionScalar": {
       "$comment": "Asset form: one exact value per axis - this file's position.",
       "type": "object",
@@ -457,9 +456,6 @@
         },
         "cgiar-cdh:note": {
           "$ref": "#/definitions/cgiar-cdh:note"
-        },
-        "cgiar-cdh:previous_version": {
-          "$ref": "#/definitions/cgiar-cdh:previous_version"
         },
         "cgiar-cdh:mip_era": {
           "$ref": "#/definitions/cgiar-cdh:mip_era"
@@ -509,6 +505,19 @@
         "cgiar-cdh:partition": {
           "$ref": "#/definitions/partitionScalar"
         }
+      },
+      "patternProperties": {
+        "^(?!cgiar-cdh:)": {
+          "$comment": "Anything outside the cgiar-cdh: namespace is someone else's business and passes untouched."
+        }
+      },
+      "additionalProperties": false
+    },
+    "collectionAssetFields": {
+      "$comment": "A Collection asset is the un-templated whole - 5.2 expands templated entries into Items - so it holds no partition. item_assets is a template shared by every Item, where one exact value cannot apply either.",
+      "type": "object",
+      "properties": {
+        "cgiar-cdh:partition": false
       },
       "patternProperties": {
         "^(?!cgiar-cdh:)": {

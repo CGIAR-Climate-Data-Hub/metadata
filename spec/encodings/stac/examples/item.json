@@ -48,14 +48,6 @@
     "cgiar-cdh:scenarios": [
       "ssp245"
     ],
-    "cgiar-cdh:spatial_resolution": [
-      {
-        "type": "xy",
-        "value": 0.05,
-        "unit": "degree",
-        "label": "3 arc-minutes (~5 km at equator)"
-      }
-    ],
     "cgiar-cdh:partition": {
       "scenario": [
         "ssp245"

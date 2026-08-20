@@ -56,13 +56,12 @@ Processing extension. The schema closes the namespace everywhere, so a stray or 
 | cgiar-cdh:intended_uses       | \[string]                                            | Uses the resource was produced for. Illustrative, never exhaustive: an absent use is not excluded, a listed one is not endorsed. Not a filter facet. |
 | cgiar-cdh:access              | string                                               | `public`, `restricted`, or `non-public`. Absent means public. Distinct from `license`: what you may do versus whether you can get it.                |
 | cgiar-cdh:access_note         | string                                               | What a user must do to obtain the data, or why it is catalogued but unavailable.                                                                     |
-| cgiar-cdh:previous_version    | string                                               | Identifier of the record this one supersedes. Repeated from the `predecessor-version` link so a search can filter on it directly.                    |
 | cgiar-cdh:partition           | [Partition Object](#partition-object)                | Item properties only: the values each axis spans within this Item. See the object for the asset form.                                                |
 | cgiar-cdh:note                | string                                               | Caveats or interpretation-critical context that is not part of `description`.                                                                        |
 | cgiar-cdh:funding             | \[[Name-URL Object](#name-url-object)]               | Funding sources for the resource.                                                                                                                    |
 | cgiar-cdh:series              | [Name-URL Object](#name-url-object)                  | Program, initiative, or product brand the resource was published under. A discovery facet, not a hierarchy.                                          |
 | cgiar-cdh:geography           | \[string]                                            | Place facet from the CDH geography vocabulary. Complements the spatial extent rather than replacing it.                                              |
-| cgiar-cdh:spatial_resolution  | \[[Resolution Object](#resolution-object)]           | Format-independent spatial resolution, including point and polygon reporting units.                                                                  |
+| cgiar-cdh:spatial_resolution  | \[[Resolution Object](#resolution-object)]           | Point and polygon reporting units. Grid spacing is not carried here - see the field notes.                                                           |
 | cgiar-cdh:not_recommended_for | \[[Not-Recommended Object](#not-recommended-object)] | Uses to avoid, each with a reason and an optional alternative.                                                                                       |
 | cgiar-cdh:mip_era             | string                                               | `CMIP5` or `CMIP6`.                                                                                                                                  |
 | cgiar-cdh:scenarios           | \[string]                                            | Scenario labels (SSP/RCP, `historic`). Belongs in Collection `summaries` when it applies across Items.                                               |
@@ -85,10 +84,26 @@ These appear on a link object, never in Collection or Item properties.
 
 #### cgiar-cdh:spatial_resolution
 
-Grid entries also become `cube:dimensions[].step` in the Datacube extension. They are repeated here
-because point and polygon reporting units - "Kenya counties", admin level 2 - have no native STAC
-home at all, and a consumer filtering on resolution needs one field to read rather than two shapes
-to reconcile.
+Only `point` and `polygon` entries. A reporting unit - "Kenya counties", admin level 2 - has no
+native STAC home at all, which is what this field is for:
+
+```json
+{
+  "cgiar-cdh:spatial_resolution": [
+    {
+      "type": "polygon",
+      "value": 2,
+      "unit": "admin-level",
+      "label": "Admin-2 units (Farland)",
+      "reference_system": "Example GAUL-like boundaries 2024"
+    }
+  ]
+}
+```
+
+Grid spacing is deliberately absent. It already maps to `cube:dimensions[].step` with the
+dimension's native `unit` / `reference_system`, so carrying it here too would state one fact in two
+places with nothing keeping them in agreement.
 
 #### cgiar-cdh:partition
 
@@ -126,16 +141,16 @@ closed lists at authoring time.
 
 ### Resolution Object
 
-| Field Name       | Type             | Description                                                                                |
-| ---------------- | ---------------- | ------------------------------------------------------------------------------------------ |
-| type             | string           | **REQUIRED**. `xy` (regular grid), `x`, `y`, `point`, or `polygon`.                        |
-| value            | number \| string | Grid spacing, or the administrative level.                                                 |
-| unit             | string           | Unit of measurement, preferably UDUNITS-2 or UCUM; `admin-level` and similar for non-grid. |
-| label            | string           | Human-readable resolution, e.g. `5 arc-minutes`, `Kenya counties`.                         |
-| reference_system | string           | For `point` and `polygon`, the system defining the reporting units, e.g. `GAUL 2015`.      |
+| Field Name       | Type             | Description                                                                    |
+| ---------------- | ---------------- | ------------------------------------------------------------------------------ |
+| type             | string           | **REQUIRED**. `point` or `polygon`. Grid types belong in `cube:dimensions`.    |
+| value            | number \| string | Numeric characterization of the reporting unit, e.g. the administrative level. |
+| unit             | string           | Unit of measurement, preferably UDUNITS-2 or UCUM; `admin-level` and similar.  |
+| label            | string           | Human-readable resolution, e.g. `Kenya counties`.                              |
+| reference_system | string           | The system defining the reporting units, e.g. `GAUL 2015`.                     |
 
-Exactly one characterization is carried: a single entry, or an `x` + `y` pair where grid spacing
-differs.
+Exactly one characterization is carried. The input `spatial.resolution[]` may also hold grid
+entries; those serialize to `cube:dimensions[].step` instead of here.
 
 ### Partition Object
 
