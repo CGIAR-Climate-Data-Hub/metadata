@@ -35,6 +35,9 @@ import yaml from "js-yaml";
 import validateSpdxExpression from "spdx-expression-validate";
 
 import { loadAllSchemas, newAjv, rel, ROOT } from "./_ajv.js";
+// The cross-field rules live beside the schema and are published with it, so a
+// browser can run the same source. This script is the only Node caller.
+import checkCrossFieldRules, { CDH_VERSIONED_URL, list } from "../spec/checks/cross-field.js";
 
 // Version-tagged $id matches the schema's published gh-pages URL. The version
 // comes from package.json so a release bump flows through automatically.
@@ -42,15 +45,11 @@ const { version } = JSON.parse(await readFile(resolve(ROOT, "package.json"), "ut
 const BASE = `https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v${version}`;
 const CORE_ID = `${BASE}/schemas/core.schema.json`;
 
-// Matches CDH-hosted, version-tagged schema URLs; captures the version segment.
 // Records keep the URLs of the release they target, so declared URLs are
 // resolved against this checkout's schemas regardless of version.
-const CDH_VERSIONED_URL =
-  /^(https:\/\/cgiar-climate-data-hub\.github\.io\/cdh-metadata-standard)\/(v\d+\.\d+\.\d+)\//;
 const toCurrentVersion = (url) => url.replace(CDH_VERSIONED_URL, `$1/v${version}/`);
 
 const YAML_EXTS = [".yaml", ".yml"];
-const list = (v) => (Array.isArray(v) ? v : []);
 
 async function walk(dir, exts) {
   const out = [];
@@ -220,150 +219,6 @@ function mechanismFor(validator, doc) {
   return { schema, known, unknown };
 }
 
-// Cross-field rules documented in standard.md that the schema cannot express.
-const RESERVED_SCHEME_PREFIX =
-  "https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/vocab/";
-function checkCrossFieldRules(doc) {
-  const out = [];
-  if (typeof doc?.cdh_schema_version === "string") {
-    const refs = [
-      ["$schema", doc?.["$schema"]],
-      ...list(doc?.extensions).map((url, i) => [`extensions/${i}`, url]),
-    ];
-    for (const [path, url] of refs) {
-      if (typeof url !== "string") continue;
-      const urlVersion = url.match(CDH_VERSIONED_URL)?.[2];
-      if (urlVersion && urlVersion !== doc.cdh_schema_version) {
-        out.push(
-          `/${path}: URL targets ${urlVersion} but cdh_schema_version is ${doc.cdh_schema_version} - a record must reference one release throughout`,
-        );
-      }
-    }
-  }
-  if (typeof doc?.license === "string") {
-    if (!validateSpdxExpression(doc.license)) {
-      out.push(`/license: must be a valid SPDX license expression`);
-    }
-    if (/\bLicenseRef-[A-Za-z0-9.-]+\b/.test(doc.license)) {
-      const hasLicenseLink = list(doc?.additional_links).some(
-        (link) => link?.rel === "license" && typeof link?.url === "string" && link.url.length > 0,
-      );
-      if (!hasLicenseLink) {
-        out.push(
-          `/license: custom LicenseRef-* expressions require an additional_links[] entry with rel: license and url`,
-        );
-      }
-    }
-  }
-  const dims = new Map(list(doc?.dimensions).map((d) => [d?.name, list(d?.values).length]));
-  const namedVariables = list(doc?.variables).filter((v) => typeof v?.name === "string").length;
-  list(doc?.data).forEach((asset, i) => {
-    const tpl = asset?.href_template;
-    if (typeof tpl !== "string" || tpl === "") return;
-    for (const [, token] of tpl.matchAll(/\{([^}]+)\}/g)) {
-      if (token === "variable") {
-        if (namedVariables === 0) {
-          out.push(
-            `/data/${i}/href_template: token {variable} expands over variables[].name, but no named variables are declared (requires the datacube extension)`,
-          );
-        }
-      } else if (!dims.has(token)) {
-        out.push(
-          `/data/${i}/href_template: token {${token}} has no matching dimensions[].name (requires the datacube extension)`,
-        );
-      } else if (dims.get(token) === 0) {
-        out.push(`/data/${i}/href_template: dimension "${token}" must list its values`);
-      }
-    }
-  });
-  const { created, updated } = doc;
-  if (typeof created === "string" && typeof updated === "string") {
-    if (new Date(updated) < new Date(created)) {
-      out.push(`/updated: must be >= created (${created})`);
-    }
-  }
-  const steps = list(doc?.processing);
-  const stepIds = new Set();
-  steps.forEach((step, i) => {
-    if (step?.id == null) return;
-    if (stepIds.has(step.id)) out.push(`/processing/${i}/id: duplicate id "${step.id}"`);
-    stepIds.add(step.id);
-  });
-  list(doc?.data).forEach((asset, i) => {
-    for (const ref of list(asset?.processing_steps)) {
-      if (!stepIds.has(ref)) {
-        out.push(`/data/${i}/processing_steps: "${ref}" does not match any processing[].id`);
-      }
-    }
-  });
-  const varNames = new Set(list(doc?.variables).map((v) => v?.name));
-  list(doc?.classes).forEach((cls, i) => {
-    if (cls?.variable != null && !varNames.has(cls.variable)) {
-      out.push(`/classes/${i}/variable: "${cls.variable}" does not match any variables[].name`);
-    }
-  });
-  const assetNames = new Set();
-  for (const [field, assets] of [
-    ["data", doc?.data],
-    ["additional_assets", doc?.additional_assets],
-  ]) {
-    list(assets).forEach((asset, i) => {
-      if (asset?.name == null) return;
-      if (assetNames.has(asset.name)) {
-        out.push(
-          `/${field}/${i}/name: duplicate asset name "${asset.name}" - names become asset keys and must be unique across data[] and additional_assets[]`,
-        );
-      }
-      assetNames.add(asset.name);
-    });
-  }
-  list(doc?.keywords).forEach((kw, i) => {
-    if (kw && typeof kw === "object" && kw.scheme?.startsWith?.(RESERVED_SCHEME_PREFIX)) {
-      out.push(
-        `/keywords/${i}/scheme: CDH vocab schemes are reserved for encoder expansion (cdh.domain / commodities) - link an external vocabulary instead`,
-      );
-    }
-  });
-  if (doc?.temporal && typeof doc.temporal === "object") {
-    const { date, start_date, end_date } = doc.temporal;
-    const hasDate = date !== undefined;
-    const hasStart = start_date !== undefined;
-    const hasEnd = end_date !== undefined;
-    if (hasDate && (hasStart || hasEnd)) {
-      out.push(
-        `/temporal: use "date" for a single instant/period, or "start_date"/"end_date" for a span - not both`,
-      );
-    }
-    if (hasStart !== hasEnd) {
-      out.push(
-        `/temporal: "start_date" and "end_date" must be used together (end_date: null for open-ended)`,
-      );
-    }
-  }
-  const columnNames = new Set(
-    [...list(doc?.dimensions), ...list(doc?.variables)]
-      .map((c) => c?.name)
-      .filter((n) => typeof n === "string"),
-  );
-  list(doc?.joins).forEach((join, i) => {
-    const left = list(join?.left_fields);
-    const right = list(join?.right_fields);
-    if (left.length && right.length && left.length !== right.length) {
-      out.push(
-        `/joins/${i}: left_fields (${left.length}) and right_fields (${right.length}) must have the same length`,
-      );
-    }
-    left.forEach((f, k) => {
-      if (typeof f === "string" && !columnNames.has(f)) {
-        out.push(
-          `/joins/${i}/left_fields/${k}: "${f}" does not match any declared dimensions[]/variables[] name`,
-        );
-      }
-    });
-  });
-  return out;
-}
-
 const TEMPLATES_PREFIX = resolve(ROOT, "templates") + sep;
 const isDraft = (file) => forceDraft || file.startsWith(TEMPLATES_PREFIX);
 
@@ -372,6 +227,9 @@ const isDraft = (file) => forceDraft || file.startsWith(TEMPLATES_PREFIX);
 // the allowed values for enum misses.
 function describeError(err) {
   const p = err.params ?? {};
+  // A `false` subschema means "this field is not allowed here" (e.g. temporal
+  // date vs start_date/end_date); Ajv's own wording says nothing useful.
+  if (err.keyword === "false schema") return "must not be present alongside its sibling fields";
   const stray = p.unevaluatedProperty ?? p.additionalProperty;
   if (stray != null) return `${err.message}: "${stray}"`;
   if (Array.isArray(p.allowedValues)) {
@@ -403,7 +261,8 @@ function validateFile(file, doc) {
     // When any subschema fails, Ajv also flags every legitimate top-level
     // field as "unevaluated" - keep only strays that no composed schema
     // actually defines.
-    const evaluable = new Set();
+    // $schema is allowed via patternProperties, not properties.
+    const evaluable = new Set(["$schema"]);
     for (const id of [CORE_ID, ...known]) {
       for (const key of Object.keys(validator.getSchema(id)?.schema?.properties ?? {})) {
         evaluable.add(key);
@@ -433,7 +292,7 @@ function validateFile(file, doc) {
     }
   }
   if (seen.size) return { draft, errors: [...seen] };
-  return { draft, errors: checkCrossFieldRules(target) };
+  return { draft, errors: checkCrossFieldRules(target, { isSpdx: validateSpdxExpression }) };
 }
 
 let failures = 0;

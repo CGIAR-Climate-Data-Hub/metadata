@@ -51,7 +51,7 @@ contact:
   - name: Brayden Youngberg
     roles: [processor, custodian]
     email: b.youngberg@cgiar.org
-    organization: The Alliance of Bioversity International and CIAT
+    organization: Alliance of Bioversity International and CIAT
 
 citation:
   title: "GLW 4: Gridded Livestock Density (Global - 2020 - 10 km)"
@@ -93,11 +93,16 @@ variables:
     unit: "{head}/km-1"
 
 cdh:
-  not_recommended_for:
-    - use: exact livestock counts
-      reason: values are spatially modeled estimates derived from census and other data
-      use_instead: official livestock census counts where available
   domain: [agricultural-production]
+  usage:
+    intended_uses:
+      - global and regional analysis of livestock distribution
+      - livestock exposure layers for hazard, disease, and emissions assessment
+      - spatial targeting at national and sub-national scale
+    not_recommended_for:
+      - use: exact livestock counts
+        reason: values are spatially modeled estimates derived from census and other data
+        use_instead: official livestock census counts where available
 
 commodities: [buffalo, cattle, chickens, goats, swine, sheep]
 

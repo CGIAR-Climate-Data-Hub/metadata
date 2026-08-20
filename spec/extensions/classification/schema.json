@@ -42,10 +42,7 @@
                       "type": "string"
                     },
                     {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
+                      "type": "integer"
                     }
                   ]
                 }

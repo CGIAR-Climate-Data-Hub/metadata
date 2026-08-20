@@ -26,7 +26,7 @@
   },
   "properties": {
     "dimensions": {
-      "description": "Cube axes: domain axes (e.g. crop, scenario), bands, and temporal axes (each type: temporal with a step). Not the lat/lon grid - that comes from the top-level spatial field; the top-level temporal field holds only the coverage extent.",
+      "description": "Cube axes: domain axes (e.g. crop, scenario), a vertical axis (type: z), place-key columns (type: location), and temporal axes (each type: temporal with a step). The horizontal lat/lon grid is derived from the top-level spatial field and is not declared here, and bands are variables rather than an axis.",
       "type": "array",
       "items": {
         "type": "object",
@@ -35,7 +35,9 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "not": { "const": "variable" },
+            "not": {
+              "const": "variable"
+            },
             "description": "Axis name. Must not be \"variable\": measures are not axes and belong in variables[]; href_template refers to them via the reserved {variable} token."
           },
           "description": {
@@ -45,8 +47,22 @@
           },
           "type": {
             "type": "string",
-            "description": "Dimension type: a domain axis (e.g. crop, scenario), bands, or temporal. Declare every temporal axis here with a step; the top-level temporal field holds only the coverage extent. The lat/lon grid comes from the spatial field, not here.",
-            "minLength": 1
+            "description": "Dimension type. Reserved values change how the dimension is read: `temporal` (an axis of ISO 8601 dates or instants - the only type that may carry a step, and a record may declare several, e.g. a year axis files are split on plus a day column inside them) and `z` (a vertical axis - depth, height, or pressure level - at most one per record, serialized as a spatial dimension on the z axis). `location` names a column identifying a place, such as an admin or station code. Any other value names a domain axis after what it varies (crop, scenario, season). `spatial` and `geometry` are rejected: the horizontal grid is derived from the top-level spatial field and never declared here, and STAC forbids both words as custom dimension types. Lowercase; aliases of `temporal` are rejected so a time axis cannot silently become a domain axis.",
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_-]*$",
+            "not": {
+              "enum": [
+                "time",
+                "times",
+                "date",
+                "dates",
+                "datetime",
+                "timestamp",
+                "spatial",
+                "geometry"
+              ]
+            },
+            "examples": ["temporal", "z", "location", "crop", "scenario"]
           },
           "reference_system": {
             "$ref": "#/$defs/nonEmptyString",
@@ -64,13 +80,53 @@
             "format": "duration",
             "description": "Spacing of one step, as an ISO 8601 duration. Only valid on a type: temporal dimension.",
             "examples": ["P3M", "P20Y"]
+          },
+          "unit": {
+            "$ref": "#/$defs/nonEmptyString",
+            "description": "Unit of measurement for the values, preferably compliant with UDUNITS-2 or UCUM. Needed on a `z` dimension (m, cm, hPa) and useful on any numeric domain axis; not a substitute for reference_system, which names the vocabulary or vertical CRS the values are coded against.",
+            "examples": ["cm", "m", "hPa"]
           }
         },
         "required": ["name", "type", "description"],
         "dependentSchemas": {
-          "step": { "properties": { "type": { "const": "temporal" } } }
+          "step": {
+            "properties": {
+              "type": {
+                "const": "temporal"
+              }
+            }
+          }
+        },
+        "if": {
+          "properties": {
+            "type": {
+              "const": "temporal"
+            }
+          },
+          "required": ["type"]
+        },
+        "then": {
+          "properties": {
+            "values": {
+              "description": "On a temporal dimension, every value is an ISO 8601 date or instant, as a string. A binned axis lists each bin's start and states its length in step, so a 30-year period axis is values: [\"2021\", \"2051\"] with step: P30Y. A cyclic label axis (DJF/MAM/JJA/SON) is not temporal - name it after what it varies and describe the labels.",
+              "items": {
+                "type": "string",
+                "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?(Z|[+-]\\d{2}:\\d{2})?)?$"
+              }
+            }
+          }
         }
-      }
+      },
+      "contains": {
+        "properties": {
+          "type": {
+            "const": "z"
+          }
+        },
+        "required": ["type"]
+      },
+      "minContains": 0,
+      "maxContains": 1
     },
     "variables": {
       "description": "Measurement variables, bands, or columns.",
@@ -105,6 +161,17 @@
             "description": "Unit of measurement, preferably compliant with UDUNITS-2 or UCUM.",
             "examples": ["t ha-1", "{head}/km2"]
           },
+          "nodata": {
+            "description": "No-data / fill value for this variable, where it differs from the asset's. Takes precedence over the asset's nodata for this variable only.",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            ]
+          },
           "note": {
             "$ref": "#/$defs/nonEmptyString",
             "description": "Variable-specific caveats, limitations, or warnings."
@@ -124,7 +191,8 @@
           "target": {
             "type": "string",
             "format": "uri",
-            "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record)."
+            "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record).",
+            "examples": ["https://cdh.example/boundaries/gaul-2015-admin2"]
           },
           "left_fields": {
             "description": "Key columns in this record; each must be a declared dimensions[]/variables[] name.",

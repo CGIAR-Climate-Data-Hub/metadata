@@ -88,10 +88,19 @@
                 "description": "Asset name; becomes the asset key in serialized output, so it must be unique across data[] and additional_assets[]."
               },
               "roles": {
-                "description": "Asset roles, e.g. metadata, thumbnail, or describedby.",
+                "description": "Asset roles. Suggested values, not a closed set: `metadata`, `validation`, `describedby`, `thumbnail`, `overview`, `visual`, `example` (a runnable usage example, e.g. a notebook or SQL file).",
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "minLength": 1,
+                  "examples": [
+                    "metadata",
+                    "validation",
+                    "describedby",
+                    "thumbnail",
+                    "overview",
+                    "visual",
+                    "example"
+                  ]
                 },
                 "type": "array",
                 "uniqueItems": true
@@ -173,12 +182,14 @@
           "type": "object"
         },
         "contact": {
+          "description": "People or organizations responsible for the resource. At least one entry must hold the `licensor` role - the party that granted the license.",
           "items": {
             "additionalProperties": false,
             "properties": {
               "email": {
                 "format": "email",
-                "type": "string"
+                "type": "string",
+                "examples": ["ada.placeholder@example.org"]
               },
               "name": {
                 "type": "string",
@@ -186,7 +197,22 @@
               },
               "organization": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "examples": [
+                  "Africa Rice Center (AfricaRice)",
+                  "Alliance of Bioversity International and CIAT",
+                  "CIFOR-ICRAF",
+                  "International Center for Agricultural Research in the Dry Areas (ICARDA)",
+                  "International Crops Research Institute for the Semi-Arid Tropics (ICRISAT)",
+                  "International Food Policy Research Institute (IFPRI)",
+                  "International Institute of Tropical Agriculture (IITA)",
+                  "International Livestock Research Institute (ILRI)",
+                  "International Maize and Wheat Improvement Center (CIMMYT)",
+                  "International Potato Center (CIP)",
+                  "International Rice Research Institute (IRRI)",
+                  "International Water Management Institute (IWMI)",
+                  "WorldFish"
+                ]
               },
               "roles": {
                 "description": "Roles this contact holds (one or more).",
@@ -373,7 +399,8 @@
         "id": {
           "description": "Short, stable, URL-safe identifier (lowercase letters, digits, hyphens).",
           "pattern": "^[a-z0-9][a-z0-9-]*$",
-          "type": "string"
+          "type": "string",
+          "examples": ["example-crop-suitability", "spam2020"]
         },
         "keywords": {
           "description": "Free-text search terms. Each item is either a plain string, or an object linking the term to an external vocabulary/ontology (e.g., AGROVOC, GEMET). Linked-keyword items are also emitted as ontology themes in the serialized output, grouped by `scheme`.",
@@ -395,9 +422,12 @@
                     "minLength": 1
                   },
                   "scheme": {
-                    "description": "Resolvable URI of the controlled vocabulary or ontology this term comes from.",
+                    "description": "Resolvable URI of the controlled vocabulary or ontology this term comes from. CDH vocab schemes (.../cdh-metadata-standard/vocab/) are reserved for encoder expansion of cdh.domain / commodities - link an external vocabulary instead.",
                     "type": "string",
-                    "format": "uri"
+                    "format": "uri",
+                    "not": {
+                      "pattern": "^https://cgiar-climate-data-hub\\.github\\.io/cdh-metadata-standard/vocab/"
+                    }
                   },
                   "uri": {
                     "description": "Resolvable URI of the specific concept within `scheme`.",
@@ -581,7 +611,7 @@
             }
           },
           "type": "object",
-          "description": "Dataset series / product family the resource belongs to (e.g., MapSPAM, GLW). `name` is the series label; `url` is the series landing page.",
+          "description": "Program, initiative, or product brand the resource was published under (e.g. Africa Agriculture Adaptation Atlas, MapSPAM, ACASA). Members may span domains, resolutions, and resource types. Not for grouping representations or releases of a single resource. `name` is the grouping key - use the same spelling on every record in the series; `url` is the series landing page.",
           "required": ["name"]
         },
         "spatial": {
@@ -594,26 +624,31 @@
                   "description": "A single bounding box: 2D [west, south, east, north], or 3D [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
                   "oneOf": [
                     {
+                      "title": "2D box",
                       "type": "array",
                       "minItems": 4,
                       "maxItems": 4,
                       "prefixItems": [
                         {
+                          "title": "West",
                           "type": "number",
                           "minimum": -180,
                           "maximum": 180
                         },
                         {
+                          "title": "South",
                           "type": "number",
                           "minimum": -90,
                           "maximum": 90
                         },
                         {
+                          "title": "East",
                           "type": "number",
                           "minimum": -180,
                           "maximum": 180
                         },
                         {
+                          "title": "North",
                           "type": "number",
                           "minimum": -90,
                           "maximum": 90
@@ -622,34 +657,41 @@
                       "items": false
                     },
                     {
+                      "title": "3D box",
                       "type": "array",
                       "minItems": 6,
                       "maxItems": 6,
                       "prefixItems": [
                         {
+                          "title": "West",
                           "type": "number",
                           "minimum": -180,
                           "maximum": 180
                         },
                         {
+                          "title": "South",
                           "type": "number",
                           "minimum": -90,
                           "maximum": 90
                         },
                         {
+                          "title": "Min elevation",
                           "type": "number"
                         },
                         {
+                          "title": "East",
                           "type": "number",
                           "minimum": -180,
                           "maximum": 180
                         },
                         {
+                          "title": "North",
                           "type": "number",
                           "minimum": -90,
                           "maximum": 90
                         },
                         {
+                          "title": "Max elevation",
                           "type": "number"
                         }
                       ],
@@ -663,26 +705,31 @@
                     "description": "A single bounding box: 2D [west, south, east, north], or 3D [west, south, min_z, east, north, max_z]. WGS84 (EPSG:4326); elevation in metres.",
                     "oneOf": [
                       {
+                        "title": "2D box",
                         "type": "array",
                         "minItems": 4,
                         "maxItems": 4,
                         "prefixItems": [
                           {
+                            "title": "West",
                             "type": "number",
                             "minimum": -180,
                             "maximum": 180
                           },
                           {
+                            "title": "South",
                             "type": "number",
                             "minimum": -90,
                             "maximum": 90
                           },
                           {
+                            "title": "East",
                             "type": "number",
                             "minimum": -180,
                             "maximum": 180
                           },
                           {
+                            "title": "North",
                             "type": "number",
                             "minimum": -90,
                             "maximum": 90
@@ -691,34 +738,41 @@
                         "items": false
                       },
                       {
+                        "title": "3D box",
                         "type": "array",
                         "minItems": 6,
                         "maxItems": 6,
                         "prefixItems": [
                           {
+                            "title": "West",
                             "type": "number",
                             "minimum": -180,
                             "maximum": 180
                           },
                           {
+                            "title": "South",
                             "type": "number",
                             "minimum": -90,
                             "maximum": 90
                           },
                           {
+                            "title": "Min elevation",
                             "type": "number"
                           },
                           {
+                            "title": "East",
                             "type": "number",
                             "minimum": -180,
                             "maximum": 180
                           },
                           {
+                            "title": "North",
                             "type": "number",
                             "minimum": -90,
                             "maximum": 90
                           },
                           {
+                            "title": "Max elevation",
                             "type": "number"
                           }
                         ],
@@ -1033,19 +1087,15 @@
               "description": "Name of the geometry column, for vector tables."
             },
             "resolution": {
-              "description": "Spatial resolution / spacing entries.",
+              "description": "Spatial resolution / spacing. Exactly one characterization per record: a single entry, or an `x` + `y` pair when grid spacing differs. A representation at a different resolution (e.g. polygon aggregates of a grid) is a separate record.",
               "items": {
                 "additionalProperties": false,
+                "required": ["type"],
                 "properties": {
                   "label": {
                     "minLength": 1,
                     "type": "string",
                     "description": "Human-readable resolution, e.g. 5 arc-minutes or Kenya counties."
-                  },
-                  "note": {
-                    "minLength": 1,
-                    "type": "string",
-                    "description": "Short spatial interpretation note."
                   },
                   "reference_system": {
                     "minLength": 1,
@@ -1076,7 +1126,38 @@
                 },
                 "type": "object"
               },
-              "type": "array"
+              "type": "array",
+              "minItems": 1,
+              "anyOf": [
+                {
+                  "maxItems": 1
+                },
+                {
+                  "maxItems": 2,
+                  "allOf": [
+                    {
+                      "contains": {
+                        "properties": {
+                          "type": {
+                            "const": "x"
+                          }
+                        },
+                        "required": ["type"]
+                      }
+                    },
+                    {
+                      "contains": {
+                        "properties": {
+                          "type": {
+                            "const": "y"
+                          }
+                        },
+                        "required": ["type"]
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           },
           "type": "object"
@@ -1160,6 +1241,18 @@
               ]
             }
           },
+          "dependentRequired": {
+            "start_date": ["end_date"],
+            "end_date": ["start_date"]
+          },
+          "dependentSchemas": {
+            "date": {
+              "properties": {
+                "start_date": false,
+                "end_date": false
+              }
+            }
+          },
           "type": "object"
         },
         "title": {
@@ -1226,6 +1319,31 @@
           "then": {
             "required": ["access_note"]
           }
+        },
+        {
+          "if": {
+            "required": ["license"],
+            "properties": {
+              "license": {
+                "pattern": "\\bLicenseRef-[A-Za-z0-9.-]+\\b"
+              }
+            }
+          },
+          "then": {
+            "required": ["additional_links"],
+            "properties": {
+              "additional_links": {
+                "contains": {
+                  "properties": {
+                    "rel": {
+                      "const": "license"
+                    }
+                  },
+                  "required": ["rel", "url"]
+                }
+              }
+            }
+          }
         }
       ],
       "title": "Climate Data Hub Metadata Input Schema",
@@ -1261,28 +1379,52 @@
                 ]
               }
             },
-            "not_recommended_for": {
-              "description": "Uses to avoid, each with a reason and optional alternative.",
-              "type": "array",
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": ["use", "reason"],
-                "properties": {
-                  "reason": {
+            "usage": {
+              "description": "Use guidance for the resource: what it was produced for, and what to avoid. Both entries are optional; omit `usage` entirely when there is nothing to say.",
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "intended_uses": {
+                  "description": "Uses the resource was produced for, as free text. Illustrative and never exhaustive: a use that is absent is not thereby excluded, and a use that is listed is not thereby endorsed for any particular decision. Suitability for anything not listed is judged from description, variables, coverage, and resolution.",
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
                     "type": "string",
-                    "description": "Why this use is discouraged.",
                     "minLength": 1
                   },
-                  "use": {
-                    "type": "string",
-                    "description": "The use being discouraged.",
-                    "minLength": 1
-                  },
-                  "use_instead": {
-                    "type": "string",
-                    "description": "Recommended alternative, if any.",
-                    "minLength": 1
+                  "examples": [
+                    [
+                      "national and sub-national hotspot mapping",
+                      "targeting of adaptation investment"
+                    ]
+                  ]
+                },
+                "not_recommended_for": {
+                  "description": "Uses to avoid, each with a reason and optional alternative.",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["use", "reason"],
+                    "properties": {
+                      "reason": {
+                        "type": "string",
+                        "description": "Why this use is discouraged.",
+                        "minLength": 1
+                      },
+                      "use": {
+                        "type": "string",
+                        "description": "The use being discouraged.",
+                        "minLength": 1
+                      },
+                      "use_instead": {
+                        "type": "string",
+                        "description": "Recommended alternative, if any.",
+                        "minLength": 1
+                      }
+                    }
                   }
                 }
               }
@@ -1408,7 +1550,7 @@
       "type": "object",
       "properties": {
         "dimensions": {
-          "description": "Cube axes: domain axes (e.g. crop, scenario), bands, and temporal axes (each type: temporal with a step). Not the lat/lon grid - that comes from the top-level spatial field; the top-level temporal field holds only the coverage extent.",
+          "description": "Cube axes: domain axes (e.g. crop, scenario), a vertical axis (type: z), place-key columns (type: location), and temporal axes (each type: temporal with a step). The horizontal lat/lon grid is derived from the top-level spatial field and is not declared here, and bands are variables rather than an axis.",
           "type": "array",
           "items": {
             "type": "object",
@@ -1429,8 +1571,22 @@
               },
               "type": {
                 "type": "string",
-                "description": "Dimension type: a domain axis (e.g. crop, scenario), bands, or temporal. Declare every temporal axis here with a step; the top-level temporal field holds only the coverage extent. The lat/lon grid comes from the spatial field, not here.",
-                "minLength": 1
+                "description": "Dimension type. Reserved values change how the dimension is read: `temporal` (an axis of ISO 8601 dates or instants - the only type that may carry a step, and a record may declare several, e.g. a year axis files are split on plus a day column inside them) and `z` (a vertical axis - depth, height, or pressure level - at most one per record, serialized as a spatial dimension on the z axis). `location` names a column identifying a place, such as an admin or station code. Any other value names a domain axis after what it varies (crop, scenario, season). `spatial` and `geometry` are rejected: the horizontal grid is derived from the top-level spatial field and never declared here, and STAC forbids both words as custom dimension types. Lowercase; aliases of `temporal` are rejected so a time axis cannot silently become a domain axis.",
+                "minLength": 1,
+                "pattern": "^[a-z][a-z0-9_-]*$",
+                "not": {
+                  "enum": [
+                    "time",
+                    "times",
+                    "date",
+                    "dates",
+                    "datetime",
+                    "timestamp",
+                    "spatial",
+                    "geometry"
+                  ]
+                },
+                "examples": ["temporal", "z", "location", "crop", "scenario"]
               },
               "reference_system": {
                 "description": "Vocabulary the dimension's values are coded against; prefer a resolvable URI when one exists (e.g. an AGROVOC concept scheme).",
@@ -1460,6 +1616,12 @@
                 "format": "duration",
                 "description": "Spacing of one step, as an ISO 8601 duration. Only valid on a type: temporal dimension.",
                 "examples": ["P3M", "P20Y"]
+              },
+              "unit": {
+                "description": "Unit of measurement for the values, preferably compliant with UDUNITS-2 or UCUM. Needed on a `z` dimension (m, cm, hPa) and useful on any numeric domain axis; not a substitute for reference_system, which names the vocabulary or vertical CRS the values are coded against.",
+                "examples": ["cm", "m", "hPa"],
+                "minLength": 1,
+                "type": "string"
               }
             },
             "required": ["name", "type", "description"],
@@ -1471,8 +1633,37 @@
                   }
                 }
               }
+            },
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "temporal"
+                }
+              },
+              "required": ["type"]
+            },
+            "then": {
+              "properties": {
+                "values": {
+                  "description": "On a temporal dimension, every value is an ISO 8601 date or instant, as a string. A binned axis lists each bin's start and states its length in step, so a 30-year period axis is values: [\"2021\", \"2051\"] with step: P30Y. A cyclic label axis (DJF/MAM/JJA/SON) is not temporal - name it after what it varies and describe the labels.",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?([T ]\\d{2}:\\d{2}(:\\d{2}(\\.\\d+)?)?(Z|[+-]\\d{2}:\\d{2})?)?$"
+                  }
+                }
+              }
             }
-          }
+          },
+          "contains": {
+            "properties": {
+              "type": {
+                "const": "z"
+              }
+            },
+            "required": ["type"]
+          },
+          "minContains": 0,
+          "maxContains": 1
         },
         "variables": {
           "description": "Measurement variables, bands, or columns.",
@@ -1509,10 +1700,22 @@
                 "minLength": 1,
                 "type": "string"
               },
+              "nodata": {
+                "description": "No-data / fill value for this variable, where it differs from the asset's. Takes precedence over the asset's nodata for this variable only.",
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                ]
+              },
               "note": {
-                "description": "Variable-specific caveats, limitations, or warnings.",
                 "minLength": 1,
-                "type": "string"
+                "type": "string",
+                "description": "Variable-specific caveats, limitations, or warnings."
               }
             },
             "required": ["name", "description", "unit"]
@@ -1529,7 +1732,8 @@
               "target": {
                 "type": "string",
                 "format": "uri",
-                "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record)."
+                "description": "Resolvable URI or id of the dataset joined to (e.g. a boundary/station record).",
+                "examples": ["https://cdh.example/boundaries/gaul-2015-admin2"]
               },
               "left_fields": {
                 "description": "Key columns in this record; each must be a declared dimensions[]/variables[] name.",
@@ -1596,10 +1800,7 @@
                           "type": "string"
                         },
                         {
-                          "type": "number"
-                        },
-                        {
-                          "type": "boolean"
+                          "type": "integer"
                         }
                       ]
                     }

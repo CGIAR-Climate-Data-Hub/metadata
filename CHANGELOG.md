@@ -10,6 +10,153 @@ occur between minor versions.
 
 ## [Unreleased]
 
+### Added
+
+- Added the `example` asset role for `additional_assets[]` - a runnable usage example (notebook,
+  script, or SQL file), which is the place for a query a consumer needs but the data itself cannot
+  carry, such as a required join. `roles` stays an open list; the suggested values are now carried
+  in the schema so editors offer them.
+- Added section 4.8, catalog position: a record's place in the catalog comes from where its file
+  sits. The record in a directory is that directory's node, records in subdirectories are its
+  children, and a pure grouping directory (one holding no record of its own) becomes a navigation
+  node named after the directory. Position adds parent and child links only - no value is ever
+  inherited from a parent, child, or sibling - and a child is nested only when it has no standing
+  outside its parent. Version snapshots sit beside their record and are never children.
+- Added `variables[].nodata` to the datacube extension, for stores whose variables carry different
+  fill values (a `float32` measure filled with `-9999` beside a `uint8` classification filled with
+  `255`). `data[].nodata` remains the asset default and a variable's own value replaces it for that
+  variable alone. A single GeoTIFF never needs it, since its bands share one data type and one fill
+  value.
+- Section 4.6 now states which fields are machine-derivable from the data and which are always
+  authored, with three rules: an authored value always wins, machine-derivable fields are never
+  required of the author, and a disagreement between an authored value and the data is a review
+  finding rather than an automatic correction.
+- Added editor hints across the schemas - `examples` on `id`, contact `email`, contact
+  `organization` (the CGIAR centers, so the same centre is not spelled three ways), join `target`,
+  asset `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
+  profile suggest values and label positional array members.
+- Added `cdh.usage.intended_uses`, a free-text list of the uses a resource was produced for, encoded
+  as `cgiar-cdh:intended_uses`. The list is **illustrative and never exhaustive**: a use that is
+  absent is not excluded, and a listed use is not an endorsement for a particular decision. It is
+  optional, is not a filter facet (`cdh.domain` remains the field browse and filtering use), and
+  limitations stay in `cdh.usage.not_recommended_for` with their reasons. Added on request from CDH
+  management, over the objection recorded in `_decisions.md` - the same objection that removed
+  `cdh.use_cases` in `7897ac6`.
+- Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
+  official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
+  with the field tables, and Collection and Item examples. It defines the fifteen `cgiar-cdh:*`
+  fields a record carries into STAC that no native field or community extension covers, and closes
+  the namespace with `additionalProperties: false` plus a negative-lookahead `patternProperties`, so
+  an undefined `cgiar-cdh:*` field - or a defined one in the wrong place - fails validation. Scope
+  is Collection, Item properties, assets, and links; a Catalog carries none, since a CDH grouping
+  node has no description of its own. Published to `<base>/v<TAG>/encodings/stac/schema.json` with
+  the rest of the release, and checked in CI by `npm run check-examples`, the `stac-node-validator`
+  invocation the official extension template uses. This makes the "every `cgiar-cdh:*` field MUST be
+  defined" rule in `mapping-stac.md` true rather than aspirational.
+- Added `cgiar-cdh:partition`, which records where a file or Item sits on the axes its record
+  declares. The shape is contextual: an asset states one scalar per axis (the file's exact
+  position), an Item lists the values it spans. This gives the token values from an `href_template`
+  expansion a named home, which `mapping-stac.md` section 5.2 previously described without naming.
+- Added `cgiar-cdh:previous_version`, the superseded record's identifier repeated from the
+  `predecessor-version` link so a search can filter on it without following links.
+- Published the cross-field checks as `spec/checks/cross-field.js`, mirrored to
+  `<base>/v<TAG>/checks/cross-field.js` beside the schema and pinned to the same release. It is
+  dependency-free ESM, so the same source runs in Node and in a browser; the SPDX expression
+  validator is injected (`check(record, { isSpdx })`) because it is the only rule that needs a
+  library. `scripts/validate-yaml.js` now imports this module instead of carrying its own copy, so a
+  form or app validates against exactly the rules the pipeline applies.
+
+### Changed
+
+- **Breaking:** a templated (`href_template`) entry no longer always emits one STAC Item per token
+  combination. When a token resolves to a `type: temporal` dimension it still does, with that
+  token's value as the Item `datetime` - a time axis has to be Items for Open Data Cube and similar
+  readers to see a series. With no temporal token, the expansion becomes one Item holding every file
+  as an asset, spanning the record's extent via `start_datetime` / `end_datetime`, and its `id`
+  names the representation rather than a position. Splitting on a domain axis scattered one dataset
+  across Items that differ in no way a client can order, and left every Item with a single asset -
+  which made `cgiar-cdh:partition`'s two shapes say the same thing twice.
+- **Breaking:** `cdh.not_recommended_for` moved to `cdh.usage.not_recommended_for`. Use guidance now
+  sits under one `cdh.usage` object alongside `intended_uses`, so the guidance fields stop competing
+  with `domain` for space at the top of the `cdh` object and the next one has an obvious home. The
+  encoding is unchanged: both members still emit flat as `cgiar-cdh:not_recommended_for` and
+  `cgiar-cdh:intended_uses`, the same way `spatial.*` flattens, because STAC and OGC Records
+  property namespaces cannot re-nest. An empty `usage` object is rejected; omit it when there is
+  nothing to say.
+- **Breaking:** `spatial.resolution` now allows exactly one spatial characterization per record: a
+  single entry, or an `x` + `y` pair where grid spacing differs. A grid entry beside a `point` or
+  `polygon` entry is rejected. A representation of the same data at a different resolution (polygon
+  aggregates of a grid) is a separate record, and resolution is never stated per asset.
+- **Breaking:** every `spatial.resolution[]` entry must state `type`.
+- **Breaking:** removed `spatial.resolution[].note`. With one characterization allowed per record it
+  was a record-level caveat living inside an array; use the record-level `note`.
+- **Breaking:** a `type: temporal` dimension's `values` must be ISO 8601 dates or instants, written
+  as strings. Bare numbers (`2030`) and range labels (`2020-2040`) are rejected, because the STAC
+  datacube extension requires ISO 8601 strings there and neither form is one. A **binned** axis
+  lists each bin's start and gives its length as the `step` - 20-year windows are
+  `values: ["2021", "2041"]` with `step: P20Y` - and the readable form (`2021-2040`) is derived from
+  value plus step rather than authored. A **cyclic** label axis (`DJF`/`MAM`/`JJA`/`SON`) is not
+  temporal at all: it repeats every year instead of running in one direction, so it is a domain axis
+  named after what it varies, with the duration each label covers stated in `description`. Several
+  temporal dimensions remain valid when each carries real dates - files split by year with a day
+  column inside, or one store holding a yearly climatology beside a daily field.
+- **Breaking:** `dimensions[]` and `variables[]` names must now be unique across both arrays. They
+  share one namespace: `cube:dimensions` and `cube:variables` are keyed by name, so a duplicate
+  silently overwrote its twin on encode and an axis or a measure vanished from the published cube
+  with no error anywhere. The names are also a table's columns and the tokens `href_template`
+  resolves against, both of which a duplicate makes ambiguous.
+- **Breaking:** `dimensions[].type` no longer accepts `spatial` or `geometry`. Neither is encodable:
+  the STAC datacube extension requires `axis` and `extent` on a spatial dimension, which a CDH
+  record does not carry, and it forbids both words outright as custom dimension types. The
+  horizontal grid stays derived from the top-level `spatial` field. Two reserved values replace the
+  uses that were being made of `spatial`:
+  - `z` for a vertical axis - soil depth, height, pressure level - which serializes as
+    `{ type: spatial, axis: z }`. **At most one per record**, since it is the only spatial axis a
+    record ever declares.
+  - `location` for a column identifying a place, such as an admin or station code. It is a key
+    rather than an axis of space, and serializes as an Additional Dimension. Any number are allowed,
+    so composite keys such as `adm0_code` + `adm2_code` still work.
+- **Breaking:** `dimensions[].type` must be lowercase (`^[a-z][a-z0-9_-]*$`), and the aliases
+  `time`, `times`, `date`, `dates`, `datetime`, and `timestamp` are rejected. `temporal` is the only
+  spelling that produces a time axis, so a typo now fails validation instead of silently serializing
+  as a domain axis. `temporal`, `spatial`, and `bands` are documented as reserved values; anything
+  else names a domain axis after what it varies.
+- `bands` is no longer suggested as a `dimensions[].type`. The datacube extension has no band
+  dimension type - a multi-band file's bands are `variables[]`, serializing as `cube:variables` and
+  `raster:bands` - so the value was advertising something that does not exist. It is still accepted
+  as an ordinary axis name for a resource that genuinely varies along what it calls a band.
+- Added `unit` to `dimensions[]`, mapping to `cube:dimensions[].unit`, which the datacube extension
+  defines on every dimension flavour while CDH carried it only on `variables[]`. Needed on a `z`
+  dimension (`cm`, `m`, `hPa`); it is not a substitute for `reference_system`, and a `z` dimension
+  may carry both.
+- **Breaking:** classification class values are restricted to a string or an integer, where any
+  number or boolean was previously accepted.
+- `series` is now a program, initiative, or product brand grouping whose members are heterogeneous
+  by design - one series can hold climate, population, and production datasets at once. It is a
+  discovery facet, so filtering by series must keep its members individually listed and filterable,
+  and it is explicitly not a product family: that relationship is catalog position (section 4.8)
+  plus `processing[].derived_from`.
+- Cross-field rules that a schema keyword can express moved out of `scripts/validate-yaml.js` and
+  into the published schema: `temporal` `date` versus `start_date`/`end_date` exclusivity, the
+  reserved CDH vocab schemes on `keywords[]`, and the `rel: license` link required alongside a
+  `LicenseRef-*` expression. Third-party validators now enforce them without this repository's
+  scripts. The script keeps only what a schema cannot state - value comparisons, name cross-
+  references between arrays, per-property uniqueness, and the SPDX expression grammar.
+- On a templated (`href_template`) entry, `file_size` describes one generated file rather than the
+  whole set; omit it where slices differ materially in size instead of averaging them.
+- The mapping documents (`mapping-stac.md`, `mapping-ogc-records.md`, `crosswalk.md`) are now
+  explicitly informative. `standard.md` is normative, a record is validated against the schema and
+  never against a mapping, and routing language that read as a requirement has been removed. Whether
+  non-spatial records are also encoded as STAC, to keep one format across the catalog, is written up
+  as an open question in `mapping-stac.md` section 1.1.
+
+### Fixed
+
+- `$schema` no longer appears in the validator's stray-field report; it is permitted through
+  `patternProperties` rather than `properties`.
+- The kitchen-sink example declared an `int8` variable under an asset-level `nodata: -9999`, a value
+  that type cannot hold. The variable is now `uint8` with its own `nodata: 255`.
+
 ## [0.2.0] - 2026-07-17
 
 ### Added

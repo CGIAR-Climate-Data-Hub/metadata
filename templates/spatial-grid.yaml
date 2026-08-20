@@ -47,7 +47,7 @@ temporal:
 
 dimensions:
   - name: ""
-    type: "" # e.g. time, crop, scenario
+    type: "" # temporal (time axis), z (vertical), location (place key), or a domain axis e.g. crop
     description: ""
     values: []
     reference_system: ""
@@ -64,10 +64,11 @@ variables:
 
 cdh:
   domain: []
-  not_recommended_for:
-    - use: ""
-      reason: ""
-      use_instead: ""
+  usage:
+    not_recommended_for:
+      - use: ""
+        reason: ""
+        use_instead: ""
 
 processing:
   - id: source

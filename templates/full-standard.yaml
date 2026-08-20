@@ -91,7 +91,6 @@ spatial:
       value:
       label: ""
       reference_system: ""
-      note: ""
 
 temporal: # Temporal coverage (conditional). Use `date` for a single instant/period, OR
   # start_date + end_date for a span (end_date: null = open-ended). Any ISO 8601 precision:
@@ -131,11 +130,12 @@ classes: # conditional, if classification scheme exists - must map to a listed v
 
 # Additional fields for searching and filtering
 cdh:
-  not_recommended_for:
-    - use: ""
-      reason: ""
-      use_instead: null
   domain: [climate] # Required - CDH-controlled vocabulary (vocab/domain.json)
+  usage:
+    not_recommended_for:
+      - use: ""
+        reason: ""
+        use_instead: null
 
 climate:
   mip_era: ""

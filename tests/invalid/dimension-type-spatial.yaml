@@ -4,33 +4,26 @@ extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/datacube/schema.json
 id: fixture-record
-title: Join referencing an undeclared column
+title: Dimension typed spatial
 description: A deliberately broken record for the negative test suite.
 license: CC-BY-4.0
 resource_type: dataset
 keywords: [fixture]
 cdh:
-  domain: [agricultural-production]
+  domain: [climate]
 contact:
   - organization: Example Org
     roles: [licensor]
 citation:
   authors: [Doe, J.]
   date: "2026"
+data:
+  - name: primary
+    locations:
+      - url: https://example.org/data.zarr
+# The horizontal grid is derived from the top-level spatial field, and STAC
+# forbids `spatial` as a custom dimension type. Use `z` or `location`.
 dimensions:
   - name: adm2_code
-    type: location
-    description: GAUL 2015 admin-2 code.
-variables:
-  - name: population
-    description: Population per admin unit.
-    unit: "1"
-# left_fields must reference a declared column; adm0_code is not declared.
-joins:
-  - target: https://cdh.example/boundaries/gaul-2015-admin2
-    left_fields: [adm0_code, adm2_code]
-    right_fields: [ADM0_CODE, ADM2_CODE]
-data:
-  - name: table
-    locations:
-      - url: https://cdh.example/data/population.parquet
+    type: spatial
+    description: Admin-2 code.

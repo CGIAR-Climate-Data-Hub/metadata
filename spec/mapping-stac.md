@@ -2,23 +2,38 @@
 
 Status: v0.2.0
 
-This document specifies how a CDH metadata record is encoded as STAC. Field definitions and
-requirements live in `standard.md`..
+This document describes the mapping of a CDH record as STAC. All field definitions and requirements
+live in `standard.md`, A record is valid or invalid against the schema, never against this mapping.
+Where the two disagree, `standard.md` wins and this document is wrong.
 
-## 1. When to use STAC
+## 1. When STAC maps well
 
-Use STAC for resources with spatial, temporal, asset-level, variable-level, or data-cube discovery
-needs. Typical cases:
+STAC fits resources with spatial, temporal, asset-level, variable-level, or data-cube discovery
+needs:
 
 - Rasters, COGs, Zarr, NetCDF, GeoParquet
 - Data cubes and gridded climate products
 - Spatial vector assets, spatial/temporal tabular assets
 - APIs for access to geospatial data
 
-This mapping applies to records routed to STAC: a `dataset` with a spatial footprint (see
-`standard.md` section 5.3). Technical spatial fields such as `bbox`, `crs`, `resolution`, and
-`geometry_column` route a record to STAC. `spatial.geography` alone is a place facet and does not
-make a record spatial data.
+A record with a spatial footprint - `bbox`, `crs`, `resolution`, or `geometry_column` (see
+`standard.md` section 5.3) - carries everything STAC needs and can encode into it directly.
+`spatial.geography` alone is a place facet, not a footprint.
+
+### 1.1 Records without a spatial footprint
+
+Whether a deployment also encodes non-spatial records as STAC, to keep one format across the whole
+catalog, is allowed, although we acknowledge it is not the intended use for Stac. The constraints
+that decide it:
+
+- A **Collection** requires `extent.spatial.bbox`. There is no null or absent form, so a non-spatial
+  Collection has to state a footprint it does not have - commonly the whole world, which then
+  answers every spatial query.
+- An **Item** may set `geometry: null`, and `bbox` is then _prohibited_ - honest about having no
+  footprint. But `datetime` is still required, null only when `start_datetime` and `end_datetime`
+  are both set, so a record with no temporal extent either needs a stand-in date. An Item is also a
+  member of a Collection rather than a resource in its own right, and Items are already produced by
+  `href_template` expansion (section 5.2), so the same construct would carry two meanings.
 
 ## 2. STAC Extensions
 
@@ -57,29 +72,29 @@ Searchable structured facts MUST NOT live only in free text.
 
 ### 4.1 Core
 
-| CDH                         | STAC placement                                                                                                                                                                                                                        |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                        | `id`                                                                                                                                                                                                                                  |
-| `title`                     | `title`                                                                                                                                                                                                                               |
-| `description`               | `description`                                                                                                                                                                                                                         |
-| `created` / `updated`       | `created` / `updated`                                                                                                                                                                                                                 |
-| `keywords`                  | `keywords`                                                                                                                                                                                                                            |
-| `license`                   | `license` (SPDX preferred)                                                                                                                                                                                                            |
-| `access`                    | `cgiar-cdh:access` (STAC has no native access-rights field). Omitted = `public`; `public` MAY be left unencoded.                                                                                                                      |
-| `access_note`               | `cgiar-cdh:access_note`; also suitable for schema.org `conditionsOfAccess` on generated landing pages.                                                                                                                                |
-| `contact[]`                 | `providers[]` and contacts extension `contacts[]` for additional contact info. At least one contact must include `licensor` in `roles`, which maps to a `licensor` provider.                                                          |
-| `citation`                  | `sci:citation`                                                                                                                                                                                                                        |
-| `doi`                       | `sci:doi` and `links[rel=cite-as]`                                                                                                                                                                                                    |
-| `related_publications[]`    | `sci:publications[]`                                                                                                                                                                                                                  |
-| `note`                      | `cgiar-cdh:note`                                                                                                                                                                                                                      |
-| `version`                   | `version` (Version Extension)                                                                                                                                                                                                         |
-| `deprecated`                | `deprecated` (Version Extension)                                                                                                                                                                                                      |
-| `previous_version`          | `links[rel=predecessor-version]`. The encoder derives the rest of the chain from the `previous_version` graph: superseded records get `links[rel=successor-version]` and `links[rel=latest-version]` (see `standard.md` section 4.7). |
-| `funding[]`                 | `cgiar-cdh:funding`                                                                                                                                                                                                                   |
-| `series`                    | `cgiar-cdh:series` (`{ name, url }`). `name` is the grouping key for series facets and listings.                                                                                                                                      |
-| `cdh.domain[]`              | `cgiar-cdh:domain` on the Collection; also expanded into Themes Extension `themes[]` under the CDH domain scheme. First entry drives sub-catalog placement.                                                                           |
-| `keywords[]` (linked items) | Each linked-keyword entry (`{ term, scheme, uri }`) is also emitted as a Themes Extension `themes[]` concept, grouped by `scheme`. Plain-string keywords are emitted only into STAC `keywords`.                                       |
-| Themes Extension `themes[]` | Encoder output only - populated from `cdh.domain`, `commodities`, and any linked-keyword entries. Not an author-facing input field.                                                                                                   |
+| CDH                         | STAC placement                                                                                                                                                                                                                                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                        | `id`                                                                                                                                                                                                                                                      |
+| `title`                     | `title`                                                                                                                                                                                                                                                   |
+| `description`               | `description`                                                                                                                                                                                                                                             |
+| `created` / `updated`       | `created` / `updated`                                                                                                                                                                                                                                     |
+| `keywords`                  | `keywords`                                                                                                                                                                                                                                                |
+| `license`                   | `license` (SPDX preferred)                                                                                                                                                                                                                                |
+| `access`                    | `cgiar-cdh:access` (STAC has no native access-rights field). Omitted = `public`; `public` MAY be left unencoded.                                                                                                                                          |
+| `access_note`               | `cgiar-cdh:access_note`; also suitable for schema.org `conditionsOfAccess` on generated landing pages.                                                                                                                                                    |
+| `contact[]`                 | `providers[]` and contacts extension `contacts[]` for additional contact info. At least one contact must include `licensor` in `roles`, which maps to a `licensor` provider.                                                                              |
+| `citation`                  | `sci:citation`                                                                                                                                                                                                                                            |
+| `doi`                       | `sci:doi` and `links[rel=cite-as]`                                                                                                                                                                                                                        |
+| `related_publications[]`    | `sci:publications[]`                                                                                                                                                                                                                                      |
+| `note`                      | `cgiar-cdh:note`                                                                                                                                                                                                                                          |
+| `version`                   | `version` (Version Extension)                                                                                                                                                                                                                             |
+| `deprecated`                | `deprecated` (Version Extension)                                                                                                                                                                                                                          |
+| `previous_version`          | `links[rel=predecessor-version]` (Version Extension). The encoder derives the rest of the chain from the `previous_version` graph: superseded records get `links[rel=successor-version]` and `links[rel=latest-version]` (see `standard.md` section 4.7). |
+| `funding[]`                 | `cgiar-cdh:funding`                                                                                                                                                                                                                                       |
+| `series`                    | `cgiar-cdh:series` (`{ name, url }`). `name` is the grouping key for series facets and listings.                                                                                                                                                          |
+| `cdh.domain[]`              | `cgiar-cdh:domain` on the Collection; also expanded into Themes Extension `themes[]` under the CDH domain scheme. First entry drives sub-catalog placement.                                                                                               |
+| `keywords[]` (linked items) | Each linked-keyword entry (`{ term, scheme, uri }`) is also emitted as a Themes Extension `themes[]` concept, grouped by `scheme`. Plain-string keywords are emitted only into STAC `keywords`.                                                           |
+| Themes Extension `themes[]` | Encoder output only - populated from `cdh.domain`, `commodities`, and any linked-keyword entries. Not an author-facing input field.                                                                                                                       |
 
 ### 4.2 Resource type
 
@@ -94,7 +109,7 @@ STAC implies resource type through object type and asset media types. CDH also e
 | `spatial.geography[]`                       | `cgiar-cdh:geography` array                                                                                                                                                                                                                                                                                                       |
 | `spatial.crs`                               | Projection Extension: `proj:code` (preferred) or `proj:epsg`                                                                                                                                                                                                                                                                      |
 | `spatial.geometry_column`                   | Table Extension `table:primary_geometry`                                                                                                                                                                                                                                                                                          |
-| `spatial.resolution[]`                      | Grid entries (`xy`, `x`, `y`) map to `cube:dimensions[].step` (+ `unit`/`reference_system`); all entries also emit as `cgiar-cdh:spatial_resolution`                                                                                                                                                                              |
+| `spatial.resolution[]`                      | Grid entries (`xy`, `x`, `y`) map to `cube:dimensions[].step` (+ `unit`/`reference_system`); `point` and `polygon` entries emit as `cgiar-cdh:spatial_resolution`                                                                                                                                                                 |
 | `temporal.date` / `start_date` / `end_date` | `date` -> `datetime`; `start_date`/`end_date` -> `start_datetime`/`end_datetime`; `end_date: null` -> open interval; also `extent.temporal.interval` (Collection). Reduced-precision values expand to full RFC 3339 (start to period start, end inclusive to period end); the raw value also feeds schema.org `temporalCoverage`. |
 
 Resolution placement, in order of preference:
@@ -103,9 +118,9 @@ Resolution placement, in order of preference:
    expanded to the relevant `cube:dimensions[]` `step`, expressed in that dimension's native `unit`
    / `reference_system`. `type: xy` is an authoring shorthand and serializes as separate x and y
    dimensions.
-2. The Collection-level `cgiar-cdh:spatial_resolution` mirrors the input `spatial.resolution[]`
-   list. This is the format-independent value for labels, point/polygon reporting units, and
-   non-metric spatial units.
+2. `point` and `polygon` entries emit as `cgiar-cdh:spatial_resolution`, and only those: a reporting
+   unit has no native STAC home, while grid spacing already has one in rule 1. Repeating a grid
+   entry there would state one fact twice, with nothing keeping the two copies in agreement.
 3. Temporal cadence is not a resolution field: it comes from a `type: temporal` dimension's `step`
    (see below), which maps to that `cube:dimensions[].step`.
 
@@ -123,6 +138,30 @@ serializes as a temporal cube dimension, carrying its `step` (an ISO 8601 durati
 Collection `extent.temporal`.
 
 For grid data, `spatial.resolution[]` derives `cube:dimensions[].step` with native units.
+
+Dimension types map as follows. The horizontal axes are derived, never authored: `spatial.bbox`
+gives each one's `extent` and `spatial.resolution[]` its `step`.
+
+| CDH `dimensions[].type` | STAC `cube:dimensions` entry                                  |
+| ----------------------- | ------------------------------------------------------------- |
+| derived from `spatial`  | `{ type: spatial, axis: x }` and `{ type: spatial, axis: y }` |
+| `z`                     | `{ type: spatial, axis: z }`, carrying `values`, `unit`       |
+| `temporal`              | `{ type: temporal }`, carrying `values` and `step`            |
+| `location`, any other   | Additional Dimension: `{ type: <the CDH value> }`             |
+
+Every dimension object requires an `extent`, which CDH does not author. The encoder derives it: from
+the dimension's own `values` (first and last) where they are listed, and otherwise from the
+top-level `temporal` coverage for a temporal axis or `spatial.bbox` for a horizontal one. That is
+what lets a high-cardinality axis - a `day` column with no enumerated values - serialize at all. A
+record may carry several temporal dimensions, each getting its own extent this way.
+
+`unit` maps to `cube:dimensions[].unit`, which the datacube extension defines on every dimension
+flavour. `spatial` and `geometry` are not accepted as authored types: the first is derived and the
+second is a shape CDH does not emit, and the extension forbids both as custom type values.
+
+`data[].nodata` is the asset default and fans out to every variable in that asset; a
+`variables[].nodata` replaces it for that variable alone. For an entry templated over `{variable}`
+(section 5.2), each expanded Item takes the nodata of the variable it holds.
 
 - Use Raster Extension on raster assets when band-level physical metadata exists.
 
@@ -157,11 +196,27 @@ The `cdh.*`, `climate.*`, and `commodities` fields in the input record are encod
 commodity JSON lookup.
 
 Faceted fields such as `scenarios` and `models` live in Collection `summaries` when they apply
-across Items. `mip_era`, `baseline`, `bias_adjustment`, `downscaling`, and `not_recommended_for` are
-Collection-level `cgiar-cdh:*` fields.
+across Items. `mip_era`, `baseline`, `bias_adjustment`, `downscaling`, `intended_uses`, and
+`not_recommended_for` are Collection-level `cgiar-cdh:*` fields.
 
 When a faceted value is also a data axis, emit it in both places: discovery fields and
 `cube:dimensions`.
+
+### 4.7 Catalog position
+
+A record's position (`standard.md` section 4.8) serializes as navigation only:
+
+- Most CDH records are collections (with the non-spatial exeption mentioned above)
+- A child record becomes a `child` link on its parent Collection and carries `parent` back to it,
+  plus `root`.
+- A pure grouping directory - one holding no record of its own - becomes a **Catalog** rather than a
+  Collection, taking its `id` and `title` from the directory name. A Catalog carries no extent,
+  license, or citation, so nothing has to be invented for it.
+- Version snapshots are not children. They serialize as `predecessor-version` / `successor-version`
+  / `latest-version` links (section 6), never as `child`.
+
+No field value moves between a parent and a child. Values are resolved into each record before
+serialization, so every published Collection is complete on its own.
 
 ## 5. Assets
 
@@ -192,15 +247,28 @@ the **same content**). Encode as:
 
 ### 5.2 Templated assets (`href_template`)
 
-A `data[]` entry with `href_template` emits one STAC Item per token combination:
+A `data[]` entry with `href_template` emits STAC Items whose assets are the expanded files:
 
 - Each `{token}` resolves against the `dimensions[]` entry of the same `name`; the encoder iterates
   the cross-product of those dimensions' `values`.
 - For each combination, `locations[0]` + filled template is the canonical asset `href`. Additional
   locations become Alternate Assets entries.
-- The Item inherits the Collection's `dimensions` / `variables`; the token values pin its position
-  on those axes and SHOULD be emitted as Item properties so each slice is independently searchable.
-- A `data[]` entry **without** `href_template` serializes as a single asset, per 5.1.
+- How the combinations group into Items depends on whether a token is a time axis:
+  - **A `{token}` resolving to a `type: temporal` dimension** -> one Item per token combination, its
+    `datetime` taken from that token's value. A STAC Item is the unit time-series tooling indexes
+    on, so a time axis has to be Items rather than assets for Open Data Cube and similar readers to
+    see a series at all. The token values appear in the Item `id`.
+  - **No temporal token** -> one Item holding every expanded file as an asset, spanning the record's
+    temporal extent via `start_datetime` / `end_datetime`. Splitting on a domain axis instead would
+    scatter one dataset across Items that differ in no way a client can order. The `id` names the
+    representation, not a position, and carries no token values.
+- The Item inherits the Collection's `dimensions` / `variables`, and `cgiar-cdh:partition` records
+  the position on those axes. The shape is contextual: an Item's partition lists the values it spans
+  (`{"crop": ["maiz", "rice"]}`), while each asset inside it states the one value it holds
+  (`{"crop": "maiz"}`) - which is what identifies a file once an Item carries more than one.
+- A `data[]` entry **without** `href_template` serializes as a single asset, per 5.1, and carries no
+  partition: there is nothing to partition it on. The same holds for `item_assets`, which is a
+  template shared by every Item rather than one positioned file.
 
 ### 5.3 Asset roles
 
@@ -213,6 +281,7 @@ A `data[]` entry with `href_template` emits one STAC Item per token combination:
 | `thumbnail`   | Preview image                                           |
 | `overview`    | Lower-resolution version of the data                    |
 | `visual`      | RGB or visualization product                            |
+| `example`     | Runnable usage example (notebook, script, SQL)          |
 
 Multiple roles on one asset are allowed (e.g., `[metadata, describedby]`).
 
@@ -263,6 +332,9 @@ Encoding rules:
 For STAC validation to pass:
 
 - Every declared extension URI in `stac_extensions` MUST be valid and pinned.
-- Every `cgiar-cdh:*` field MUST be defined in the CDH STAC Extension schema. Adding undefined
-  `cgiar-cdh:*` fields will fail validation.
+- Every `cgiar-cdh:*` field MUST be defined in the
+  [CDH STAC extension schema](./encodings/stac/schema.json), which closes the namespace: an
+  undefined `cgiar-cdh:*` field, or a defined one in the wrong place, fails validation.
+- Every emitted record MUST declare the extension in `stac_extensions`, pinned to the release the
+  record targets.
 - File sizes and projection codes SHOULD be present on assets that need them.

@@ -33,18 +33,18 @@ contact:
   - name: Zhe Guo
     roles: [producer]
     email: z.guo@cgiar.org
-    organization: International Food Policy Research Institute
+    organization: International Food Policy Research Institute (IFPRI)
     url: https://www.ifpri.org/
   - name: Shuang Zhou
     roles: [producer]
     email: s.zhou@cgiar.org
-    organization: International Food Policy Research Institute
+    organization: International Food Policy Research Institute (IFPRI)
     url: https://www.ifpri.org/
   - name: Liangzhi You
     roles: [producer]
-    organization: International Food Policy Research Institute
+    organization: International Food Policy Research Institute (IFPRI)
 
-  - organization: International Food Policy Research Institute
+  - organization: International Food Policy Research Institute (IFPRI)
     roles: [licensor]
     url: https://www.ifpri.org/
 
@@ -167,10 +167,15 @@ variables:
 
 cdh:
   domain: [agricultural-production]
-  not_recommended_for:
-    - use: field-scale farm management
-      reason: the grid is too coarse for field-scale operational decisions.
-      use_instead: local survey or administrative production data.
+  usage:
+    intended_uses:
+      - global and regional analysis of crop area, production, and yield patterns
+      - food security and agricultural systems assessment
+      - spatial targeting at national and sub-national scale
+    not_recommended_for:
+      - use: field-scale farm management
+        reason: the grid is too coarse for field-scale operational decisions.
+        use_instead: local survey or administrative production data.
 
 commodities:
   - wheat

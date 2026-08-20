@@ -39,7 +39,6 @@ spatial:
     - type: polygon # point or polygon
       label: ""
       reference_system: ""
-      note: ""
 
 temporal:
   start_date: ""
@@ -55,10 +54,11 @@ variables:
 
 cdh:
   domain: []
-  not_recommended_for:
-    - use: ""
-      reason: ""
-      use_instead: ""
+  usage:
+    not_recommended_for:
+      - use: ""
+        reason: ""
+        use_instead: ""
 
 processing:
   - id: source

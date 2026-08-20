@@ -131,6 +131,31 @@ cdh:
   domain: [agriculture, climate]
 ```
 
+### `cdh.usage`
+
+What the producers built the resource for, in a few short phrases. Optional, and the list is
+**illustrative rather than exhaustive** - a use that is not listed is not thereby ruled out, and a
+listed use is not an endorsement for a particular decision. Someone judging fit for an unlisted
+purpose reads `description`, `variables`, coverage, and resolution.
+
+Skip it rather than write `research` or `decision-making`; a phrase that fits every dataset tells a
+reader nothing. Limitations go in `usage.not_recommended_for`, which carries the reason and the
+alternative.
+
+Both members live under `usage`, and both are optional - omit `usage` when there is nothing to say.
+
+```yaml
+cdh:
+  usage:
+    intended_uses:
+      - national and sub-national hotspot mapping
+      - targeting of adaptation investment
+    not_recommended_for:
+      - use: field-scale planting decisions
+        reason: the grid is too coarse for field-scale operational decisions.
+        use_instead: local survey or administrative production data.
+```
+
 ### `keywords`
 
 Free-text search terms. Use words people are likely to search for.
@@ -268,8 +293,10 @@ Rules:
 - The template assumes every value combination exists.
 - Each file URL is `locations[0].url` + filled template; additional locations become alternates.
 - Without `href_template`, `locations[].url` are full file URLs and the entry stays one asset.
-- A templated entry shares one `description`, `nodata`, and `media_type` across every generated
-  file; split into separate `data[]` entries (e.g. one per variable) when those differ.
+- A templated entry shares one `description`, `nodata`, `media_type`, and `file_size` across every
+  generated file; split into separate `data[]` entries (e.g. one per variable) when those differ.
+  `file_size` is the size of a single generated file, not the set - omit it where slices differ
+  materially in size rather than averaging them.
 
 Only the file-partitioning dimensions go in the template. Dimensions stored inside each file (e.g.
 bands of a multi-band COG) stay out of it.
@@ -489,6 +516,44 @@ alternate formats, or services.
 
 For `additional_assets`, provide `media_type` and `file_size` when known. Review may add them from
 inspectable files.
+
+`roles` is open; the suggested values are `metadata`, `validation`, `describedby`, `thumbnail`,
+`overview`, `visual`, and `example`. Use `example` for a runnable usage example - worth adding when
+consuming the data needs a query that the data itself cannot carry, such as a required join:
+
+```yaml
+additional_assets:
+  - name: join-example
+    roles: [example]
+    media_type: application/x-ipynb+json
+    description: Joins the table to admin-2 boundaries and maps the result.
+    locations:
+      - url: https://example.org/examples/join-admin2.ipynb
+```
+
+## Where The Record Lives
+
+Put the record in a directory named for the resource. Superseded snapshots sit beside it. When a
+representation exists only because of that resource - an admin-level aggregation, a point
+extraction, a convenience reformat nobody would look for on its own - give it a subdirectory, and it
+becomes a child you can enter from the parent:
+
+```text
+example-crop-suitability/
+  example-crop-suitability.yaml
+  example-crop-suitability-v1.yaml
+  admin2/
+    example-crop-suitability-admin2.yaml
+```
+
+Nothing is inherited. Each record still states its own `license`, `contact`, `citation`, `spatial`,
+and `temporal`, even where the parent repeats it word for word - the position only adds navigation
+links, and a child still records `processing[].derived_from` if it was derived from its parent.
+
+If the thing has standing of its own - its own DOI, its own funding, inputs from several products -
+it is not a child. Give it its own directory and link it with `derived_from`. Do not group by theme
+or program either: a subject area is `cdh.domain` and a program is `series`, and both stay filters
+rather than folders. See `standard.md` section 4.8.
 
 ## Superseding a Record
 

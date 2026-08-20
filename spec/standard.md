@@ -131,12 +131,33 @@ Use sidecar files (linked with `rel=describedby`) for large, nested, or frequent
 such as long code lists, full [variable dictionaries](extensions/datacube/README.md), QA/QC outputs,
 detailed table schemas, and detailed [classification legends](extensions/classification/README.md).
 
-### 4.6 Author-supplied vs review-inferred
+### 4.6 Author-supplied vs machine-derived
 
-Review MAY add technical facts readable from the asset: `media_type`, `file_size`, `spatial.bbox`,
-`spatial.crs`, and variable `data_type` / `nodata` / `dimensions`. Authors SHOULD provide them when
-known. Fields such as descriptions, units, reading guidance, caveats, license, citation, remain the
-author's responsibility.
+Every field a record can hold is either machine-derivable or directly authored. This implies who is
+expected to provide each field.
+
+| Tier                  | Supplied by                                 | Fields                                                                                                                                                                     |
+| --------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Machine-derivable** | Readable from the data itself               | `media_type`, `file_size`, `spatial.bbox`, `spatial.crs`, `spatial.resolution`, `spatial.geometry_column`, `nodata`, `variables[].data_type`, table columns                |
+| **Authored**          | A person, always - no tool can supply these | `title`, `description`, `note`, `keywords`, `resource_type`, `license`, `access`, `contact`, `citation`, `series`, units, reading guidance, caveats, and every `cdh` field |
+
+Three rules govern how the tiers interact:
+
+1. **An authored value always wins.** A value written by a person is never silently replaced by one
+   read from the data. This holds even when the two disagree.
+2. **Machine-derivable fields are never required of the author.** No machine-derivable field is
+   listed as Required in section 5; leaving one out is not an omission. Authors SHOULD provide them
+   when known, and MUST provide the ones needed to interpret the resource when the data cannot be
+   read - embargoed or `access: restricted` resources, or a record authored before the data is
+   uploaded. Otherwise they can be filled in the review process with the data.
+3. **A disagreement is reported for review.** Where an authored value and the data disagree, the
+   difference is reported for review. Neither value is changed automatically: the data may be wrong,
+   the record may be wrong, and only a person can say which.
+
+Values may be filled in at any time before publication - by the author, by review, or by a tool that
+reads the data - but they are filled **into the record**. A published record is complete on its own
+and never resolves values from another record, a parent (section 4.8), or an external file at read
+time.
 
 ### 4.7 Versioning a resource
 
@@ -164,6 +185,52 @@ Author the chain backward only: each new record points at its predecessor.
 provenance, not a version chain - use `processing[].derived_from` or a `via` link. A resource
 superseded by something outside the Hub can carry an `additional_links[]` entry with
 `rel: successor-version`; a changelog can be linked with `rel: version-history`.
+
+### 4.8 Catalog position
+
+A record's position in the catalog is expressed by where its file sits, not by a field on the
+record:
+
+- The record in a directory is that directory's node.
+- Records in subdirectories beneath it are its _children_.
+- Version snapshots of a record sit beside it in the same directory. They belong to the version
+  chain (section 4.7), never to the hierarchy.
+- A directory that holds no record of its own, only subdirectories, is a pure grouping: it becomes a
+  navigation node carrying an identifier and title from the directory name, with no extent,
+  citation, or license.
+
+```text
+example-crop-suitability/
+  example-crop-suitability.yaml       # the node
+  example-crop-suitability-v1.yaml    # superseded snapshot - version chain, not a child
+  admin2/
+    example-crop-suitability-admin2.yaml   # child of the record above
+chirps/                               # pure grouping - no record of its own
+  daily/
+    chirps-daily.yaml
+  seasonal/
+    chirps-seasonal.yaml
+```
+
+Rules:
+
+- **Position determines links, never values.** Each record carries its own `license`, `contact`,
+  `spatial`, `temporal`, and every other field it needs. Nothing is inherited from a parent, a
+  child, or a sibling (section 4.6). Position adds parent and child links to the published record,
+  and nothing else.
+- **Nest a child only when it has no standing outside its parent.** An extraction, aggregation, or
+  convenience representation of one product is a child: nobody looks for it without knowing the
+  product. A resource with its own standing - its own DOI, its own funding, or inputs from several
+  products - is a record at its own position, linked by `processing[].derived_from`.
+- **Containment never implies derivation.** Where a child is derived from its parent, say so with
+  `processing[].derived_from` (section 5.6), exactly as a non-nested record would.
+- **`id` is not namespaced by position.** Every `id` MUST stay unique across the Hub regardless of
+  which directory holds it (section 5.1).
+- **Nest families, not themes.** Cross-cutting groupings - a program or initiative (`series`), a
+  subject area (`cdh.domain`) - are facets. They MUST NOT drive hierarchy, because their members are
+  heterogeneous and each one has to stay individually listed and filterable.
+- One level of nesting is normally enough. Deeper trees SHOULD be justified by navigation, not by
+  tidiness.
 
 ## 5. Field Reference
 
@@ -379,8 +446,14 @@ keywords:
 - **Requirement:** Optional
 - **Expected value:** `{ name, url }`; `name` is required.
 - **Rules:**
-  - Groups records that belong to one dataset series or product family (e.g., MapSPAM, GLW, Africa
-    Agriculture Adaptation Atlas), independent of the version chain.
+  - Groups records published under one program, initiative, or product brand (e.g., Africa
+    Agriculture Adaptation Atlas, MapSPAM, GLW), independent of the version chain.
+  - Members are heterogeneous anda one series may span domains, resolutions, and resource types - a
+    program series can hold climate, population, and production datasets at once
+  - Not a product family. Do not use `series` to group representations or releases of a single
+    resource - a grid and its polygon aggregates, or one product at two resolutions. That
+    relationship is expressed by where the records sit in the catalog (section 4.8), plus
+    `processing[].derived_from` for the derivation itself.
   - `name` is the grouping key: use the exact same spelling on every record in the series.
   - `url` is the series landing page, when one exists.
   - A series is not a version chain (section 4.7) and not provenance (`processing[].derived_from`).
@@ -518,19 +591,22 @@ spatial:
 
 - **Requirement:** Conditional. Required when the spatial unit or spacing is needed to interpret the
   data (e.g., regular grids, point observations, or polygon reporting units).
-- **Expected value:** List of `{ type, value, unit, label, reference_system, note }`.
+- **Expected value:** List of `{ type, value, unit, label, reference_system }`.
 - **Rules:**
-  - `type` is one of `xy`, `x`, `y`, `point`, or `polygon`.
+  - `type` is required, and is one of `xy`, `x`, `y`, `point`, or `polygon`.
+  - **Exactly one spatial characterization per record:** either a single entry, or an `x` + `y` pair
+    when grid spacing differs. No other combination is valid - a grid entry never sits beside a
+    `point` / `polygon` entry.
   - Use `type: xy` for regular grids with the same x/y spacing.
-  - Use separate `type: x` and `type: y` entries only when x/y spacing differs.
-  - Do not mix `xy` with `x` / `y` entries in the same record.
+  - A representation of the same data at a different spatial resolution (e.g. polygon aggregates
+    extracted from a grid) is a **separate record** linked by `derived_from`, not a second entry
+    here. Resolution is record-level, never per asset.
   - For grid entries (`xy`, `x`, `y`), `value` + `unit` describe grid spacing and map to STAC
     Datacube dimension `step` + `unit`.
   - For point or polygon entries, use `label` and `reference_system` to describe the observation
     locations or reporting units. `value` + `unit` may be used when a meaningful level exists, such
     as `value: 2`, `unit: admin-level`.
   - `label` is the human-readable form (e.g., `5 arc-minutes`, `Kenya counties`).
-  - `note` is for short spatial interpretation notes that do not belong in the record-level `note`.
 
 #### `spatial.geometry_column`
 
@@ -566,11 +642,17 @@ temporal cadence is not stored here (see "Temporal cadence" below).
 
 #### Temporal cadence
 
-Temporal cadence (daily, monthly, seasonal, projection periods, ...) is **not** a `temporal` field.
-Express it as a `type: temporal` dimension in the datacube extension, with an ISO 8601 `step` - one
-dimension per temporal axis, and a cube may have several (e.g. `season` within 20-year `period`s).
-This mirrors `spatial`: the horizontal grid comes from `spatial`, and every other axis - time and
-domain - is a `dimensions[]` entry. See the [datacube extension](extensions/datacube/README.md).
+Temporal cadence (daily, monthly, projection periods, ...) is **not** a `temporal` field. Express it
+as a `type: temporal` dimension in the datacube extension, with an ISO 8601 `step` - one dimension
+per temporal axis, and a record may have several (files split by year, each holding a day column).
+
+A temporal dimension's values are ISO 8601 dates or instants. A binned axis lists each bin's start
+and gives its length as the `step`, so 20-year projection windows are `values: ["2021", "2041"]`
+with `step: P20Y`. A **cyclic** label axis - `DJF`/`MAM`/`JJA`/`SON` - is not temporal: it repeats
+every year rather than running in one direction, so it is a domain axis named after what it varies,
+and how long each label covers is stated in its `description`. This mirrors `spatial`: the
+horizontal grid comes from `spatial`, and every other axis - time and domain - is a `dimensions[]`
+entry. See the [datacube extension](extensions/datacube/README.md).
 
 ### 5.5 Extension fields
 
@@ -581,7 +663,7 @@ these extension fields, not in `keywords` (see section 4.4).
 
 | Extension                                             | Fields                                                 | Applies to                            |
 | ----------------------------------------------------- | ------------------------------------------------------ | ------------------------------------- |
-| [CDH](extensions/cdh/README.md)                       | `cdh.domain`, `cdh.not_recommended_for`                | all records (required by the profile) |
+| [CDH](extensions/cdh/README.md)                       | `cdh.domain`, `cdh.usage`                              | all records (required by the profile) |
 | [Climate](extensions/climate/README.md)               | `climate.*` - scenarios, models, baseline, downscaling | climate / CMIP / adaptation           |
 | [Datacube](extensions/datacube/README.md)             | `dimensions[]`, `variables[]`                          | gridded / multidimensional / tabular  |
 | [Classification](extensions/classification/README.md) | `classes[]`                                            | categorical / classified data         |
@@ -628,8 +710,9 @@ these extension fields, not in `keywords` (see section 4.4).
   reserved `{variable}` token, which expands over `variables[].name` for files split per variable
   (`variable` is therefore not allowed as a dimension name). The entry serializes as one item per
   combination of the tokens' values. Values are substituted verbatim; every combination is assumed
-  to exist. Omit it for a single file. See the
-  [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
+  to exist. Omit it for a single file. On a templated entry, `file_size` describes **one generated
+  file**, not the set; where slices differ materially in size, omit it rather than averaging. See
+  the [authoring guide](./authoring-guide.md#generating-many-files-with-href_template).
 - **Rules:**
   - `name` is required; it becomes the asset key in serialized output and must be unique across
     `data[]` and `additional_assets[]`.
@@ -648,8 +731,10 @@ these extension fields, not in `keywords` (see section 4.4).
 - **Expected value per entry:** `{ name, locations, description, media_type, roles, file_size }`.
 - **`locations[]`:** Same shape and rules as `data[].locations` - required, at least one entry;
   first is canonical; multiple entries only for the same content via a different access path.
-- **Vocabulary for `roles`:** `metadata`, `validation`, `describedby`, `thumbnail`, `overview`,
-  `visual`.
+- **Vocabulary for `roles`:** Suggested, not closed - `metadata`, `validation`, `describedby`,
+  `thumbnail`, `overview`, `visual`, `example`. Use `example` for a runnable usage example (a
+  notebook, script, or SQL file), which is the place for a query a consumer needs but the data
+  cannot carry - a required join, or a non-obvious column meaning.
 - **Rules:** Same as `data[]`.
 
 #### `additional_links[]`

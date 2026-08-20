@@ -39,8 +39,9 @@ spatial:
       unit: "" # e.g. admin-level
       label: ""
       reference_system: "" # boundary/station system used by the join key
-      note: >
-        Rows are keyed to external spatial features or locations; geometries are not embedded.
+
+note: > # dataset-wide caveats
+  Rows are keyed to external spatial features or locations; geometries are not embedded.
 
 temporal:
   start_date: ""
@@ -49,7 +50,7 @@ temporal:
 dimensions:
   # The key column(s) rows are keyed on, e.g. adm0_code + adm2_code, or station_id.
   - name: "" # e.g. adm2_code
-    type: spatial
+    type: location # a column identifying a place, not an axis of the cube
     description: ""
     reference_system: "" # vocabulary the codes come from, e.g. GAUL 2015 (resolvable URI preferred)
 
@@ -72,10 +73,11 @@ joins:
 
 cdh:
   domain: []
-  not_recommended_for:
-    - use: ""
-      reason: ""
-      use_instead: ""
+  usage:
+    not_recommended_for:
+      - use: ""
+        reason: ""
+        use_instead: ""
 
 processing:
   - id: source

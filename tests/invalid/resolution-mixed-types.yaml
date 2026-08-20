@@ -1,20 +1,17 @@
-cdh_schema_version: "v0.2.0"
 "$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/schemas/profiles/cdh.schema.json
+cdh_schema_version: "v0.2.0"
 extensions:
   - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.2.0/extensions/cdh/schema.json
 id: fixture-record
-title: Fixture record
+title: Grid and polygon resolution in one record
 description: A deliberately broken record for the negative test suite.
 license: CC-BY-4.0
 resource_type: dataset
 keywords: [fixture]
 cdh:
   domain: [climate]
-  usage:
-    not_recommended_for:
-      - use: operational field-scale decisions
 contact:
-  - organization: Test Org
+  - organization: Example Org
     roles: [licensor]
 citation:
   authors: [Doe, J.]
@@ -23,3 +20,15 @@ data:
   - name: primary
     locations:
       - url: https://example.org/data.tif
+# One characterization per record: a single entry, or an x + y pair. A grid entry
+# beside a polygon entry means two records (the aggregate is derived_from the grid).
+spatial:
+  bbox: [-180, -90, 180, 90]
+  resolution:
+    - type: xy
+      value: 0.05
+      unit: degree
+    - type: polygon
+      value: 2
+      unit: admin-level
+      reference_system: GAUL24
