@@ -42,8 +42,8 @@ occur between minor versions.
   absent is not excluded, and a listed use is not an endorsement for a particular decision. It is
   optional, is not a filter facet (`cdh.domain` remains the field browse and filtering use), and
   limitations stay in `cdh.usage.not_recommended_for` with their reasons. Added on request from CDH
-  management, over the objection recorded in `_decisions.md` - the same objection that removed
-  `cdh.use_cases` in `7897ac6`.
+  management, over a recorded objection - the same objection that removed `cdh.use_cases` in
+  `7897ac6`.
 - Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
   official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
   with the field tables, and Collection and Item examples. It defines the fifteen `cgiar-cdh:*`

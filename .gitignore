@@ -6,6 +6,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Internal working notes, kept local
+_decisions.md
+
 # Local agent/session files
 .codex
 .claude
