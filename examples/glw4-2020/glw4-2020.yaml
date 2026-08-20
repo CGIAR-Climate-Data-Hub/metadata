@@ -93,11 +93,12 @@ variables:
     unit: "{head}/km-1"
 
 cdh:
-  not_recommended_for:
-    - use: exact livestock counts
-      reason: values are spatially modeled estimates derived from census and other data
-      use_instead: official livestock census counts where available
   domain: [agricultural-production]
+  usage:
+    not_recommended_for:
+      - use: exact livestock counts
+        reason: values are spatially modeled estimates derived from census and other data
+        use_instead: official livestock census counts where available
 
 commodities: [buffalo, cattle, chickens, goats, swine, sheep]
 

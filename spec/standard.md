@@ -656,13 +656,13 @@ Each extension is documented alongside its schema (linked below); all are option
 extension, which the CDH profile requires (`cdh.domain`). Encode values you filter or facet on in
 these extension fields, not in `keywords` (see section 4.4).
 
-| Extension                                             | Fields                                                       | Applies to                            |
-| ----------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------- |
-| [CDH](extensions/cdh/README.md)                       | `cdh.domain`, `cdh.intended_uses`, `cdh.not_recommended_for` | all records (required by the profile) |
-| [Climate](extensions/climate/README.md)               | `climate.*` - scenarios, models, baseline, downscaling       | climate / CMIP / adaptation           |
-| [Datacube](extensions/datacube/README.md)             | `dimensions[]`, `variables[]`                                | gridded / multidimensional / tabular  |
-| [Classification](extensions/classification/README.md) | `classes[]`                                                  | categorical / classified data         |
-| [Agriculture](extensions/agriculture/README.md)       | `commodities[]`                                              | agriculture / food-systems / crops    |
+| Extension                                             | Fields                                                 | Applies to                            |
+| ----------------------------------------------------- | ------------------------------------------------------ | ------------------------------------- |
+| [CDH](extensions/cdh/README.md)                       | `cdh.domain`, `cdh.usage`                              | all records (required by the profile) |
+| [Climate](extensions/climate/README.md)               | `climate.*` - scenarios, models, baseline, downscaling | climate / CMIP / adaptation           |
+| [Datacube](extensions/datacube/README.md)             | `dimensions[]`, `variables[]`                          | gridded / multidimensional / tabular  |
+| [Classification](extensions/classification/README.md) | `classes[]`                                            | categorical / classified data         |
+| [Agriculture](extensions/agriculture/README.md)       | `commodities[]`                                        | agriculture / food-systems / crops    |
 
 ### 5.6 Processing and Provenance
 

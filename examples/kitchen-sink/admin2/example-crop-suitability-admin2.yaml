@@ -133,10 +133,11 @@ joins:
 
 cdh:
   domain: [agricultural-production, adaptation]
-  not_recommended_for:
-    - use: comparing units of very different size
-      reason: a mean over a large unit hides variation a small unit cannot hide.
-      use_instead: the gridded sibling record.
+  usage:
+    not_recommended_for:
+      - use: comparing units of very different size
+        reason: a mean over a large unit hides variation a small unit cannot hide.
+        use_instead: the gridded sibling record.
 
 commodities:
   - maize

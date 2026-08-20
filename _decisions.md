@@ -230,7 +230,7 @@ One reference field, one reverse lookup, sections fall out of `type`.
   - `cdh.domain` = controlled **subject area** (drives filter/sub-catalog) —
     e.g. `agricultural-production`
   - `keywords` = free **search terms** — e.g. `crop production`
-  - `cdh.not_recommended_for` = explicit **uses to avoid**, with reasons and
+  - `cdh.usage.not_recommended_for` = explicit **uses to avoid**, with reasons and
     alternatives where available.
 - Websites or AI assistants may infer and display illustrative applications from
   description, variables, coverage, resolution, domain, and limitations, but those
@@ -307,7 +307,7 @@ Core = structurally universal + center-agnostic. Extension = domain/type-specifi
 
 | Extension          | Current fields                                      | STAC equiv         | Applies to                    |
 | ------------------ | --------------------------------------------------- | ------------------ | ----------------------------- |
-| **cdh**            | `cdh.*` (domain, use\_cases, not\_recommended\_for) | Themes / custom    | all CDH records (via profile) |
+| **cdh**            | `cdh.*` (domain, usage) | Themes / custom    | all CDH records (via profile) |
 | **climate**        | whole `climate.*`                                   | none native        | climate/CMIP only             |
 | **datacube**       | `dimensions` + `variables`                          | Datacube Ext       | gridded/multidim/tabular      |
 | **classification** | `classes`                                           | Classification Ext | categorical data              |

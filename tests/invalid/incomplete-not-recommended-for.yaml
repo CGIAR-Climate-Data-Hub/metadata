@@ -10,8 +10,9 @@ resource_type: dataset
 keywords: [fixture]
 cdh:
   domain: [climate]
-  not_recommended_for:
-    - use: operational field-scale decisions
+  usage:
+    not_recommended_for:
+      - use: operational field-scale decisions
 contact:
   - organization: Test Org
     roles: [licensor]

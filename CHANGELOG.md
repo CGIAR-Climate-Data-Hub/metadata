@@ -34,13 +34,13 @@ occur between minor versions.
 - Added editor hints across the schemas - `examples` on `id`, contact `email`, join `target`, asset
   `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
   profile suggest values and label positional array members.
-- Added `cdh.intended_uses`, a free-text list of the uses a resource was produced for, encoded as
-  `cgiar-cdh:intended_uses`. The list is **illustrative and never exhaustive**: a use that is absent
-  is not excluded, and a listed use is not an endorsement for a particular decision. It is optional,
-  is not a filter facet (`cdh.domain` remains the field browse and filtering use), and limitations
-  stay in `cdh.not_recommended_for` with their reasons. Added on request from CDH management, over
-  the objection recorded in `_decisions.md` - the same objection that removed `cdh.use_cases` in
-  `7897ac6`.
+- Added `cdh.usage.intended_uses`, a free-text list of the uses a resource was produced for, encoded
+  as `cgiar-cdh:intended_uses`. The list is **illustrative and never exhaustive**: a use that is
+  absent is not excluded, and a listed use is not an endorsement for a particular decision. It is
+  optional, is not a filter facet (`cdh.domain` remains the field browse and filtering use), and
+  limitations stay in `cdh.usage.not_recommended_for` with their reasons. Added on request from CDH
+  management, over the objection recorded in `_decisions.md` - the same objection that removed
+  `cdh.use_cases` in `7897ac6`.
 - Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
   official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
   with the field tables, and examples including a deliberately invalid one. It defines the sixteen
@@ -70,6 +70,13 @@ occur between minor versions.
 
 ### Changed
 
+- **Breaking:** `cdh.not_recommended_for` moved to `cdh.usage.not_recommended_for`. Use guidance now
+  sits under one `cdh.usage` object alongside `intended_uses`, so the guidance fields stop competing
+  with `domain` for space at the top of the `cdh` object and the next one has an obvious home. The
+  encoding is unchanged: both members still emit flat as `cgiar-cdh:not_recommended_for` and
+  `cgiar-cdh:intended_uses`, the same way `spatial.*` flattens, because STAC and OGC Records
+  property namespaces cannot re-nest. An empty `usage` object is rejected; omit it when there is
+  nothing to say.
 - **Breaking:** `spatial.resolution` now allows exactly one spatial characterization per record: a
   single entry, or an `x` + `y` pair where grid spacing differs. A grid entry beside a `point` or
   `polygon` entry is rejected. A representation of the same data at a different resolution (polygon

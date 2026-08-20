@@ -131,7 +131,7 @@ cdh:
   domain: [agriculture, climate]
 ```
 
-### `cdh.intended_uses`
+### `cdh.usage`
 
 What the producers built the resource for, in a few short phrases. Optional, and the list is
 **illustrative rather than exhaustive** - a use that is not listed is not thereby ruled out, and a
@@ -139,14 +139,21 @@ listed use is not an endorsement for a particular decision. Someone judging fit 
 purpose reads `description`, `variables`, coverage, and resolution.
 
 Skip it rather than write `research` or `decision-making`; a phrase that fits every dataset tells a
-reader nothing. Limitations go in `cdh.not_recommended_for`, which carries the reason and the
+reader nothing. Limitations go in `usage.not_recommended_for`, which carries the reason and the
 alternative.
+
+Both members live under `usage`, and both are optional - omit `usage` when there is nothing to say.
 
 ```yaml
 cdh:
-  intended_uses:
-    - national and sub-national hotspot mapping
-    - targeting of adaptation investment
+  usage:
+    intended_uses:
+      - national and sub-national hotspot mapping
+      - targeting of adaptation investment
+    not_recommended_for:
+      - use: field-scale planting decisions
+        reason: the grid is too coarse for field-scale operational decisions.
+        use_instead: local survey or administrative production data.
 ```
 
 ### `keywords`

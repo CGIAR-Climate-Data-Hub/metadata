@@ -167,10 +167,11 @@ variables:
 
 cdh:
   domain: [agricultural-production]
-  not_recommended_for:
-    - use: field-scale farm management
-      reason: the grid is too coarse for field-scale operational decisions.
-      use_instead: local survey or administrative production data.
+  usage:
+    not_recommended_for:
+      - use: field-scale farm management
+        reason: the grid is too coarse for field-scale operational decisions.
+        use_instead: local survey or administrative production data.
 
 commodities:
   - wheat
