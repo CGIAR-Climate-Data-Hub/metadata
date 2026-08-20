@@ -10,7 +10,8 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
 
 - **Requirement:** Conditional. Required for data cubes, tabular data with axes, or any dataset
   whose meaning depends on axes/codes.
-- **Expected value per dimension:** `{ name, type, description, values, reference_system, step }`.
+- **Expected value per dimension:**
+  `{ name, type, description, values, reference_system, step, unit }`.
 - **Rules:**
   - `type` is either one of three **reserved** values or a domain axis name:
     - `temporal` - a time axis. The only type that may carry a `step`, and the only spelling that
@@ -131,10 +132,10 @@ code columns), and the value table declares its key columns and the `joins[]` en
 ```yaml
 dimensions:
   - name: adm0_code
-    type: spatial
+    type: location
     description: GAUL 2015 country code.
   - name: adm2_code
-    type: spatial
+    type: location
     description: GAUL 2015 admin-2 code.
 variables:
   - name: population

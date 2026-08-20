@@ -47,7 +47,7 @@ temporal:
 
 dimensions:
   - name: ""
-    type: "" # temporal (time axis), spatial, bands, or a domain axis e.g. crop, scenario
+    type: "" # temporal (time axis), z (vertical), location (place key), or a domain axis e.g. crop
     description: ""
     values: []
     reference_system: ""

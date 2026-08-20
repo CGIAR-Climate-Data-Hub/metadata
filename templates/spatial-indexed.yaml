@@ -49,7 +49,7 @@ temporal:
 dimensions:
   # The key column(s) rows are keyed on, e.g. adm0_code + adm2_code, or station_id.
   - name: "" # e.g. adm2_code
-    type: spatial
+    type: location # a column identifying a place, not an axis of the cube
     description: ""
     reference_system: "" # vocabulary the codes come from, e.g. GAUL 2015 (resolvable URI preferred)
 

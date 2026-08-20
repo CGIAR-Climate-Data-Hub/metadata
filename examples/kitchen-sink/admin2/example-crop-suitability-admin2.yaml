@@ -91,10 +91,10 @@ temporal:
 # The same axes as the grid, minus lat/lon: here they are table columns.
 dimensions:
   - name: adm0_code
-    type: spatial
+    type: location
     description: Example country code of the reporting unit.
   - name: adm2_code
-    type: spatial
+    type: location
     description: Example admin-2 code of the reporting unit.
   - name: time
     type: temporal

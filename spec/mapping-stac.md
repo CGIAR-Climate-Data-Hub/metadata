@@ -139,6 +139,26 @@ Collection `extent.temporal`.
 
 For grid data, `spatial.resolution[]` derives `cube:dimensions[].step` with native units.
 
+Dimension types map as follows. The horizontal axes are derived, never authored: `spatial.bbox`
+gives each one's `extent` and `spatial.resolution[]` its `step`.
+
+| CDH `dimensions[].type` | STAC `cube:dimensions` entry                                  |
+| ----------------------- | ------------------------------------------------------------- |
+| derived from `spatial`  | `{ type: spatial, axis: x }` and `{ type: spatial, axis: y }` |
+| `z`                     | `{ type: spatial, axis: z }`, carrying `values`, `unit`       |
+| `temporal`              | `{ type: temporal }`, carrying `values` and `step`            |
+| `location`, any other   | Additional Dimension: `{ type: <the CDH value> }`             |
+
+Every dimension object requires an `extent`, which CDH does not author. The encoder derives it: from
+the dimension's own `values` (first and last) where they are listed, and otherwise from the
+top-level `temporal` coverage for a temporal axis or `spatial.bbox` for a horizontal one. That is
+what lets a high-cardinality axis - a `day` column with no enumerated values - serialize at all. A
+record may carry several temporal dimensions, each getting its own extent this way.
+
+`unit` maps to `cube:dimensions[].unit`, which the datacube extension defines on every dimension
+flavour. `spatial` and `geometry` are not accepted as authored types: the first is derived and the
+second is a shape CDH does not emit, and the extension forbids both as custom type values.
+
 `data[].nodata` is the asset default and fans out to every variable in that asset; a
 `variables[].nodata` replaces it for that variable alone. For an entry templated over `{variable}`
 (section 5.2), each expanded Item takes the nodata of the variable it holds.

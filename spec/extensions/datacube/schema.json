@@ -26,7 +26,7 @@
   },
   "properties": {
     "dimensions": {
-      "description": "Cube axes: domain axes (e.g. crop, scenario), bands, and temporal axes (each type: temporal with a step). Not the lat/lon grid - that comes from the top-level spatial field; the top-level temporal field holds only the coverage extent.",
+      "description": "Cube axes: domain axes (e.g. crop, scenario), a vertical axis (type: z), place-key columns (type: location), and temporal axes (each type: temporal with a step). The horizontal lat/lon grid is derived from the top-level spatial field and is not declared here, and bands are variables rather than an axis.",
       "type": "array",
       "items": {
         "type": "object",
@@ -35,7 +35,9 @@
           "name": {
             "type": "string",
             "minLength": 1,
-            "not": { "const": "variable" },
+            "not": {
+              "const": "variable"
+            },
             "description": "Axis name. Must not be \"variable\": measures are not axes and belong in variables[]; href_template refers to them via the reserved {variable} token."
           },
           "description": {
@@ -45,13 +47,22 @@
           },
           "type": {
             "type": "string",
-            "description": "Dimension type. Three values are reserved and change how the dimension is read: `temporal` (a time axis, the only type that may carry a step), `spatial` (a column identifying a place, such as an admin code), and `bands`. Any other value names a domain axis after what it varies (crop, scenario, technology). Lowercase; aliases of `temporal` are rejected so a time axis cannot silently become a domain axis. The lat/lon grid comes from the spatial field, not here.",
+            "description": "Dimension type. Reserved values change how the dimension is read: `temporal` (a time axis, the only type that may carry a step) and `z` (a vertical axis - depth, height, or pressure level - at most one per record, serialized as a spatial dimension on the z axis). `location` names a column identifying a place, such as an admin or station code. Any other value names a domain axis after what it varies (crop, scenario, season). `spatial` and `geometry` are rejected: the horizontal grid is derived from the top-level spatial field and never declared here, and STAC forbids both words as custom dimension types. Lowercase; aliases of `temporal` are rejected so a time axis cannot silently become a domain axis.",
             "minLength": 1,
             "pattern": "^[a-z][a-z0-9_-]*$",
             "not": {
-              "enum": ["time", "times", "date", "dates", "datetime", "timestamp"]
+              "enum": [
+                "time",
+                "times",
+                "date",
+                "dates",
+                "datetime",
+                "timestamp",
+                "spatial",
+                "geometry"
+              ]
             },
-            "examples": ["temporal", "spatial", "bands", "crop", "scenario"]
+            "examples": ["temporal", "z", "location", "crop", "scenario"]
           },
           "reference_system": {
             "$ref": "#/$defs/nonEmptyString",
@@ -69,13 +80,34 @@
             "format": "duration",
             "description": "Spacing of one step, as an ISO 8601 duration. Only valid on a type: temporal dimension.",
             "examples": ["P3M", "P20Y"]
+          },
+          "unit": {
+            "$ref": "#/$defs/nonEmptyString",
+            "description": "Unit of measurement for the values, preferably compliant with UDUNITS-2 or UCUM. Needed on a `z` dimension (m, cm, hPa) and useful on any numeric domain axis; not a substitute for reference_system, which names the vocabulary or vertical CRS the values are coded against.",
+            "examples": ["cm", "m", "hPa"]
           }
         },
         "required": ["name", "type", "description"],
         "dependentSchemas": {
-          "step": { "properties": { "type": { "const": "temporal" } } }
+          "step": {
+            "properties": {
+              "type": {
+                "const": "temporal"
+              }
+            }
+          }
         }
-      }
+      },
+      "contains": {
+        "properties": {
+          "type": {
+            "const": "z"
+          }
+        },
+        "required": ["type"]
+      },
+      "minContains": 0,
+      "maxContains": 1
     },
     "variables": {
       "description": "Measurement variables, bands, or columns.",
@@ -112,7 +144,14 @@
           },
           "nodata": {
             "description": "No-data / fill value for this variable, where it differs from the asset's. Takes precedence over the asset's nodata for this variable only.",
-            "anyOf": [{ "type": "number" }, { "$ref": "#/$defs/nonEmptyString" }]
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            ]
           },
           "note": {
             "$ref": "#/$defs/nonEmptyString",
