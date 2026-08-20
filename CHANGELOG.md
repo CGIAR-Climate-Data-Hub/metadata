@@ -68,6 +68,14 @@ occur between minor versions.
 
 ### Changed
 
+- **Breaking:** a templated (`href_template`) entry no longer always emits one STAC Item per token
+  combination. When a token resolves to a `type: temporal` dimension it still does, with that
+  token's value as the Item `datetime` - a time axis has to be Items for Open Data Cube and similar
+  readers to see a series. With no temporal token, the expansion becomes one Item holding every file
+  as an asset, spanning the record's extent via `start_datetime` / `end_datetime`, and its `id`
+  names the representation rather than a position. Splitting on a domain axis scattered one dataset
+  across Items that differ in no way a client can order, and left every Item with a single asset -
+  which made `cgiar-cdh:partition`'s two shapes say the same thing twice.
 - **Breaking:** `cdh.not_recommended_for` moved to `cdh.usage.not_recommended_for`. Use guidance now
   sits under one `cdh.usage` object alongside `intended_uses`, so the guidance fields stop competing
   with `domain` for space at the top of the `cdh` object and the next one has an obvious home. The
