@@ -65,8 +65,6 @@ occur between minor versions.
   validator is injected (`check(record, { isSpdx })`) because it is the only rule that needs a
   library. `scripts/validate-yaml.js` now imports this module instead of carrying its own copy, so a
   form or app validates against exactly the rules the pipeline applies.
-- Vendored the pinned OGC API - Records 1.0 record schema under `external/`, so validation of
-  records routed to that encoding is offline and deterministic against a named spec version.
 
 ### Changed
 
