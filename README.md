@@ -71,8 +71,8 @@ npm test           # formatting + markdown lint + schema/vocab/yaml validation
 npm run check      # schemas + vocabs + compile + bundle + yaml + negative fixtures
 ```
 
-Individual targets: `check-schemas`, `check-vocabs`, `compile-schemas`, `check-yaml`,
-`check-invalid`, `bundle-profile`, `gen-schemas`, `lint-md`.
+Individual targets: `check-schemas`, `check-vocabs`, `compile-schemas`, `check-examples`,
+`check-yaml`, `check-invalid`, `bundle-profile`, `gen-schemas`, `lint-md`.
 
 Records under [`tests/invalid/`](./tests/invalid/README.md) are negative fixtures - each MUST fail
 validation. They catch schema or rule changes that accidentally loosen validation.

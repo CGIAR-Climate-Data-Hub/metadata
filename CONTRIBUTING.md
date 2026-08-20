@@ -22,9 +22,12 @@ npm install
 
 Useful scripts:
 
-- `npm test`: formatting, markdown lint, schemas, vocabularies, YAML, and negative fixtures.
-- `npm run check`: schemas, vocabularies, bundled profile, YAML, and negative fixtures.
+- `npm test`: formatting, markdown lint, schemas, vocabularies, STAC examples, YAML, and negative
+  fixtures.
+- `npm run check`: schemas, vocabularies, bundled profile, STAC examples, YAML, and negative
+  fixtures.
 - `npm run format`: format Markdown, JSON, and YAML.
+- `npm run format-examples`: format the STAC examples, which prettier leaves alone.
 
 This repository also uses [prek](https://prek.j178.dev/) for the hooks in `.pre-commit-config.yaml`.
 Install it once:

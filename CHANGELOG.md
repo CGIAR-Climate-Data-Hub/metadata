@@ -31,8 +31,9 @@ occur between minor versions.
   authored, with three rules: an authored value always wins, machine-derivable fields are never
   required of the author, and a disagreement between an authored value and the data is a review
   finding rather than an automatic correction.
-- Added editor hints across the schemas - `examples` on `id`, contact `email`, join `target`, asset
-  `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
+- Added editor hints across the schemas - `examples` on `id`, contact `email`, contact
+  `organization` (the CGIAR centers, so the same centre is not spelled three ways), join `target`,
+  asset `roles`, and dimension `type`, and `title` on each bbox coordinate - so editors bound to the
   profile suggest values and label positional array members.
 - Added `cdh.usage.intended_uses`, a free-text list of the uses a resource was produced for, encoded
   as `cgiar-cdh:intended_uses`. The list is **illustrative and never exhaustive**: a use that is
