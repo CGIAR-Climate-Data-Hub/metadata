@@ -57,8 +57,6 @@ occur between minor versions.
   declares. The shape is contextual: an asset states one scalar per axis (the file's exact
   position), an Item lists the values it spans. This gives the token values from an `href_template`
   expansion a named home, which `mapping-stac.md` section 5.2 previously described without naming.
-- Added `cgiar-cdh:previous_version`, the superseded record's identifier repeated from the
-  `predecessor-version` link so a search can filter on it without following links.
 - Published the cross-field checks as `spec/checks/cross-field.js`, mirrored to
   `<base>/v<TAG>/checks/cross-field.js` beside the schema and pinned to the same release. It is
   dependency-free ESM, so the same source runs in Node and in a browser; the SPDX expression
