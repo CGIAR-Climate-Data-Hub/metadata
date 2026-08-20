@@ -25,7 +25,7 @@
   ],
   "cgiar-cdh:access": "restricted",
   "cgiar-cdh:access_note": "Discoverable, but obtaining the data requires an account request.",
-  "cgiar-cdh:note": "Suitability classes are illustrative and were generated for documentation purposes only.",
+  "cgiar-cdh:note": "Suitability classes are illustrative and were generated for documentation purposes only. The regular latitude/longitude grid has cells whose ground area shrinks toward the poles.",
   "cgiar-cdh:geography": ["africa"],
   "cgiar-cdh:series": {
     "name": "Example Suitability Atlas",

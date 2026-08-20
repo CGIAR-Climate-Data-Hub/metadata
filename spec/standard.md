@@ -591,7 +591,7 @@ spatial:
 
 - **Requirement:** Conditional. Required when the spatial unit or spacing is needed to interpret the
   data (e.g., regular grids, point observations, or polygon reporting units).
-- **Expected value:** List of `{ type, value, unit, label, reference_system, note }`.
+- **Expected value:** List of `{ type, value, unit, label, reference_system }`.
 - **Rules:**
   - `type` is required, and is one of `xy`, `x`, `y`, `point`, or `polygon`.
   - **Exactly one spatial characterization per record:** either a single entry, or an `x` + `y` pair

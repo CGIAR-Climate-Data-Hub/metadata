@@ -88,7 +88,7 @@ occur between minor versions.
   as strings. Bare numbers (`2030`) and range labels (`2020-2040`) are rejected, because the STAC
   datacube extension requires ISO 8601 strings there and neither form is one. A **binned** axis
   lists each bin's start and gives its length as the `step` - 20-year windows are
-  `values: ["2021", "2041"]` with `step: P20Y` - and the readable form (`2021-2050`) is derived from
+  `values: ["2021", "2041"]` with `step: P20Y` - and the readable form (`2021-2040`) is derived from
   value plus step rather than authored. A **cyclic** label axis (`DJF`/`MAM`/`JJA`/`SON`) is not
   temporal at all: it repeats every year instead of running in one direction, so it is a domain axis
   named after what it varies, with the duration each label covers stated in `description`. Several

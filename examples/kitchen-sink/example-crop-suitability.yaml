@@ -50,7 +50,8 @@ keywords:
 
 note: >
   This is sample data. Suitability classes are illustrative and were generated for documentation
-  purposes only.
+  purposes only. The regular latitude/longitude grid has cells whose ground area shrinks toward the
+  poles.
 
 contact:
   - name: Ada Placeholder

@@ -45,7 +45,8 @@ keywords:
 
 note: >
   Aggregation hides within-unit variation: a unit reported as Moderate can contain both unsuitable
-  and highly suitable cells. Use the gridded sibling record when that matters.
+  and highly suitable cells. Use the gridded sibling record when that matters. Units follow the
+  boundary record joined below; codes are stable within a release.
 
 contact:
   - name: Ada Placeholder
