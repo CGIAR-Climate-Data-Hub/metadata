@@ -37,6 +37,8 @@ Dimensions and variables for gridded, multidimensional, or tabular data.
     one exists (e.g. the AGROVOC URI for a `crop` dimension).
   - Define coded values. Use `reference_system`, a short inline explanation in `description`, or a
     sidecar code list linked with `rel=describedby`.
+  - `name` MUST be unique across `dimensions[]` and `variables[]` together: they share one
+    namespace, and a duplicate would overwrite its twin when serialized.
   - Do not add custom fields such as `value_definitions` to `dimensions[]`.
 
 ## `variables[]`
