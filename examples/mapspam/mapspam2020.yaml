@@ -33,18 +33,18 @@ contact:
   - name: Zhe Guo
     roles: [producer]
     email: z.guo@cgiar.org
-    organization: International Food Policy Research Institute
+    organization: International Food Policy Research Institute (IFPRI)
     url: https://www.ifpri.org/
   - name: Shuang Zhou
     roles: [producer]
     email: s.zhou@cgiar.org
-    organization: International Food Policy Research Institute
+    organization: International Food Policy Research Institute (IFPRI)
     url: https://www.ifpri.org/
   - name: Liangzhi You
     roles: [producer]
-    organization: International Food Policy Research Institute
+    organization: International Food Policy Research Institute (IFPRI)
 
-  - organization: International Food Policy Research Institute
+  - organization: International Food Policy Research Institute (IFPRI)
     roles: [licensor]
     url: https://www.ifpri.org/
 
