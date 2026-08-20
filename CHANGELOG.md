@@ -43,7 +43,7 @@ occur between minor versions.
   `cdh.use_cases` in `7897ac6`.
 - Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
   official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
-  with the field tables, and Collection and Item examples. It defines the sixteen `cgiar-cdh:*`
+  with the field tables, and Collection and Item examples. It defines the fifteen `cgiar-cdh:*`
   fields a record carries into STAC that no native field or community extension covers, and closes
   the namespace with `additionalProperties: false` plus a negative-lookahead `patternProperties`, so
   an undefined `cgiar-cdh:*` field - or a defined one in the wrong place - fails validation. Scope
