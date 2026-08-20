@@ -10,15 +10,30 @@
   "license": "CC-BY-4.0",
   "extent": {
     "spatial": {
-      "bbox": [[10, -5, 40, 20]]
+      "bbox": [
+        [
+          10,
+          -5,
+          40,
+          20
+        ]
+      ]
     },
     "temporal": {
-      "interval": [["2030-01-01T00:00:00Z", "2050-12-31T23:59:59Z"]]
+      "interval": [
+        [
+          "2030-01-01T00:00:00Z",
+          "2050-12-31T23:59:59Z"
+        ]
+      ]
     }
   },
   "cgiar-cdh:resource_type": "dataset",
   "cgiar-cdh:previous_version": "example-crop-suitability-v1",
-  "cgiar-cdh:domain": ["agricultural-production", "adaptation"],
+  "cgiar-cdh:domain": [
+    "agricultural-production",
+    "adaptation"
+  ],
   "cgiar-cdh:intended_uses": [
     "national and sub-national suitability screening",
     "targeting of adaptation investment"
@@ -26,7 +41,9 @@
   "cgiar-cdh:access": "restricted",
   "cgiar-cdh:access_note": "Discoverable, but obtaining the data requires an account request.",
   "cgiar-cdh:note": "Suitability classes are illustrative and were generated for documentation purposes only. The regular latitude/longitude grid has cells whose ground area shrinks toward the poles.",
-  "cgiar-cdh:geography": ["africa"],
+  "cgiar-cdh:geography": [
+    "africa"
+  ],
   "cgiar-cdh:series": {
     "name": "Example Suitability Atlas",
     "url": "https://example.org/atlas"
@@ -66,8 +83,14 @@
     "resolution": "0.05 degree"
   },
   "summaries": {
-    "cgiar-cdh:scenarios": ["ssp245", "ssp585"],
-    "cgiar-cdh:models": ["EXAMPLE-ESM1", "EXAMPLE-ESM2"]
+    "cgiar-cdh:scenarios": [
+      "ssp245",
+      "ssp585"
+    ],
+    "cgiar-cdh:models": [
+      "EXAMPLE-ESM1",
+      "EXAMPLE-ESM2"
+    ]
   },
   "links": [
     {
@@ -93,7 +116,9 @@
     "zarr": {
       "href": "https://example.org/data/example-crop-suitability/v2/cube.zarr",
       "type": "application/vnd.zarr; version=3",
-      "roles": ["data"],
+      "roles": [
+        "data"
+      ],
       "cgiar-cdh:partition": {
         "variable": "suitability_index"
       }

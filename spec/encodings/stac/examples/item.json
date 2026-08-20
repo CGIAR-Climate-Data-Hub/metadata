@@ -10,20 +10,44 @@
     "type": "Polygon",
     "coordinates": [
       [
-        [10, -5],
-        [40, -5],
-        [40, 20],
-        [10, 20],
-        [10, -5]
+        [
+          10,
+          -5
+        ],
+        [
+          40,
+          -5
+        ],
+        [
+          40,
+          20
+        ],
+        [
+          10,
+          20
+        ],
+        [
+          10,
+          -5
+        ]
       ]
     ]
   },
-  "bbox": [10, -5, 40, 20],
+  "bbox": [
+    10,
+    -5,
+    40,
+    20
+  ],
   "properties": {
     "datetime": "2030-01-01T00:00:00Z",
-    "cgiar-cdh:domain": ["agricultural-production"],
+    "cgiar-cdh:domain": [
+      "agricultural-production"
+    ],
     "cgiar-cdh:access": "restricted",
-    "cgiar-cdh:scenarios": ["ssp245"],
+    "cgiar-cdh:scenarios": [
+      "ssp245"
+    ],
     "cgiar-cdh:spatial_resolution": [
       {
         "type": "xy",
@@ -33,9 +57,15 @@
       }
     ],
     "cgiar-cdh:partition": {
-      "scenario": ["ssp245"],
-      "crop": ["maiz"],
-      "variable": ["suitability_index"]
+      "scenario": [
+        "ssp245"
+      ],
+      "crop": [
+        "maiz"
+      ],
+      "variable": [
+        "suitability_index"
+      ]
     }
   },
   "links": [
@@ -48,7 +78,9 @@
     "data": {
       "href": "https://example.org/data/example-crop-suitability/v2/cogs/suit_ssp245_maiz_suitability_index.tif",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-      "roles": ["data"],
+      "roles": [
+        "data"
+      ],
       "cgiar-cdh:partition": {
         "scenario": "ssp245",
         "crop": "maiz",

@@ -43,15 +43,14 @@ occur between minor versions.
   `cdh.use_cases` in `7897ac6`.
 - Added the CGIAR CDH **STAC extension** at `spec/encodings/stac/`, mirroring the layout of the
   official `stac-extensions` template: `schema.json` (draft-07, as STAC extensions are), a README
-  with the field tables, and examples including a deliberately invalid one. It defines the sixteen
-  `cgiar-cdh:*` fields a record carries into STAC that no native field or community extension
-  covers, and closes the namespace with `additionalProperties: false` plus a negative-lookahead
-  `patternProperties`, so an undefined `cgiar-cdh:*` field - or a defined one in the wrong place -
-  fails validation. Scope is Collection, Item properties, assets, and links; a Catalog carries none,
-  since a CDH grouping node has no description of its own. Published to
-  `<base>/v<TAG>/encodings/stac/schema.json` with the rest of the release, and checked in CI by
-  `npm run check-stac-extension`, which also asserts the schema's `$id` and required
-  `stac_extensions` URL name the current version. This makes the "every `cgiar-cdh:*` field MUST be
+  with the field tables, and Collection and Item examples. It defines the sixteen `cgiar-cdh:*`
+  fields a record carries into STAC that no native field or community extension covers, and closes
+  the namespace with `additionalProperties: false` plus a negative-lookahead `patternProperties`, so
+  an undefined `cgiar-cdh:*` field - or a defined one in the wrong place - fails validation. Scope
+  is Collection, Item properties, assets, and links; a Catalog carries none, since a CDH grouping
+  node has no description of its own. Published to `<base>/v<TAG>/encodings/stac/schema.json` with
+  the rest of the release, and checked in CI by `npm run check-examples`, the `stac-node-validator`
+  invocation the official extension template uses. This makes the "every `cgiar-cdh:*` field MUST be
   defined" rule in `mapping-stac.md` true rather than aspirational.
 - Added `cgiar-cdh:partition`, which records where a file or Item sits on the axes its record
   declares. The shape is contextual: an asset states one scalar per axis (the file's exact

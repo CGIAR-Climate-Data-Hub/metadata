@@ -29,8 +29,6 @@ describes its output all name the same release.
   - [Collection example](examples/collection.json): the usual case, a dataset with climate
     provenance and a resolution that STAC cannot express natively
   - [Item example](examples/item.json): one expanded slice of a templated data entry
-  - [Invalid example](examples/invalid-unknown-field.json): an undefined `cgiar-cdh:` field, which
-    the closed namespace rejects
 - [JSON Schema](schema.json)
 - [Changelog](../../../CHANGELOG.md)
 
@@ -180,9 +178,8 @@ mapping documents move together in one release.
 ### Running tests
 
 ```bash
-npm run check-stac-extension
+npm run check-examples
 ```
 
-Every example under `examples/` must validate against `schema.json`, and every example named
-`invalid-*.json` must fail. The check also asserts that the schema's `$id` and the URL it requires
-in `stac_extensions` both name the release in `package.json`.
+Every example under `examples/` must validate as STAC and against `schema.json`, via
+`stac-node-validator` with this extension's published URL mapped to the local file.
