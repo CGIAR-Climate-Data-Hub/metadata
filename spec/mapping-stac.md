@@ -247,16 +247,25 @@ the **same content**). Encode as:
 
 ### 5.2 Templated assets (`href_template`)
 
-A `data[]` entry with `href_template` emits one STAC Item per token combination:
+A `data[]` entry with `href_template` emits STAC Items whose assets are the expanded files:
 
 - Each `{token}` resolves against the `dimensions[]` entry of the same `name`; the encoder iterates
   the cross-product of those dimensions' `values`.
 - For each combination, `locations[0]` + filled template is the canonical asset `href`. Additional
   locations become Alternate Assets entries.
-- The Item inherits the Collection's `dimensions` / `variables`; the token values pin its position
-  on those axes and are emitted as `cgiar-cdh:partition` so each slice is independently searchable.
-  The shape is contextual: an Item's partition lists the values it spans (`{"crop": ["maiz"]}`),
-  while the asset inside it states the one value it holds (`{"crop": "maiz"}`).
+- How the combinations group into Items depends on whether a token is a time axis:
+  - **A `{token}` resolving to a `type: temporal` dimension** -> one Item per token combination, its
+    `datetime` taken from that token's value. A STAC Item is the unit time-series tooling indexes
+    on, so a time axis has to be Items rather than assets for Open Data Cube and similar readers to
+    see a series at all. The token values appear in the Item `id`.
+  - **No temporal token** -> one Item holding every expanded file as an asset, spanning the record's
+    temporal extent via `start_datetime` / `end_datetime`. Splitting on a domain axis instead would
+    scatter one dataset across Items that differ in no way a client can order. The `id` names the
+    representation, not a position, and carries no token values.
+- The Item inherits the Collection's `dimensions` / `variables`, and `cgiar-cdh:partition` records
+  the position on those axes. The shape is contextual: an Item's partition lists the values it spans
+  (`{"crop": ["maiz", "rice"]}`), while each asset inside it states the one value it holds
+  (`{"crop": "maiz"}`) - which is what identifies a file once an Item carries more than one.
 - A `data[]` entry **without** `href_template` serializes as a single asset, per 5.1, and carries no
   partition: there is nothing to partition it on. The same holds for `item_assets`, which is a
   template shared by every Item rather than one positioned file.
