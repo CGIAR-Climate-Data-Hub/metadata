@@ -1,15 +1,30 @@
 # Authoring guide
 
-This guide is to help in filling out metadata records: what to write first, what can wait, and where
-detail is needed.
+This guide is designed to help authors create and submit useful and valid records to the Climate
+data hub. This includes which fields are always required, which ones are conditionally required
+depending on the submission type, and what the fields mean. Is expected that most records will be
+refined and finalized during review, so mistakes and purposeful omissions are expected and should
+not prevent or delay submission.
 
 The formal standard is `standard.md`. Fillable YAML starting points live in `../templates/`; each
 CDH template declares the CDH profile in `$schema` and binds YAML-aware editors to the same profile
 (`schemas/profiles/cdh.schema.json` = the core plus all CDH extensions) for autocomplete and field
-hints. Other profiles should declare their own profile schema URL; core-only records may omit
-profile-specific fields.
+hints in code editors (VScode, positron, Neovim, etc.). Teams wanting to customize the metadata
+standard for other projects can modify and generate a new profile and declare their own schema URL.
 
-## The Short Version
+## Key Questions a Record Should Answer
+
+- What is this resource?
+- What can it be used for?
+- Who produced or maintains it?
+- How should it be cited?
+- What are the reuse limitations and license?
+- Where can the data, code, or documentation be found?
+- What geography and time period does it cover?
+- What variables, units, dimensions, or classes does it contain?
+- What limitations or caveats does it have?
+
+## The bare minimum
 
 Start with enough metadata for someone to find, understand, cite, and access the resource without
 opening the files.
@@ -22,63 +37,14 @@ Fill these first:
 - `resource_type`
 - `cdh.domain`
 - `keywords`
-- `license`
-- `contact` with at least one `licensor` in `roles`
-- `citation`
-- `created`
-- `updated`
-- `data`
+- `license`, as all CDH resources must be licensed
+- `contact` with at least one contact as the `licensor` in `roles`
+- `citation` of how the resource should be cited
+- `data` with at least one entry and url
 
-Then add only the sections that apply to the resource.
-
-## What The Record Should Answer
-
-A useful record answers:
-
-- What is this resource?
-- What can it be used for?
-- Who produced or maintains it?
-- How should it be cited?
-- What license applies?
-- Where can the data, code, or documentation be found?
-- What geography and time period does it cover?
-- What variables, units, dimensions, or classes does it contain?
-- What sources and processing created it?
-- What limitations or caveats matter?
-
-## Minimum Record
-
-Use this as the first pass.
-
-```yaml
-"$schema": https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/schemas/profiles/cdh.schema.json
-cdh_schema_version: "v0.3.0"
-id: ""
-title: ""
-description: ""
-resource_type: ""
-extensions:
-  - https://cgiar-climate-data-hub.github.io/cdh-metadata-standard/v0.3.0/extensions/cdh/schema.json
-keywords: []
-license: ""
-contact:
-  - organization: ""
-    roles: [licensor]
-    email: ""
-    url: ""
-citation:
-  authors: []
-  date: ""
-# created / updated are optional - filled in at publication if omitted.
-cdh:
-  domain: []
-data:
-  - name: ""
-    locations:
-      - url: ""
-    description: ""
-    media_type: ""
-```
+Then add the sections that apply to the resource. Note that a minimum record is often not synonymous
+with a complete or valid record, and fields such as `variables` will be needed to answer the core
+questions above.
 
 ## Required Fields
 
@@ -92,8 +58,8 @@ Use lowercase words with hyphens:
 id: banana-climate-risk-indicators
 ```
 
-Do not put the version in the `id`; the unversioned `id` always describes the current release (see
-[Superseding a Record](#superseding-a-record)).
+Generally, do not put the version in the `id`; the unversioned `id` always describes the current
+release (see [Superseding a record & versioning](#superseding-a-record)).
 
 ### `title`
 
@@ -105,9 +71,11 @@ title: Banana Climate Risk Indicators
 
 ### `description`
 
-One short paragraph explaining what the resource is and what it can be used for.
+A short paragraph or two explaining what the resource is and what it can be used for.
 
-Do not rely on the description for filterable facts. Put those facts in the structured fields too.
+Do not rely on the description for filterable facts, variables, units, etc. Put those facts in the
+structured fields provided for them to increase human and machine usability, filtering, and
+discovery.
 
 ### `resource_type`
 
@@ -116,15 +84,17 @@ What kind of thing the record describes.
 Common values:
 
 - `dataset`
-- `software`
-- `service`
-- `document`
+- `software` including online tools and dashboards
+- `service` such as an API
+- `document` such as a report, brief, or paper. Tutorials and guides can also be included, but it is
+  likely better for them to be formatted and submitted to the hub as Wikis or Tutorials for better
+  visibility.
 
 ### `cdh.domain`
 
 The main CDH category used for browsing, filtering, and catalog placement.
 
-Use values from `vocab/domain.json`. Put the primary domain first.
+Use values from `vocab/domain.json`. Multiple are allowed, but the primary domain first.
 
 ```yaml
 cdh:
@@ -133,16 +103,15 @@ cdh:
 
 ### `cdh.usage`
 
-What the producers built the resource for, in a few short phrases. Optional, and the list is
-**illustrative rather than exhaustive** - a use that is not listed is not thereby ruled out, and a
-listed use is not an endorsement for a particular decision. Someone judging fit for an unlisted
-purpose reads `description`, `variables`, coverage, and resolution.
+This is optional but recommended for datasets. It is intended to direct uses what they can use this
+resource for, and any instances where a different dataset should be used instead. Intended uses can
+be listed, but they should not be exhaustive. Intended uses should be reasonably broad as to not
+limit users if their exact use is not listed. The not recommended for field is also optional but
+perhaps more useful to include. It should explicitly lay out uses where this data should not be used
+and provide a reason for why. This prevents a user from using the data where it is not appropriate,
+while not limiting them to a narrow subset of uses.
 
-Skip it rather than write `research` or `decision-making`; a phrase that fits every dataset tells a
-reader nothing. Limitations go in `usage.not_recommended_for`, which carries the reason and the
-alternative.
-
-Both members live under `usage`, and both are optional - omit `usage` when there is nothing to say.
+Terms and uses such as `research` or `decision-making` are not helpful and should be avoided.
 
 ```yaml
 cdh:
@@ -182,7 +151,8 @@ keywords:
 
 #### Linking keywords to an ontology
 
-Link keywords to an external vocabulary when useful:
+Link keywords to an external vocabulary where possible. This can help increase the understanding of
+the data, particularly for AI-readiness:
 
 ```yaml
 keywords:
@@ -197,15 +167,21 @@ Plain-string keywords stay full-text-only. Both forms can be mixed in the same l
 
 ### `license`, `contact`, and `citation`
 
-These make the record reusable and citable.
+These make the record reusable and citable. Without a license a dataset is not usable and cannot be
+included in the hub. Including a citation ensures the author of the work is acknowledged and it is
+properly cited.
 
-Use an SPDX license expression such as `CC-BY-4.0`, `CC0-1.0`, `MIT`, or `CC-BY-4.0 OR CC0-1.0`. For
-a custom license, use `LicenseRef-*` and add an `additional_links[]` entry with `rel: license` and a
-URL for the license terms.
+Use an SPDX license expression such as `CC-BY-4.0`, `CC0-1.0`, `MIT`, or `CC-BY-4.0 OR CC0-1.0`. A
+comprehensive list of license expressions can be found [here](https://spdx.org/licenses/). If the
+data is not licensed, a license must be chosen before submission (see
+[Choose a License](https://choosealicense.com/) for guidance). For a custom license, use
+`LicenseRef-*` and add an `additional_links[]` entry with `rel: license` and a URL for the license
+terms.
 
 Use `access_note` when `access` is `restricted` or `non-public`. It should say how to request
-access, what authentication is needed, or whether the data is embargoed. Link request forms with
-`rel: create-form`; link access help pages or `mailto:` contacts with `rel: help`.
+access, what authentication is needed, or whether the data is embargoed. In `additional_links[]`,
+link to request forms with `rel: create-form`; link access help pages or `mailto:` contacts with
+`rel: help`.
 
 For `contact`, use either an organization contact or a person contact. Every record must include at
 least one contact with `licensor` in `roles`; that contact is the licensing party for the resource.
@@ -224,28 +200,30 @@ Person contact:
 ```yaml
 contact:
   - name: Jane Doe
-    organization: CGIAR
+    organization: IITA
     roles: [processor]
     email: jane.doe@example.org
 ```
 
 If `name` is used, include `organization` too. `organization` on its own is OK. Roles: `licensor`,
-`producer`, `processor` (STAC provider roles), `point-of-contact` (a contact point), or `custodian`
-(the party accountable for the resource and its metadata - typically whoever authored or submitted
-the record and maintains it); the latter two map to the Contacts extension. `roles` is an array, so
-one contact may hold several.
+`producer`, `processor`, `point-of-contact`, or `custodian` (the party accountable for the resource
+and its metadata - typically whoever authored or submitted the record and maintains it). Contacts
+are allowed to list multiple roles.
 
 For `citation`, provide structured fields - `authors` and `date` (required), plus optional `title`,
-`publisher`, and `url`. You may omit `citation` when a `doi` is provided.
+`publisher`, and `url`. You may omit `citation` when a `doi` is provided, as fields can be derived.
 
 ### `created` and `updated`
 
 These timestamps are optional when authoring - provide them if you want, or leave them out and they
-are filled in at publication. Serialized records always include both.
+are filled in at publication. If updating a resource, please provide a new `updated` date.
 
 ### `data`
 
-At least one link to the resource.
+At least one link to the resource. It is understood that sometimes the resource may need to be
+uploaded to the climate data hub before this can be filled. As such, the url can be a placeholder
+for the upload location or be left blank to be filled in on final review. Embargoed or restricted
+data should still include a link, such as a request page, an embargoed dataverse entry, etc.
 
 ```yaml
 data:
@@ -256,43 +234,67 @@ data:
     media_type: application/vnd.apache.parquet
 ```
 
-Each asset's `locations` lists access paths to the **same content**. The first is canonical. Put
-different formats or services in separate `data` entries.
+Each asset's `locations` lists access paths to the same content. The first is the primary access
+pattern (most often an https url). Alternate locations can be provided if applicable, such as if the
+same file is hosted on multiple storage platforms. Data in different formats (csv, parquet) or
+services (such as an API or GEE asset) should be listed as separate `data` entries.
 
-If you know the media type or file size, provide it. If either value is missing it will be added
-during CDH review.
+Every asset needs a `name`, and names must be unique across both `data` and `additional_assets`. Use
+`nodata` when an asset has a sentinel value for missing or invalid observations. When `processing`
+contains multiple steps, use `processing_steps` to list the step IDs that apply to a particular data
+asset, in processing order:
 
-#### Generating many files with `href_template`
+```yaml
+data:
+  - name: suitability-cog
+    locations:
+      - url: https://example.org/suitability.tif
+    nodata: -9999
+    processing_steps: [source, calculate-suitability]
+```
+
+If you know the media type or file size, please provide it. If either value is missing it will need
+to be added during final review.
+
+#### How to handle many files with `href_template`
 
 When one dataset is split into many files along dimensions (e.g. hive partitioned parquets or cogs
-with 1 file per crop), use one `data[]` entry with `href_template`. Do not hand-list every file.
+with 1 file per crop), use one `data[]` entry with `href_template`. You should not need to hand-list
+every file.
 
-With a template, `locations[].url` are treated as **base paths** and the template is appended to
-each:
+With a template, `locations[].url` are treated as base paths and the template is appended to each:
 
 ```yaml
 data:
   - name: cogs
     locations:
-      - url: https://data.cdh.org/crop-yield/cogs/ # base; first is canonical (use HTTPS)
+      - url: https://data.cdh.org/crop-information/cogs/ # base; first is canonical (use HTTPS)
         title: HTTPS
-      - url: s3://cdh/crop-yield/cogs/
+      - url: s3://cdh/crop-information/cogs/
         title: S3
-    href_template: "crop_yield_{crop}_{system}_{variable}.tif"
+    href_template: "{crop}_{system}_suitability.tif"
     media_type: "image/tiff; application=geotiff; profile=cloud-optimized"
 ```
 
+In the above example, the full paths would look something like:
+
+- `https://data.cdh.org/crop-information/cogs/maize_irrigated_suitability.tif`
+- `https://data.cdh.org/crop-information/cogs/maize_rainfed_suitability.tif`
+- `https://data.cdh.org/crop-information/cogs/bean_irrigated_suitability.tif`
+- `https://data.cdh.org/crop-information/cogs/cassava_rainfed_suitability.tif`
+
 Rules:
 
-- Each `{token}` must match a declared `dimensions[].name`, except the reserved `{variable}` token,
-  which expands over `variables[].name` for files split per variable. `variable` cannot be used as a
-  dimension name.
+- Using `href_template` for multiple files
+  requires[Variables and dimensions](#variables-and-dimensions) to also be declared.
+- Each `{token}` must match a declared `dimensions[].name`, except the `{variable}` token, which
+  expands over `variables[].name` for files split per variable.
 - The matching dimension's `values` (or the variable names) are substituted verbatim and must match
   file-name tokens.
-- Every token dimension must list `values`; continuous axes such as `lat` / `lon` cannot be tokens.
+- Every token dimension must list `values`
 - The template assumes every value combination exists.
 - Each file URL is `locations[0].url` + filled template; additional locations become alternates.
-- Without `href_template`, `locations[].url` are full file URLs and the entry stays one asset.
+- Without `href_template`, `locations[].url` are full file URLs.
 - A templated entry shares one `description`, `nodata`, `media_type`, and `file_size` across every
   generated file; split into separate `data[]` entries (e.g. one per variable) when those differ.
   `file_size` is the size of a single generated file, not the set - omit it where slices differ
@@ -301,16 +303,17 @@ Rules:
 Only the file-partitioning dimensions go in the template. Dimensions stored inside each file (e.g.
 bands of a multi-band COG) stay out of it.
 
-## Add These Only When They Apply
+## Additional fields (Conditional/Optional)
 
-Some of these are extension fields - `climate`, `commodities`, `classes`, and
-`variables`/`dimensions`. The CDH template already declares them in `extensions[]`, so you only fill
-the ones that apply. `spatial`, `temporal`, `processing`, and the asset fields are core and always
-available.
+Some fields in the template will not apply to every record. This includes things like `climate`,
+`commodities`, `classes`, and `variables`/`dimensions`. Only fill the ones that apply. However,
+additional does not always mean optional. If it applies to a dataset, it should be used. Most
+datasets will be required to provide a list of variables, for example.
 
-For a third-party extension, add its pinned schema URL to `extensions[]`. If the record uses a
-profile, set `$schema` to that profile's canonical schema URL and bind it for editor hints. See
-`standard.md` section 4.2 and [`extending.md`](extending.md).
+This schema can be extended if a dataset requires additional metadata that is not currently covered.
+This should be done by contacting the team, or creating a new third-party extension and adding a
+pinned schema URL to `extensions[]`. See `standard.md` section 4.2 and
+[`extending.md`](extending.md).
 
 ### Spatial
 
@@ -332,8 +335,7 @@ Bounding box coordinate order is:
 - 3D: `[west, south, min_z, east, north, max_z]` (elevation in metres)
 
 Use a flat bounding box for one extent. Use a list only for **disjoint** coverage (separate areas
-with a large gap), listing each real area in any order. Do not author an overall/union box - the
-encoder derives it when serializing.
+with a large gap), listing each real area in any order.
 
 When converting from common tools, watch the axis order. Here is a comparison across several tools +
 stac:
@@ -349,11 +351,9 @@ stac:
 ```yaml
 spatial:
   bbox: [-180.0, -90.0, 180.0, 90.0] # whole Earth
-```
-
-```yaml
+# or
 spatial:
-  bbox: # disjoint coverage; no overall/union box - the encoder derives it
+  bbox:
     - [5.9, 47.3, 15.0, 55.1] # Germany
     - [-75.6, -55.9, -66.4, -17.5] # Chile
 ```
@@ -361,14 +361,16 @@ spatial:
 `spatial.geography` is the named-place facet for browse and filtering (the precise footprint lives
 in `spatial.bbox`). Use ids from `vocab/geography.json`, a controlled list built from UN M49. M49
 includes regions and countries: `[sub-saharan-africa]`, `[eastern-africa]`, `[kenya, uganda]`, or
-`[world]`. There is no `global`.
+`[world]`. List all applicable geographies in the dataset, preferring the highest level of coverage.
+If `geography` is `[eastern-africa]`, it can be assumed that all east African countries are included
+in the dataset fully. If this is not the case, each country should be listed. There is no need to
+repeat coverage with children in a parent region. For example, listing the parent is sufficient, not
+`[eastern-africa, kenya, uganda, ...]`.
 
-If `spatial.bbox` or `spatial.crs` is omitted for a geospatial STAC record, the CDH review process
-will add it. Provide these fields when you know them, especially for multi-asset records or when the
-first asset is not representative.
+`spatial.crs` should be a coordinate reference system (CRS) identifier, such as `EPSG:4326`.
 
-Use `spatial.resolution` for the spatial spacing or unit at which values are represented. For
-regular grids, use `type: xy` when x/y spacing is the same:
+Use `spatial.resolution` for the spatial unit at which values are represented. For regular grids
+(most common case), use `type: xy` when x/y spacing is the same:
 
 ```yaml
 spatial:
@@ -377,7 +379,6 @@ spatial:
       value: 0.08333333333333333
       unit: degree
       label: 5 arc-minutes
-      reference_system: EPSG:4326
 ```
 
 For polygon reporting units such as counties or watersheds:
@@ -392,20 +393,34 @@ spatial:
       reference_system: GAUL24
 ```
 
-Use `spatial.geometry_column` when a vector/table asset contains an embedded geometry column.
+Use `spatial.geometry_column` when a vector/table asset contains an embedded geometry column which
+needs to be read.
 
 ### Temporal
 
 Use `temporal` when the resource has a time period, forecast period, projection period, or recurring
-observations.
+observations. It is expected that most datasets will have a temporal field, either a time range of
+when observatations took place, a single point in time, or actual time steps.
 
 Common fields:
 
+- `temporal.date`
 - `temporal.start_date`
 - `temporal.end_date`
 
-`temporal` is the coverage extent only. Give `start_date` alone for a single instant / reference
-point, `start_date` + `end_date` for a span, or `end_date: null` for an open-ended series.
+`temporal` describes the coverage extent only. Use `date` for a single instant or reference period.
+Use `start_date` and `end_date` for a span, with `end_date: null` for an open-ended series. Do not
+combine `date` with `start_date` or `end_date`.
+
+These fields can be precise to the year (_e.g._ `date: "1981"`), month (_e.g._ `date: "1981-01"`),
+day (_e.g._ `date: "1981-01-01"`), or datetime (_e.g._ `date: "1981-01-01T00:00:00"`).
+
+```yaml
+temporal:
+  date: "2020"
+```
+
+For a range:
 
 ```yaml
 temporal:
@@ -413,10 +428,8 @@ temporal:
   end_date: "2020-12-31"
 ```
 
-Temporal cadence (daily, monthly, seasonal, projection periods) is not a `temporal` field. Declare a
-`type: temporal` dimension with an ISO 8601 `step` (see
-[Variables and dimensions](#variables-and-dimensions)). A cube may have several temporal axes (e.g.
-`season` within 20-year `period`s).
+Temporal cadence (daily, monthly, projection periods) should be declared as a `type: temporal`
+dimension with an ISO 8601 `step` (see [Variables and dimensions](#variables-and-dimensions)).
 
 ```yaml
 temporal:
@@ -450,9 +463,9 @@ variables:
 For each variable:
 
 - Use `description` for what the variable measures.
+- It is preferable to have unit as a UCUM or UDUNITS-2 unit.
 - Include the normal reading guidance in `description` when direction matters.
 - Use `note` for variable-specific limitations, caveats, or warnings.
-- Use the record-level `note` for dataset-wide limitations.
 
 #### Dimensions
 
@@ -460,13 +473,14 @@ Use `dimensions` when variables depend on additional axes such as scenario, mode
 band, etc. Time dimension is already covered by `temporal` metadata field.
 
 Define coded values. If a code is not obvious, explain it in the dimension description, point to a
-controlled vocabulary, or link a sidecar code list.
+controlled vocabulary, or link a sidecar code list as an [additional asset](#additional-assets).
 
 ### Classes
 
-Use `classes` for categorical values, class maps, bitfields, or classified rasters.
+Use `classes` for categorical values, classified rasters, etc.
 
-For long class lists, link a sidecar file instead of putting everything in the record.
+For long class lists, link a sidecar file instead of putting everything in the record (see
+[additional assets](#additional-assets)).
 
 ### Processing
 
@@ -492,7 +506,8 @@ processing:
 
 ### Climate Fields
 
-Use `climate` fields only when the resource is climate-related and the field applies.
+Use `climate` fields only when the resource is climate-related or was generated using climate data,
+and the field applies.
 
 Possible Fields:
 
@@ -509,13 +524,18 @@ Use `commodities` for agriculture, food-systems, livestock, and crop resources.
 
 Use values from `vocab/commodity.json`.
 
-### Additional Assets and Links
+### Additional assets
 
-Use these for supporting files, documentation, previews, schemas, QA/QC output, code lists,
-alternate formats, or services.
+Use `additional_assets` for supporting files that accompany the primary data, such as documentation,
+previews, schemas, QA/QC output, code lists, thumbnails, or runnable examples. Different formats of
+the data may also be listed here when they are supplementary rather than a primary way of accessing
+the resource.
 
-For `additional_assets`, provide `media_type` and `file_size` when known. Review may add them from
-inspectable files.
+Like entries in `data`, every additional asset needs a unique `name` and at least one location. Use
+multiple `locations` only when they provide different ways to access the same file; use separate
+asset entries for different files.
+
+For `additional_assets`, provide `media_type` and `file_size` when known.
 
 `roles` is open; the suggested values are `metadata`, `validation`, `describedby`, `thumbnail`,
 `overview`, `visual`, and `example`. Use `example` for a runnable usage example - worth adding when
@@ -529,6 +549,31 @@ additional_assets:
     description: Joins the table to admin-2 boundaries and maps the result.
     locations:
       - url: https://example.org/examples/join-admin2.ipynb
+  - name: classes
+    roles: [metadata, describedby]
+    media_type: text/csv
+    description: class codes for the dataset.
+    locations:
+      - url: https://example.org/rasterClasses.csv
+```
+
+### Additional links
+
+Use `additional_links` for related web resources rather than downloadable files: for example,
+documentation pages, license terms, request forms, services, or related and source datasets. Each
+link needs a unique `name`, a `url`, and a `rel` value describing its relationship to the record.
+
+Common `rel` values include `describedby` for documentation, `license` for license terms,
+`create-form` for an access-request form, `help` for access instructions, `cite-as` for the
+preferred citation target, and `derived_from` for a source dataset. See `standard.md` section 6 for
+the full list.
+
+```yaml
+additional_links:
+  - name: access-request
+    rel: create-form
+    url: https://example.org/request-access
+    description: Form for requesting access to the dataset.
 ```
 
 ## Where The Record Lives
@@ -597,23 +642,11 @@ Avoid inventing new fields. If the template has no place for something, use `add
 
 1. Fill the minimum record.
 2. Add `spatial` and `temporal` if relevant.
-3. Add `variables`, and include units and reading guidance.
-4. Add `dimensions` or `classes` only if they are needed to understand values.
+3. Add `variables` and `dimensions`, and include units and reading guidance.
+4. Add `classes` only if they are needed to understand values.
 5. Add `processing` for derived products.
-6. Add climate and commodity fields when they improve discovery.
+6. Add `climate` and `commodity` fields when they improve discovery.
 7. Add sidecars or extra links for long supporting detail.
-8. Review the record using the checklist in `standard.md`.
-
-## Quick Review
-
-Before publishing, check:
-
-- The title and description are understandable without opening the data.
-- Search and filter facts are in structured fields, not only prose.
-- Variables have units and plain-language meaning.
-- Important caveats are in `note`.
-- Data, code, documentation, citation, and license links are stable.
-- Optional fields are omitted when they do not apply.
 
 ## Validation Checklist
 
