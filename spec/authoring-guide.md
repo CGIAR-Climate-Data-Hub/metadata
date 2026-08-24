@@ -172,11 +172,11 @@ included in the hub. Including a citation ensures the author of the work is ackn
 properly cited.
 
 Use an SPDX license expression such as `CC-BY-4.0`, `CC0-1.0`, `MIT`, or `CC-BY-4.0 OR CC0-1.0`. A
-comprehensive list of license expressions can be found [here](https://spdx.org/licenses/). If the
-data is not licensed, a license must be chosen before submission (see
-[Choose a License](https://choosealicense.com/) for guidance). For a custom license, use
-`LicenseRef-*` and add an `additional_links[]` entry with `rel: license` and a URL for the license
-terms.
+comprehensive list of license expressions can be found
+[on the SPDX website](https://spdx.org/licenses/). If the data is not licensed, a license must be
+chosen before submission (see [Choose a License](https://choosealicense.com/) for guidance). For a
+custom license, use `LicenseRef-*` and add an `additional_links[]` entry with `rel: license` and a
+URL for the license terms.
 
 Use `access_note` when `access` is `restricted` or `non-public`. It should say how to request
 access, what authentication is needed, or whether the data is embargoed. In `additional_links[]`,
